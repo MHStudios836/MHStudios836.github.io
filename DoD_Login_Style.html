@@ -1,0 +1,456 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>MH Studios™ | Operative Access</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+		
+		<style>
+			/* ==========================================================================
+			   THEME: TACTICAL OPS (VIDEO BACKDROP)
+			   ========================================================================== */
+			:root {
+				--mh-blue: #0080FF;
+				--mh-cyan: #00e5ff;
+				--mh-dark: #05070a;
+				--mh-glass: rgba(13, 17, 23, 0.9);
+				--mh-red: #ff004c;
+				--mh-green: #00ff41;
+			}
+
+			body {
+				margin: 0;
+				padding: 0;
+				background-color: #000;
+				color: #fff;
+				font-family: 'Uni Sans', sans-serif;
+				height: 100vh;
+				overflow: hidden;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			/* --- 1. BACKGROUND LAYERS --- */
+			#video-layer {
+				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+				z-index: -2;
+				object-fit: cover;
+				opacity: 0.6;
+			}
+
+			#mesh-layer {
+				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+				z-index: -1;
+				background-image: 
+					linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+					linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(255, 0, 0, 0.02));
+				background-size: 100% 2px, 3px 100%;
+				pointer-events: none;
+			}
+
+			/* --- 2. MAIN INTERFACE CONTAINER --- */
+			.secure-interface {
+				display: flex;
+				width: 900px;
+				max-width: 95%;
+				height: 600px; /* Increased Height slightly */
+				background: var(--mh-glass);
+				border: 1px solid rgba(255,255,255,0.1);
+				backdrop-filter: blur(15px);
+				box-shadow: 0 0 80px rgba(0,0,0,0.8);
+				border-radius: 4px;
+				overflow: hidden;
+				animation: bootUp 1s ease-out;
+				transition: border-color 0.3s;
+			}
+
+			/* --- 3. LEFT PANEL (INTEL) --- */
+			.intel-panel {
+				width: 40%;
+				background: rgba(0,0,0,0.4);
+				border-right: 1px solid rgba(255,255,255,0.1);
+				padding: 40px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				position: relative;
+			}
+			
+			.brand-lockup { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+			.brand-lockup img { height: 40px; filter: drop-shadow(0 0 8px var(--mh-blue)); }
+			.brand-text { font-size: 1.2em; letter-spacing: 2px; color: #fff; font-weight: 400; }
+
+			.sys-info {
+				font-family: 'Courier New', monospace;
+				font-size: 0.75em;
+				color: #888;
+				line-height: 1.6;
+			}
+			.sys-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 5px 0; }
+			.sys-val { color: var(--mh-cyan); }
+
+			.encryption-visual {
+				height: 100px;
+				background: rgba(0,0,0,0.3);
+				border: 1px solid #333;
+				margin-top: 20px;
+				position: relative;
+				overflow: hidden;
+			}
+			.code-stream {
+				position: absolute; top: 0; left: 0;
+				font-family: 'Courier New', monospace; font-size: 10px; color: var(--mh-blue); opacity: 0.5;
+				padding: 10px;
+				animation: scrollCode 5s linear infinite;
+			}
+
+			/* --- 4. RIGHT PANEL (ACCESS FORM) - SCROLLABLE --- */
+			.access-panel {
+				width: 60%;
+				padding: 40px;
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				overflow-y: auto; /* ENABLE SCROLLING */
+				height: 100%;
+			}
+
+			/* CUSTOM SCROLLBAR (MATCHES HOMEPAGE) */
+			.access-panel::-webkit-scrollbar { width: 6px; }
+			.access-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+			.access-panel::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 3px; }
+			.access-panel::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+
+			.panel-header { text-align: center; margin-bottom: 30px; flex-shrink: 0; }
+			.panel-title { font-size: 1.8em; font-weight: 900; letter-spacing: 3px; color: #fff; margin-bottom: 5px; }
+			.panel-sub { font-family: 'Courier New', monospace; font-size: 0.7em; color: var(--mh-blue); }
+
+			/* TABS */
+			.auth-toggle {
+				display: flex;
+				background: rgba(0,0,0,0.3);
+				border-radius: 4px;
+				padding: 5px;
+				margin-bottom: 30px;
+				flex-shrink: 0;
+			}
+			.toggle-btn {
+				flex: 1;
+				text-align: center;
+				padding: 10px;
+				font-size: 0.8em;
+				cursor: pointer;
+				transition: 0.3s;
+				color: #666;
+				border-radius: 2px;
+				font-weight: bold;
+			}
+			.toggle-btn.active {
+				background: var(--mh-blue);
+				color: #000;
+				box-shadow: 0 0 15px rgba(0,128,255,0.3);
+			}
+
+			/* INPUTS */
+			.input-frame { position: relative; margin-bottom: 20px; }
+			.input-frame label {
+				display: block; font-family: 'Courier New', monospace; font-size: 0.7em; color: #aaa; margin-bottom: 8px;
+			}
+			.tac-input {
+				width: 100%;
+				background: rgba(255,255,255,0.05);
+				border: 1px solid rgba(255,255,255,0.1);
+				color: #fff;
+				padding: 12px 15px;
+				outline: none;
+				transition: 0.3s;
+				font-family: sans-serif;
+			}
+			.tac-input:focus {
+				border-color: var(--mh-cyan);
+				background: rgba(0, 229, 255, 0.05);
+				box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
+			}
+
+			/* BUTTON */
+			.execute-btn {
+				width: 100%;
+				background: transparent;
+				border: 1px solid var(--mh-cyan);
+				color: var(--mh-cyan);
+				padding: 15px;
+				font-weight: 900;
+				letter-spacing: 2px;
+				cursor: pointer;
+				text-transform: uppercase;
+				transition: 0.3s;
+				margin-top: 10px;
+				position: relative;
+				overflow: hidden;
+			}
+			.execute-btn:hover {
+				background: var(--mh-cyan);
+				color: #000;
+				box-shadow: 0 0 30px var(--mh-cyan);
+			}
+
+			/* ROLE CARDS */
+			.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+			.role-card {
+				background: rgba(0,0,0,0.3); border: 1px solid #333; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s;
+			}
+			.role-card:hover { border-color: #666; }
+			.role-card.selected { border-color: var(--mh-blue); background: rgba(0,128,255,0.1); }
+			.role-icon { font-size: 1.5em; color: #888; margin-bottom: 5px; }
+			.role-card.selected .role-icon { color: var(--mh-blue); }
+			.role-label { font-size: 0.7em; font-weight: bold; color: #fff; }
+
+			/* UTILS */
+			.hidden { display: none; }
+			.status-log { 
+				margin-top: 20px; font-family: 'Courier New', monospace; font-size: 0.75em; text-align: center; min-height: 20px; flex-shrink: 0;
+			}
+			
+			/* UPDATED HOME LINK - FLOWS WITH SCROLL */
+			.home-link {
+				margin-top: 30px;
+				margin-bottom: 10px;
+				text-align: center;
+				display: block;
+				font-size: 0.7em; 
+				color: #555; 
+				text-decoration: none;
+				flex-shrink: 0;
+			}
+			.home-link:hover { color: var(--mh-cyan); }
+
+			/* ANIMATIONS */
+			@keyframes bootUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
+
+			/* MOBILE */
+			@media (max-width: 800px) {
+				.secure-interface { flex-direction: column; height: auto; max-height: 90vh; margin: 20px; }
+				.intel-panel { width: 100%; height: 120px; flex-direction: row; padding: 20px; align-items: center; flex-shrink: 0; }
+				.access-panel { width: 100%; padding: 30px; overflow-y: auto; }
+				.encryption-visual, .sys-info { display: none; }
+			}
+		</style>
+	</head>
+	<body>
+
+		<video autoplay muted loop id="video-layer">
+			<source src="videos/DoD_BGV.mp4" type="video/mp4">
+		</video>
+		<div id="mesh-layer"></div>
+
+		<div class="secure-interface">
+			
+			<div class="intel-panel">
+				<div>
+					<div class="brand-lockup">
+						<img src="images/Logo_2.png" alt="MH">
+						<div class="brand-text">MH STUDIOS™</div>
+					</div>
+					<div class="sys-info">
+						<div class="sys-row"><span>NODE_ID:</span> <span class="sys-val">ALPHA-7</span></div>
+						<div class="sys-row"><span>STATUS:</span> <span class="sys-val" style="color:var(--mh-green);">ONLINE</span></div>
+						<div class="sys-row"><span>ENCRYPTION:</span> <span class="sys-val">TLS 1.3</span></div>
+						<div class="sys-row"><span>LATENCY:</span> <span class="sys-val">12ms</span></div>
+					</div>
+				</div>
+				
+				<div class="encryption-visual">
+					<div class="code-stream">
+						01010101 MH_PROTOCOL_INIT...<br>
+						VERIFYING HANDSHAKE...<br>
+						ACCESS_TOKEN: [NULL]<br>
+						WAITING FOR CREDENTIALS...<br>
+						FIREBASE_AUTH: READY<br>
+						SECURE_PIPE: ESTABLISHED<br>
+						0011010010110...
+					</div>
+				</div>
+			</div>
+
+			<div class="access-panel">
+				<div class="panel-header">
+					<div class="panel-title">LOGIN</div>
+					<div class="panel-sub">/// AUTHENTICATE IDENTITY ///</div>
+				</div>
+
+				<div class="auth-toggle">
+					<div class="toggle-btn active" id="btn-login">LOGIN</div>
+					<div class="toggle-btn" id="btn-signup">REGISTER</div>
+				</div>
+
+				<form id="login-form">
+					<div class="input-frame">
+						<label>> SECURE EMAIL</label>
+						<input type="email" class="tac-input" id="login-email" required>
+					</div>
+					<div class="input-frame">
+						<label>> PASSWORD</label>
+						<input type="password" class="tac-input" id="login-pass" required>
+					</div>
+					<button type="submit" class="execute-btn">ACCESS DASHBOARD</button>
+				</form>
+
+				<form id="register-form" class="hidden">
+					<div class="input-frame">
+						<label>> FULL NAME</label>
+						<input type="text" class="tac-input" id="reg-name" required>
+					</div>
+					<div class="input-frame">
+						<label>> EMAIL ADDRESS</label>
+						<input type="email" class="tac-input" id="reg-email" required>
+					</div>
+					
+					<div class="input-frame">
+						<label>> DESIGNATION</label>
+						<div class="role-grid">
+							<div class="role-card selected" data-role="client">
+								<div class="role-icon"><i class="fas fa-user-graduate"></i></div>
+								<div class="role-label">STUDENT</div>
+							</div>
+							<div class="role-card" data-role="freelancer">
+								<div class="role-icon"><i class="fas fa-terminal"></i></div>
+								<div class="role-label">FREELANCER</div>
+							</div>
+						</div>
+						<input type="hidden" id="reg-role" value="client">
+					</div>
+
+					<div class="input-frame">
+						<label>> CREATE PASSWORD</label>
+						<input type="password" class="tac-input" id="reg-pass" required>
+					</div>
+
+					<button type="submit" class="execute-btn" style="border-color:var(--mh-blue); color:var(--mh-blue);">INITIALIZE PROFILE</button>
+				</form>
+
+				<div class="status-log" id="status-display"></div>
+				
+				<a href="index.html" class="home-link">
+					<i class="fas fa-undo"></i> ABORT OPERATION
+				</a>
+			</div>
+		</div>
+
+		<script src="assets/js/jquery.min.js"></script>
+
+		<script>
+			$(document).ready(function() {
+				// TAB SWITCHING PROTOCOL
+				$('#btn-login').on('click', function() {
+					$(this).addClass('active'); $('#btn-signup').removeClass('active');
+					$('#login-form').removeClass('hidden'); $('#register-form').addClass('hidden');
+					$('.panel-title').text("LOGIN");
+				});
+
+				$('#btn-signup').on('click', function() {
+					$(this).addClass('active'); $('#btn-login').removeClass('active');
+					$('#register-form').removeClass('hidden'); $('#login-form').addClass('hidden');
+					$('.panel-title').text("ENLIST");
+				});
+
+				// ROLE SELECTION
+				$('.role-card').on('click', function() {
+					$('.role-card').removeClass('selected');
+					$(this).addClass('selected');
+					$('#reg-role').val($(this).data('role'));
+				});
+			});
+
+			function typeStatus(text, color) {
+				const $el = $('#status-display');
+				$el.css('color', color).text('');
+				let i = 0;
+				const speed = 30;
+				
+				function type() {
+					if (i < text.length) {
+						$el.text($el.text() + text.charAt(i));
+						i++;
+						setTimeout(type, speed);
+					}
+				}
+				type();
+			}
+		</script>
+
+		<script type="module">
+			import { auth, db, appId } from './assets/js/firebase-init.js';
+			import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
+			import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+
+			// LOGIN HANDLER
+			$('#login-form').on('submit', async (e) => {
+				e.preventDefault();
+				const email = $('#login-email').val();
+				const pass = $('#login-pass').val();
+				
+				typeStatus("> VERIFYING ENCRYPTION KEYS...", "#fff");
+
+				try {
+					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+					
+					// Success
+					typeStatus("> ACCESS GRANTED. LOADING DASHBOARD...", "#00ff41");
+					$('.secure-interface').css('border-color', '#00ff41'); 
+					
+					setTimeout(() => {
+						window.location.href = 'Admin_Room.html';
+					}, 1500);
+
+				} catch (error) {
+					console.error(error);
+					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "CONNECTION FAILED";
+					typeStatus("> ERROR: " + errorMsg, "#ff004c");
+					$('.secure-interface').css('border-color', '#ff004c');
+				}
+			});
+
+			// REGISTER HANDLER
+			$('#register-form').on('submit', async (e) => {
+				e.preventDefault();
+				const name = $('#reg-name').val();
+				const email = $('#reg-email').val();
+				const pass = $('#reg-pass').val();
+				const role = $('#reg-role').val();
+
+				typeStatus("> GENERATING OPERATIVE ID...", "#fff");
+
+				try {
+					const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+					const user = userCredential.user;
+
+					// Write to Database
+					await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
+						name: name,
+						email: email,
+						role: role,
+						joined: new Date().toISOString(),
+						credits: 0,
+						status: 'active'
+					});
+
+					typeStatus("> PROFILE INITIALIZED. WELCOME, OPERATIVE.", "#00ff41");
+					setTimeout(() => {
+						window.location.href = 'Admin_Room.html';
+					}, 2000);
+
+				} catch (error) {
+					console.error(error);
+					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "REGISTRATION FAILED";
+					typeStatus("> ERROR: " + errorMsg, "#ff004c");
+				}
+			});
+		</script>
+	</body>
+</html>

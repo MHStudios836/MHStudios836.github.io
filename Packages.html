@@ -1,0 +1,410 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>MH Studios™ | Packages & Pricing</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+		
+		<style>
+			/* ==========================================================================
+			   THEME: TITAN V4.1 (MATCHING HOMEPAGE)
+			   ========================================================================== */
+			:root {
+				--mh-blue: #0080FF;
+				--mh-cyan: #00e5ff;
+				--mh-dark: #05070a;
+				--mh-panel: rgba(13, 17, 23, 0.95);
+				--mh-grid: rgba(0, 128, 255, 0.1);
+				--mh-text: #e0e0e0;
+				--mh-gold: #FFD700;
+			}
+
+			body {
+				background-color: #000;
+				color: var(--mh-text);
+				font-family: 'Uni Sans', sans-serif;
+				overflow-x: hidden;
+				margin: 0;
+			}
+
+			/* --- GLOBAL UTILITIES --- */
+			a { text-decoration: none; transition: 0.3s; }
+			::-webkit-scrollbar { width: 8px; }
+			::-webkit-scrollbar-track { background: #000; }
+			::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 4px; }
+			::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+
+			/* --- 1. NAVIGATION (STICKY HUD) --- */
+			#tactical-nav {
+				position: fixed; top: 0; left: 0; width: 100%;
+				padding: 15px 30px;
+				z-index: 999;
+				display: flex; justify-content: space-between; align-items: center;
+				background: rgba(5, 7, 10, 0.85);
+				backdrop-filter: blur(15px);
+				border-bottom: 1px solid rgba(255,255,255,0.1);
+				transition: 0.3s;
+			}
+			#tactical-nav.scrolled {
+				padding: 10px 30px;
+				background: rgba(0,0,0,0.95);
+				border-bottom-color: var(--mh-blue);
+			}
+
+			.brand-link {
+				display: flex; align-items: center; gap: 15px;
+				color: #fff; 
+				font-family: 'Uni Sans', sans-serif;
+				font-weight: 400; /* Regular */
+				letter-spacing: 2px;
+				font-size: 1.2em;
+			}
+			.brand-link:hover { color: var(--mh-cyan); text-shadow: 0 0 10px var(--mh-cyan); }
+			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-blue)); }
+
+			.menu-trigger {
+				color: #fff;
+				font-family: 'Uni Sans', sans-serif;
+				font-weight: 400; /* Regular */
+				cursor: pointer;
+				padding: 10px 20px;
+				border: 1px solid rgba(255,255,255,0.2);
+				display: flex; align-items: center; gap: 10px;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+			}
+			.menu-trigger:hover {
+				background: var(--mh-blue);
+				border-color: var(--mh-blue);
+				color: #000;
+				box-shadow: 0 0 15px var(--mh-blue);
+			}
+
+			/* --- 2. MENU OVERLAY (THE VAULT) --- */
+			#menu-overlay {
+				position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
+				background: rgba(5, 7, 10, 0.98);
+				border-left: 2px solid var(--mh-blue);
+				z-index: 1000;
+				padding: 40px;
+				display: flex; flex-direction: column;
+				transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+				box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+			}
+			#menu-overlay.active { right: 0; }
+			
+			.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
+			.menu-close:hover { color: var(--mh-red); }
+
+			.menu-links a {
+				display: block; font-size: 1.2em; color: #fff; padding: 15px 0;
+				border-bottom: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 2px;
+			}
+			.menu-links a:hover { color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan); }
+			
+			.menu-auth { margin-top: auto; display: grid; gap: 10px; }
+			
+			.lang-grid { display: flex; justify-content: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+			.lang-btn { width: 40px; height: 30px; opacity: 0.4; transition: 0.3s; border: 1px solid transparent; border-radius: 4px; padding: 2px; }
+			.lang-btn img { width: 100%; height: auto; display: block; }
+			.lang-btn:hover, .lang-btn.active { opacity: 1; border-color: var(--mh-cyan); transform: scale(1.1); }
+
+			/* --- 3. HERO (MINIMALIST) --- */
+			.pricing-hero {
+				padding: 160px 20px 60px;
+				text-align: center;
+				background: radial-gradient(circle at 50% 0%, #1a2035 0%, #000 70%);
+			}
+			.hero-title {
+				font-size: 4em; font-weight: 900; letter-spacing: 8px; color: #fff;
+				text-shadow: 0 0 20px var(--mh-blue); margin-bottom: 10px; text-transform: uppercase;
+			}
+			.hero-tag {
+				font-family: 'Courier New', monospace; color: var(--mh-cyan); font-size: 1em; letter-spacing: 3px;
+			}
+
+			/* --- 4. MATRIX GRID --- */
+			.matrix-container {
+				max-width: 1300px;
+				margin: 0 auto 100px;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+				gap: 30px;
+				padding: 20px;
+			}
+
+			.package-panel {
+				background: var(--mh-panel);
+				border: 1px solid rgba(0, 128, 255, 0.2);
+				padding: 40px 30px;
+				position: relative;
+				transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+				display: flex;
+				flex-direction: column;
+				text-align: center;
+				overflow: hidden;
+			}
+
+			/* Tech Accents */
+			.package-panel::before {
+				content: ''; position: absolute; top: 0; left: 0;
+				width: 40px; height: 3px; background: var(--mh-blue);
+			}
+			.package-panel::after {
+				content: ''; position: absolute; bottom: 0; right: 0;
+				width: 3px; height: 40px; background: var(--mh-blue);
+			}
+
+			.package-panel:hover {
+				transform: translateY(-15px) scale(1.02);
+				border-color: var(--mh-cyan);
+				box-shadow: 0 0 30px rgba(0, 128, 255, 0.3);
+			}
+
+			/* Content */
+			.level-indicator { font-size: 0.7em; color: var(--mh-blue); letter-spacing: 3px; margin-bottom: 10px; }
+			.package-name { font-size: 2.2em; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; color: #fff; }
+			.package-price { font-size: 3.5em; font-weight: 900; color: var(--mh-cyan); margin-bottom: 30px; text-shadow: 0 0 15px rgba(0,229,255,0.4); }
+			.package-price span { font-size: 0.3em; color: #555; letter-spacing: 1px; }
+
+			/* Features List */
+			.feature-list { list-style: none; padding: 0; margin: 0 0 40px 0; text-align: left; flex-grow: 1; }
+			.feature-list li {
+				padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+				font-size: 0.9em; color: #aaa; display: flex; align-items: center; gap: 15px;
+			}
+			.feature-list li i { color: var(--mh-blue); font-size: 0.8em; }
+
+			/* BUTTONS */
+			.deploy-btn {
+				background: transparent;
+				border: 1px solid var(--mh-blue);
+				color: var(--mh-blue);
+				padding: 18px;
+				font-weight: 900;
+				text-decoration: none;
+				text-transform: uppercase;
+				letter-spacing: 2px;
+				transition: 0.3s;
+				clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+			}
+			.deploy-btn:hover { background: var(--mh-blue); color: #000; box-shadow: 0 0 20px var(--mh-blue); }
+
+			/* --- SPECIAL: ELITE TIER --- */
+			.package-panel.elite {
+				border-color: var(--mh-gold);
+				background: linear-gradient(145deg, rgba(255, 215, 0, 0.05), rgba(0,0,0,0.9));
+			}
+			.package-panel.elite .package-price, .package-panel.elite li i { color: var(--mh-gold); }
+			.package-panel.elite::before, .package-panel.elite::after { background: var(--mh-gold); }
+			.package-panel.elite .deploy-btn { border-color: var(--mh-gold); color: var(--mh-gold); }
+			.package-panel.elite .deploy-btn:hover { background: var(--mh-gold); color: #000; box-shadow: 0 0 25px var(--mh-gold); }
+
+			/* --- 5. FOOTER (SYNCED) --- */
+			#tactical-footer {
+				padding: 80px 20px;
+				background: #020202;
+				border-top: 1px solid #111;
+				font-size: 0.9em;
+				color: #666;
+			}
+			.footer-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				max-width: 1200px;
+				margin: 0 auto;
+				gap: 50px;
+			}
+			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+			.footer-col ul { list-style: none; padding: 0; }
+			.footer-col li { margin-bottom: 12px; }
+			.footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+			.footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+			.social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+			.social-grid a { color: #555; transition: 0.3s; }
+			.social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+			/* RESPONSIVE */
+			@media (max-width: 900px) {
+				.hero-title { font-size: 2.5em; letter-spacing: 5px; }
+				.matrix-container { grid-template-columns: 1fr; padding: 10px; }
+				#menu-overlay { width: 100%; }
+			}
+		</style>
+	</head>
+	<body>
+
+		<nav id="tactical-nav">
+			<a href="index.html" class="brand-link">
+				<img src="images/Logo_2.png" alt="MH LOGO">
+				MH STUDIOS™
+			</a>
+			
+			<div class="menu-trigger" id="menu-btn">
+				<span>MENU</span>
+				<i class="fas fa-bars"></i>
+			</div>
+		</nav>
+
+		<div id="menu-overlay">
+			<div class="menu-close"><i class="fas fa-times"></i></div>
+			
+			<div class="menu-links">
+				<a href="index.html"><i class="fas fa-home" style="width:30px;"></i> Command Center</a>
+				<a href="Products_Services_Room.html"><i class="fas fa-cube" style="width:30px;"></i> The Armory</a>
+				<a href="Packages.html"><i class="fas fa-tags" style="width:30px;"></i> Clearance Levels</a>
+				<a href="index.html#guild-sector"><i class="fas fa-users-cog" style="width:30px;"></i> The Guild</a>
+				<a href="index.html#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
+			</div>
+			
+			<div class="menu-auth">
+				<a href="DoD_Login_Style.html" class="btn-main deploy-btn" style="text-align:center; padding: 10px;">OPERATIVE LOGIN</a>
+				
+				<div class="lang-grid">
+					<a href="#" class="lang-btn active" title="English"><img src="images/GB.png" alt="GB"></a>
+					<a href="#" class="lang-btn" title="Arabic"><img src="images/Ar.png" alt="AR"></a>
+					<a href="#" class="lang-btn" title="Dutch"><img src="images/Du.png" alt="NL"></a>
+					<a href="#" class="lang-btn" title="Russian"><img src="images/Ru.png" alt="RU"></a>
+				</div>
+			</div>
+		</div>
+
+		<section class="pricing-hero">
+			<h1 class="hero-title">PACKAGES</h1>
+			<div class="hero-tag">/// SELECT YOUR OPERATIONAL CLEARANCE ///</div>
+		</section>
+
+		<div class="matrix-container">
+			
+			<div class="package-panel">
+				<div class="level-indicator">CLEARANCE: LEVEL 1</div>
+				<div class="package-name">Scout</div>
+				<div class="package-price">$19<span>/MO</span></div>
+				<ul class="feature-list">
+					<li><i class="fas fa-check"></i> Basic Web Assets</li>
+					<li><i class="fas fa-check"></i> Standard UI Components</li>
+					<li><i class="fas fa-check"></i> Community Support</li>
+					<li><i class="fas fa-check"></i> 1 Project License</li>
+				</ul>
+				<a href="Payment_Gateway.html?id=pkg_scout" class="deploy-btn">Initialize</a>
+			</div>
+
+			<div class="package-panel" style="border-width: 2px; border-color: var(--mh-blue);">
+				<div style="position: absolute; top: 15px; right: -30px; background: var(--mh-blue); color: #000; padding: 5px 40px; transform: rotate(45deg); font-size: 0.6em; font-weight: bold; letter-spacing:1px;">RECOMMENDED</div>
+				<div class="level-indicator">CLEARANCE: LEVEL 2</div>
+				<div class="package-name">Commander</div>
+				<div class="package-price">$49<span>/MO</span></div>
+				<ul class="feature-list">
+					<li><i class="fas fa-check"></i> Full Armory Access</li>
+					<li><i class="fas fa-check"></i> Animated HUD Elements</li>
+					<li><i class="fas fa-check"></i> Priority Encryption Support</li>
+					<li><i class="fas fa-check"></i> 5 Project Licenses</li>
+					<li><i class="fas fa-check"></i> Source Code Access</li>
+				</ul>
+				<a href="Payment_Gateway.html?id=pkg_commander" class="deploy-btn" style="background: var(--mh-blue); color: #000;">Deploy</a>
+			</div>
+
+			<div class="package-panel elite">
+				<div class="level-indicator">CLEARANCE: LEVEL 3</div>
+				<div class="package-name">Elite</div>
+				<div class="package-price">$99<span>/MO</span></div>
+				<ul class="feature-list">
+					<li><i class="fas fa-check"></i> Unlimited Everything</li>
+					<li><i class="fas fa-check"></i> Custom HUD Development</li>
+					<li><i class="fas fa-check"></i> 24/7 Tactical Support</li>
+					<li><i class="fas fa-check"></i> Enterprise Licenses</li>
+					<li><i class="fas fa-check"></i> Early Access Artifacts</li>
+				</ul>
+				<a href="Payment_Gateway.html?id=pkg_elite" class="deploy-btn">Authorize</a>
+			</div>
+
+		</div>
+
+		<footer id="tactical-footer">
+			<div class="footer-grid">
+				<div class="footer-col">
+					<h4>MH STUDIOS™</h4>
+					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+					<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
+				</div>
+				<div class="footer-col">
+					<h4>SECTORS</h4>
+					<ul>
+						<li><a href="Products_Services_Room.html">The Armory</a></li>
+						<li><a href="Packages.html">Service Packages</a></li>
+						<li><a href="index.html#guild-sector">The Guild</a></li>
+						<li><a href="DoD_Login_Style.html">Operative Login</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>LEGAL PROTOCOLS</h4>
+					<ul>
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Terms of Engagement</a></li>
+						<li><a href="#">Refund Policy</a></li>
+						<li><a href="#">PCI-DSS Compliance</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>SECURE CHANNELS</h4>
+					<div class="social-grid">
+						<a href="#"><i class="fab fa-discord"></i></a>
+						<a href="#"><i class="fab fa-github"></i></a>
+						<a href="#"><i class="fab fa-linkedin"></i></a>
+						<a href="#"><i class="fab fa-instagram"></i></a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="assets/js/jquery.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				// --- MENU LOGIC ---
+				$('#menu-btn').on('click', function() {
+					$('#menu-overlay').addClass('active');
+				});
+				$('.menu-close, .menu-links a').on('click', function() {
+					$('#menu-overlay').removeClass('active');
+				});
+
+				// --- LANGUAGE LOGIC ---
+				$('.lang-btn').on('click', function(e) {
+					e.preventDefault();
+					$('.lang-btn').removeClass('active');
+					$(this).addClass('active');
+					console.log("Language switched: " + $(this).attr('title'));
+				});
+
+				// --- SCROLL NAVBAR LOGIC ---
+				$(window).on('scroll', function() {
+					if ($(window).scrollTop() > 50) {
+						$('#tactical-nav').addClass('scrolled');
+					} else {
+						$('#tactical-nav').removeClass('scrolled');
+					}
+				});
+
+				// --- SCROLL REVEAL ANIMATION ---
+				$(window).on('scroll', function() {
+					$('.package-panel').each(function() {
+						var top_of_element = $(this).offset().top;
+						var bottom_of_window = $(window).scrollTop() + $(window).height();
+						
+						if(bottom_of_window > top_of_element + 50) {
+							$(this).css({'opacity':'1', 'transform':'translateY(0)'});
+						}
+					});
+				});
+
+				// Initial State for Animation
+				$('.package-panel').css({'opacity':'0', 'transform':'translateY(30px)'});
+			});
+		</script>
+
+	</body>
+</html>

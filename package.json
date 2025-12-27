@@ -1,0 +1,23 @@
+{
+  "name": "mh-studios-website",
+  "version": "1.0.0",
+  "description": "Official website for MH Studios™ — built with Eleventy",
+  "main": "index.js",
+  "scripts": {
+    "dev": "eleventy --serve --watch --quiet",
+    "build": "eleventy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "eleventy",
+    "static-site",
+    "nunjucks",
+    "mh-studios"
+  ],
+  "author": "MH Studios™",
+  "license": "ISC",
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "dotenv": "^17.2.3"
+  }
+}

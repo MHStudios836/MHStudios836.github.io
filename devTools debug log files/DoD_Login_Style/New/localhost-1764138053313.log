@@ -1,0 +1,6 @@
+DoD_Login_Style.html:1 Access to script at 'https://www.gstatic.com/firebase/9/firebase-firestore.js' from origin 'http://localhost:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebase-init.js:15  GET https://www.gstatic.com/firebase/9/firebase-firestore.js net::ERR_FAILED 404 (Not Found)
+DoD_Login_Style.html:1 Access to script at 'https://www.gstatic.com/firebase/9/firebase-app.js' from origin 'http://localhost:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebase-init.js:3  GET https://www.gstatic.com/firebase/9/firebase-app.js net::ERR_FAILED 404 (Not Found)
+DoD_Login_Style.html:1 Access to script at 'https://www.gstatic.com/firebase/9/firebase-auth.js' from origin 'http://localhost:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebase-init.js:10  GET https://www.gstatic.com/firebase/9/firebase-auth.js net::ERR_FAILED 404 (Not Found)

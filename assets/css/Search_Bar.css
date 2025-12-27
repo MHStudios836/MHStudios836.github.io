@@ -1,0 +1,116 @@
+
+/* 1. Container */
+#header-search-form {
+    display: flex;
+    align-items: center;
+    border: solid 1px #505050;
+    border-radius: 4px;
+    height: 2.8em;
+    width: 52px;                    /* Collapsed */
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: #303030;
+    padding: 0 0.5em 0 0.5em;        /* FIXED: Removed 3em bottom */
+}
+
+/* 2. Hover / Focus: Expand */
+#header-search-form:hover,
+#header-search-form.active-focus {
+    width: 300px;
+    border-color: #53e3fb !important;
+    box-shadow: 0 0 0 1px #53e3fb, 0 0 8px rgba(83, 227, 251, 0.4) !important;
+}
+
+
+/* 3. Input – SINGLE, CLEAN RULE */
+#header-search-form input[type="text"] {
+    border: none;
+    background: transparent;
+    color: #f9f9f9 !important;       /* VISIBLE TEXT */
+    font-size: 0.9em;
+    outline: none;
+    height: 100%;
+    width: 0;
+    padding: 0.5em 0em;
+    opacity: 0;
+    min-width: 0;
+    transition: width 0.3s ease, padding 0.3s ease, opacity 0.2s ease 0.1s;
+}
+
+/* 4. Input: Expanded */
+#header-search-form:hover input[type="text"],
+#header-search-form.active-focus input[type="text"] {
+    width: 250px;
+    padding: 0 1em;
+    opacity: 1;
+}
+
+/* --- SEARCH BUTTON – REVERT TO PROVEN OLD CODE (WORKED) --- */
+#header-search-form button[type="submit"] {
+    flex-shrink: 0;
+    width: 3em;
+    height: 100%;
+    cursor: pointer;
+    background: transparent;
+    color: transparent;
+    border: #202020;
+    line-height: 3em;           /* THIS IS THE KEY – FORCES VERTICAL CENTER */
+    padding: 0;
+    font-size: 1em;
+    transition: background-color 0.2s;
+    text-indent: 0;
+    background-image: none;
+}
+
+#header-search-form button[type="submit"]:hover {
+    background: none;
+}
+
+/* 6. Icon scroll */
+#header-search-form button[type="submit"] i {
+    transition: color 0.3s ease;
+}
+
+#header.scrolled #header-search-form button[type="submit"] i {
+    color: #f9f9f9 !important;
+}
+
+/* Responsive Adjustments for Mobile: Input always expanded */
+@media screen and (max-width: 720px) {
+    /* Ensure the header layout adjusts for mobile */
+    #header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-top: 1em;
+        padding-bottom: 1em;
+        min-height: auto;
+    }
+    
+    /* On mobile, search bar should always be expanded */
+    #header-search-form {
+        width: 40% !important; 
+        max-width: 100%;
+    }
+    
+    /* Ensure the input is fully visible and takes up necessary width */
+    #header-search-form input[type="text"] {
+        width: calc(100% - 3em) !important; /* Full width minus button width */
+        opacity: 1 !important; 
+        padding: 0 0.5em 0 1em !important; 
+    }
+
+    #header .logo {
+        margin-bottom: 0.5em;
+    }
+}
+
+/* --- SEARCH ICON SCROLL COLOR SWITCH --- */
+#header-search-form button[type="submit"] i {
+    color: #f9f9f9;
+    transition: color 0.3s ease;
+}
+
+/* Active on scroll */
+#header.scrolled #header-search-form button[type="submit"] i {
+    color: #f9f9f9 !important;
+}

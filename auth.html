@@ -1,0 +1,374 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>User Authentication - MH Studios</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom styles to match a modern, clean aesthetic and ensure responsiveness */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #3b5998; /* Dark blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background-color: #ffffff;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            transition: all 0.3s ease;
+        }
+
+        /* Styling for the custom message/alert box */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: #e53e3e; /* Red for errors */
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            max-width: 90%;
+            font-weight: 600;
+        }
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .btn-primary {
+            background-color: #4a69bd; /* Primary button color */
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .btn-primary:hover {
+            background-color: #3b5998;
+            transform: translateY(-1px);
+        }
+        .btn-google {
+            background-color: #DB4437; /* Google red */
+            transition: background-color 0.2s ease;
+        }
+        .btn-google:hover {
+            background-color: #c0382e;
+        }
+
+        .tab-btn.active {
+            border-bottom: 3px solid #4a69bd;
+            font-weight: 700;
+            color: #1a202c;
+        }
+    </style>
+
+    <!-- Firebase SDK Imports (Using v11.6.1 for stability) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Set Firebase Log Level to debug for development purposes
+        setLogLevel('Debug');
+
+        // --- GLOBAL VARIABLES (Provided by Canvas Environment) ---
+        // The environment securely passes the config here.
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // --- FIREBASE INITIALIZATION ---
+        let app, auth, db;
+        let isAuthReady = false;
+        let currentUserId = null;
+
+        /**
+         * Shows a temporary, styled message box for errors or success.
+         * @param {string} message - The message content.
+         * @param {string} type - 'error' or 'success'.
+         */
+        const showMessage = (message, type = 'error') => {
+            const msgBox = document.getElementById('messageBox');
+            msgBox.textContent = message;
+            msgBox.style.backgroundColor = type === 'success' ? '#48bb78' : '#e53e3e';
+            msgBox.classList.add('show');
+            setTimeout(() => {
+                msgBox.classList.remove('show');
+            }, 5000);
+        };
+
+        /**
+         * Initializes Firebase services and attempts automatic sign-in.
+         */
+        const initializeFirebase = async () => {
+            if (Object.keys(firebaseConfig).length === 0) {
+                showMessage("Firebase config missing. Cannot initialize.", 'error');
+                return;
+            }
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Wait for the initial authentication state to be resolved
+                await new Promise((resolve) => {
+                    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                        if (!user && initialAuthToken) {
+                            // Attempt custom token sign-in (canvas-specific)
+                            await signInWithCustomToken(auth, initialAuthToken).catch(e => {
+                                showMessage("Custom token sign-in failed. Falling back to anonymous.", 'error');
+                                console.error("Custom token sign-in failed:", e);
+                            });
+                        }
+                        
+                        // After any sign-in attempt, determine the final user state
+                        currentUserId = auth.currentUser?.uid || crypto.randomUUID();
+                        isAuthReady = true;
+                        unsubscribe(); 
+                        resolve();
+                    });
+                });
+                
+                console.log("Firebase Initialized. Current User ID:", currentUserId);
+                
+                // Set up the real-time listener for ongoing auth changes
+                onAuthStateChanged(auth, handleAuthStateChange);
+
+            } catch (error) {
+                showMessage(`Firebase Initialization Error: ${error.message}`, 'error');
+                console.error("Firebase Initialization Error:", error);
+            }
+        };
+
+        // --- AUTHENTICATION HANDLERS ---
+
+        const handleSignUp = async (email, password) => {
+            if (!auth || !isAuthReady) return;
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                showMessage("Registration successful! Welcome.", 'success');
+                // Save basic user profile data to Firestore
+                await setDoc(doc(db, `artifacts/${appId}/users/${userCredential.user.uid}/profile/details`), {
+                    email: userCredential.user.email,
+                    createdAt: new Date().toISOString()
+                });
+            } catch (error) {
+                showMessage(`Sign Up Failed: ${error.message}`, 'error');
+                console.error("Sign Up Error:", error);
+            }
+        };
+
+        const handleSignIn = async (email, password) => {
+            if (!auth || !isAuthReady) return;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage("Sign In successful. Welcome back!", 'success');
+            } catch (error) {
+                showMessage(`Sign In Failed: ${error.message}`, 'error');
+                console.error("Sign In Error:", error);
+            }
+        };
+
+        const handleGoogleSignIn = async () => {
+            if (!auth || !isAuthReady) return;
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(auth, provider);
+                showMessage("Google Sign In successful. Welcome!", 'success');
+            } catch (error) {
+                showMessage(`Google Sign In Failed: ${error.message}`, 'error');
+                console.error("Google Sign In Error:", error);
+            }
+        };
+        
+        const handleSignOut = async () => {
+            if (!auth || !isAuthReady) return;
+            try {
+                await signOut(auth);
+                showMessage("You have been signed out.", 'success');
+            } catch (error) {
+                showMessage(`Sign Out Failed: ${error.message}`, 'error');
+                console.error("Sign Out Error:", error);
+            }
+        };
+
+        /**
+         * Updates the UI based on the current authentication state.
+         * @param {object | null} user - The Firebase User object.
+         */
+        const handleAuthStateChange = (user) => {
+            const authSection = document.getElementById('authSection');
+            const welcomeSection = document.getElementById('welcomeSection');
+            const userInfo = document.getElementById('userInfo');
+
+            if (user && user.isAnonymous === false) {
+                // User is authenticated (Email/Password or Google)
+                authSection.style.display = 'none';
+                welcomeSection.style.display = 'block';
+                const userDisplay = user.email || user.displayName || 'Authenticated User';
+
+                userInfo.innerHTML = `
+                    <p class="text-gray-700 text-sm mb-1">Signed in as:</p>
+                    <p class="font-semibold text-lg text-blue-800 break-words">${userDisplay}</p>
+                    <p class="text-xs text-gray-500 mt-2 break-words">User ID: ${user.uid}</p>
+                `;
+            } else {
+                // User is not authenticated or is anonymous
+                authSection.style.display = 'block';
+                welcomeSection.style.display = 'none';
+                
+                if (user && user.isAnonymous === true) {
+                     // User is signed in anonymously (only if custom token was missing/failed)
+                     welcomeSection.style.display = 'block';
+                     userInfo.innerHTML = `
+                        <p class="text-gray-700 text-sm mb-1">Currently signed in anonymously.</p>
+                        <p class="text-xs text-gray-500 mt-2 break-words">Anonymous ID: ${user.uid}</p>
+                        <p class="text-xs text-red-500 mt-1">Sign in below to save your data!</p>
+                    `;
+                }
+            }
+        };
+
+
+        // --- DOM EVENT LISTENERS ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start Firebase initialization
+            initializeFirebase();
+            
+            const tabLogin = document.getElementById('tabLogin');
+            const tabSignup = document.getElementById('tabSignup');
+            const formLogin = document.getElementById('formLogin');
+            const formSignup = document.getElementById('formSignup');
+            const signOutBtn = document.getElementById('signOutBtn');
+            const googleSignInBtn = document.getElementById('googleSignInBtn');
+
+            // Tab switching logic
+            tabLogin.addEventListener('click', () => {
+                tabLogin.classList.add('active');
+                tabSignup.classList.remove('active');
+                formLogin.style.display = 'block';
+                formSignup.style.display = 'none';
+            });
+
+            tabSignup.addEventListener('click', () => {
+                tabSignup.classList.add('active');
+                tabLogin.classList.remove('active');
+                formSignup.style.display = 'block';
+                formLogin.style.display = 'none';
+            });
+
+            // Form submission handlers
+            formLogin.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                handleSignIn(email, password);
+            });
+
+            formSignup.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+                handleSignUp(email, password);
+            });
+
+            // Social sign-in and sign-out buttons
+            googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+            signOutBtn.addEventListener('click', handleSignOut);
+        });
+        
+    </script>
+</head>
+<body>
+
+    <!-- Message/Error Box -->
+    <div id="messageBox" class="message-box"></div>
+
+    <div class="auth-container">
+        
+        <h1 class="text-3xl font-extrabold text-center text-gray-800 mb-6">MH STUDIOS™</h1>
+
+        <!-- Authentication Form Section (Show when logged out) -->
+        <div id="authSection" style="display: none;">
+            
+            <!-- Tabs -->
+            <div class="flex border-b mb-6">
+                <button id="tabLogin" class="tab-btn active flex-1 py-2 text-gray-600 focus:outline-none">Sign In</button>
+                <button id="tabSignup" class="tab-btn flex-1 py-2 text-gray-600 focus:outline-none">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="formLogin" class="space-y-4">
+                <div>
+                    <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-bold text-white btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Sign In
+                </button>
+                <p class="text-center text-sm text-gray-500 pt-2">- OR -</p>
+            </form>
+
+            <!-- Sign Up Form (Hidden by default) -->
+            <form id="formSignup" class="space-y-4" style="display: none;">
+                <div>
+                    <label for="signupEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="signupEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="signupPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="signupPassword" required minlength="6" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters.</p>
+                </div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-bold text-white btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Sign Up
+                </button>
+                <p class="text-center text-sm text-gray-500 pt-2">- OR -</p>
+            </form>
+            
+            <!-- Google Sign-In Button -->
+            <button id="googleSignInBtn" class="w-full mt-4 flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white btn-google focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600">
+                <i class="fab fa-google mr-3"></i>
+                Continue with Google
+            </button>
+        </div>
+
+        <!-- Welcome/Signed In Section (Show when logged in) -->
+        <div id="welcomeSection" style="display: none;" class="text-center p-6 border border-gray-200 rounded-lg">
+            <h2 class="text-2xl font-bold text-green-600 mb-4">Hello!</h2>
+            <div id="userInfo" class="mb-6 bg-gray-50 p-4 rounded-lg">
+                <!-- User info will be displayed here -->
+            </div>
+            
+            <button id="signOutBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                Sign Out
+            </button>
+            <a href="index.html" class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">
+                Go to Homepage
+            </a>
+        </div>
+        
+    </div>
+
+</body>
+</html>

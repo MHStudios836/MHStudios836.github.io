@@ -1,0 +1,133 @@
+{% set title = title or "MH Studios™" %}
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>MH Studios™ - Main Homepage</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<!-- NEW: Include specialized search bar CSS -->
+        <link rel="stylesheet" href="assets/css/Search_Bar.css">
+		<script src="https://kit.fontawesome.com/c4445c7fdf.js" crossorigin="anonymous"></script>
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<!-- Favicon -->
+		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+		
+        {% if page_css %}
+            <link rel="stylesheet" href="/assets/css/{{ page_css }}" />
+        {% endif %}
+
+        <style>
+            /* Base style for transition effect */
+            body {
+                opacity: 1;
+                transition: opacity 0.5s ease-in-out; /* Set your desired transition duration */
+            }
+            /* Class to trigger the fade-out */
+            body.fade-out {
+                opacity: 0;
+            }
+            /* Add any other common inline styles here */
+        </style>
+        
+	</head>
+	<body class="is-preload">
+
+		<div id="wrapper">
+
+			<!-- Header (Updated with ID for Firebase logic) -->
+				<!-- Note: The "styleN" class below should match that of the banner element. -->
+					<header id="header" class="alt style2">
+						<a href="index.html" class="logo"><strong>MH</strong><span>STUDIOS™</span></a>
+						<nav>
+							<!-- NEW CONTAINER FOR PROFILE/SIGN-IN TOGGLE -->
+							<a href="Login_Signup.html" id="signin-text-link" class="button special small" style="margin-right: 1.5rem;">Sign In</a>							
+							<!-- ICON TARGET (Hidden by default, shown when logged in) -->
+							<a href="Admin_Room.html" id="user-icon-container" class="profile-pic" style="display: none;">
+							<img id="user-status-icon" class="icon-signed-out" src="images/man.png" alt="User Profile" width="32" height="32">
+							</a>	
+							<!-- NEW SEARCH FORM -->
+                            <form id="header-search-form" method="get" action="#">
+                            <input type="text" name="query" placeholder="Search..." required />
+                            <button type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
+                            </form>
+                            <!-- END NEW SEARCH FORM -->							
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+
+				<!-- Menu -->
+				<nav id="menu">
+					<ul class="links">
+						<li><a href="index.html" data-translate="menu.home">Home</a></li>
+						<li><a href="About.html" data-translate="menu.landing">About</a></li>
+						<li class="services-menu">
+							<span class="opener" data-translate="menu.Services">Services</span>
+							<ul>
+								<li><a href="Web_Design.html">Web Development</a></li>
+								<li><a href="Graphic_Design.html">Graphic Design</a></li>
+								<li><a href="Video_Design.html">Video Editing</a></li>
+								<li><a href="Audio_Design.html">Audio Services</a></li>
+							</ul>
+						</li>
+						<li><a href="elements.html" data-translate="menu.Designs">Designs</a></li>
+					</ul>
+					
+					<ul class="actions stacked">
+						<li><a href="#" class="button primary fit" data-translate="menu.get_started">Get Started</a></li>
+						
+						<li><a href="Login_Signup.html" class="button primary fit" data-translate="menu.login">Log In</a></li>
+						
+						<li><a href="Login_Signup.html" class="button fit" data-translate="menu.signup">Sign Up</a></li>
+						
+						<li class="lang-switch-container">
+						<button class="lang-btn-flag active" id="lang-en"><img src="images/GB.png" class="img" alt="" width="16" height="16"> En</button>
+						<button class="lang-btn-flag" id="lang-ar"><img src="images/Ar_1.png" class="img" alt="" width="16" height="16"> Ar</button>
+						<button class="lang-btn-flag" id="lang-ru"><img src="images/ru.png" class="img" alt="" width="16" height="16"> Ru</button>
+						<button class="lang-btn-flag" id="lang-du"><img src="images/du.png" class="img" alt="" width="16" height="16"> Du</button>
+						</li>
+					</ul>
+				</nav>
+
+			<footer id="footer">
+				<div class="inner">
+					<ul class="icons">
+						<li><a href="https://www.x.com/MHStudios836" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="https://www.facebook.com/mh.studios.836/" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="https://www.instagram.com/mhdesigns.836" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+						<li><a href="https://github.com/MHStudios836" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="https://www.linkedin.com/in/mhstudios836/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+						<li><a href="https://www.youtube.com/@mh.studios.836" class="icon brands alt fa-youtube"><span class="label">YouTube</span></a></li>
+						<li><a href="https://wa.me/message/OOFIM5FC3SLMD1" class="icon brands alt fa-whatsapp"><span class="label">WhatsApp</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy;2025 MH STUDIOS™ - All Rights Reserved</li><li>Design: <a href="https://www.instagram.com/mhdesigns.836"><img src="/images/Logo_2.png" class="icon" alt="MH Studios™" width="12" height="12"> MH Designs™</a></li>
+					</ul>
+				</div>
+			</footer>
+
+		</div>
+		<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/jquery.scrolly.min.js"></script>
+		<script src="assets/js/jquery.scrollex.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+		<script src="assets/js/Search_Box.js"></script>
+
+		<script src="assets/js/firebase-init.js" type="module"></script>
+		<script src="assets/js/admin.js" type="module"></script>
+		<script src="assets/js/language-switcher.js"></script>
+        
+        {% if page_scripts %}
+            {% for script in page_scripts %}
+                <script src="/assets/js/{{ script }}" {% if script | endsWith('module') %}type="module"{% endif %}></script>
+            {% endfor %}
+        {% endif %}
+        
+	</body>
+</html>

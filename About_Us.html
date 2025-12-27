@@ -1,0 +1,380 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>MH Studios™ | Corporate Intel</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+		
+		<style>
+			/* ==========================================================================
+			   THEME: TITAN CORPORATE (CYBER-NAVY)
+			   ========================================================================== */
+			:root {
+				--mh-blue: #0080FF;
+				--mh-cyan: #00e5ff;
+				--mh-dark: #05070a;
+				--mh-panel: rgba(13, 17, 23, 0.95);
+				--mh-text: #e0e0e0;
+				--mh-gold: #FFD700;
+			}
+
+			body {
+				background-color: #000;
+				color: var(--mh-text);
+				font-family: 'Uni Sans', sans-serif;
+				margin: 0;
+				overflow-x: hidden;
+			}
+
+			/* --- SCROLLBAR --- */
+			::-webkit-scrollbar { width: 8px; }
+			::-webkit-scrollbar-track { background: #000; }
+			::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 4px; }
+
+			/* --- 1. NAVIGATION (STICKY HUD) --- */
+			#tactical-nav {
+				position: fixed; top: 0; left: 0; width: 100%;
+				padding: 15px 30px;
+				z-index: 999;
+				display: flex; justify-content: space-between; align-items: center;
+				background: rgba(5, 7, 10, 0.85);
+				backdrop-filter: blur(15px);
+				border-bottom: 1px solid rgba(255,255,255,0.1);
+				transition: 0.3s;
+			}
+			#tactical-nav.scrolled {
+				padding: 10px 30px;
+				background: rgba(0,0,0,0.95);
+				border-bottom-color: var(--mh-blue);
+			}
+
+			.brand-link {
+				display: flex; align-items: center; gap: 15px;
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em;
+			}
+			.brand-link:hover { color: var(--mh-cyan); text-shadow: 0 0 10px var(--mh-cyan); }
+			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-blue)); }
+
+			.menu-trigger {
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; cursor: pointer;
+				padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2);
+				display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
+			}
+			.menu-trigger:hover {
+				background: var(--mh-blue); border-color: var(--mh-blue); color: #000; box-shadow: 0 0 15px var(--mh-blue);
+			}
+
+			/* --- 2. MENU OVERLAY (THE VAULT) --- */
+			#menu-overlay {
+				position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
+				background: rgba(5, 7, 10, 0.98);
+				border-left: 2px solid var(--mh-blue);
+				z-index: 1000;
+				padding: 40px;
+				display: flex; flex-direction: column;
+				transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+				box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+				overflow-y: auto;
+			}
+			#menu-overlay.active { right: 0; }
+			
+			.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
+			.menu-close:hover { color: var(--mh-red); }
+
+			/* MAIN LINKS */
+			.menu-links a, .menu-dropdown-btn {
+				display: flex; align-items: center; justify-content: space-between;
+				font-size: 1.2em; color: #fff; padding: 15px 0;
+				border-bottom: 1px solid rgba(255,255,255,0.1);
+				text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+			}
+			.menu-links a:hover, .menu-dropdown-btn:hover {
+				color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan);
+			}
+
+			/* DROPDOWN SUB-MENU */
+			.dropdown-container {
+				display: none; /* Hidden by default */
+				background: rgba(255,255,255,0.03);
+				padding-left: 20px;
+				border-left: 1px solid var(--mh-blue);
+				margin-bottom: 10px;
+			}
+			.dropdown-container a {
+				font-size: 0.9em; color: #aaa; border-bottom: none; padding: 10px 0;
+			}
+			.dropdown-container a:hover { color: var(--mh-gold); padding-left: 10px; }
+			
+			/* Rotation for arrow */
+			.fa-chevron-down { transition: 0.3s; font-size: 0.8em; }
+			.menu-dropdown-btn.active .fa-chevron-down { transform: rotate(180deg); color: var(--mh-cyan); }
+
+			.menu-auth { margin-top: auto; display: grid; gap: 10px; }
+			
+			/* LANGUAGE GRID */
+			.lang-grid { display: flex; justify-content: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+			.lang-btn { width: 40px; height: 30px; opacity: 0.4; transition: 0.3s; border: 1px solid transparent; border-radius: 4px; padding: 2px; }
+			.lang-btn img { width: 100%; height: auto; display: block; }
+			.lang-btn:hover, .lang-btn.active { opacity: 1; border-color: var(--mh-cyan); transform: scale(1.1); }
+
+
+			/* --- 3. HERO SECTION --- */
+			#hero {
+				height: 70vh; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; border-bottom: 2px solid var(--mh-blue);
+			}
+			#hero-bg {
+				position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+				background: url('images/Gemini_Generated_About_Us_3.png') center/cover;
+				opacity: 0.3; z-index: 1;
+			}
+			.hero-content {
+				z-index: 3; text-align: center; max-width: 900px; padding: 40px;
+				backdrop-filter: blur(5px); border: 1px solid rgba(0,128,255,0.2);
+				background: rgba(0,0,0,0.6);
+			}
+			.hero-title { font-size: 4em; font-weight: 900; letter-spacing: 8px; color: #fff; margin-bottom: 10px; text-transform: uppercase; }
+			.hero-sub { color: var(--mh-cyan); font-family: 'Courier New'; letter-spacing: 2px; }
+
+			/* --- 4. SECTOR: THE 5 BRANCHES --- */
+			#branches-sector { padding: 100px 20px; background: #080a0e; }
+			.section-header { text-align: center; margin-bottom: 60px; }
+			.section-header h2 { font-size: 2.5em; color: #fff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 3px; }
+			.section-header span { color: var(--mh-blue); font-family: 'Courier New'; }
+
+			.branch-grid {
+				display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1300px; margin: 0 auto;
+			}
+			.branch-card {
+				background: var(--mh-panel); border: 1px solid rgba(255,255,255,0.1); padding: 30px;
+				transition: 0.3s; position: relative; overflow: hidden;
+			}
+			.branch-card:hover { transform: translateY(-10px); border-color: var(--mh-cyan); box-shadow: 0 10px 30px rgba(0,229,255,0.1); }
+			
+			/* Specific Branch Colors */
+			.branch-icon { font-size: 2.5em; margin-bottom: 20px; }
+			.branch-eservice .branch-icon { color: var(--mh-blue); }
+			.branch-arts .branch-icon { color: #ff004c; }
+			.branch-sounds .branch-icon { color: var(--mh-gold); }
+			.branch-stores .branch-icon { color: #00ff41; }
+			.branch-soft .branch-icon { color: #aa00ff; }
+
+			.branch-title { font-size: 1.4em; color: #fff; font-weight: bold; margin-bottom: 10px; }
+			.branch-desc { color: #aaa; font-size: 0.9em; line-height: 1.6; }
+			
+			/* SPECIAL LOGO FOR CREATIVE ARTS */
+			.ca-logo { height: 50px; margin-bottom: 15px; filter: drop-shadow(0 0 5px #ff004c); }
+			
+			/* BUTTONS */
+			.btn-main {
+				padding: 18px 50px; font-weight: 900; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;
+				transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); font-size: 0.9em;
+			}
+			.btn-blue { background: var(--mh-blue); color: #000; border: none; }
+			.btn-blue:hover { background: #fff; box-shadow: 0 0 30px var(--mh-blue); transform: translateY(-5px); }
+			.btn-hollow { background: transparent; border: 1px solid var(--mh-blue); color: var(--mh-blue); }
+			.btn-hollow:hover { background: rgba(0,128,255,0.1); color: #fff; border-color: #fff; }
+			
+			/* --- 5. WORKFLOW (ORGANIZATION) --- */
+			#workflow-sector { padding: 100px 20px; background: #000; border-top: 1px solid #222; }
+			.workflow-node {
+				display: flex; gap: 40px; max-width: 1100px; margin: 0 auto 60px; align-items: center;
+				background: rgba(255,255,255,0.02); padding: 40px; border-left: 4px solid var(--mh-blue);
+			}
+			.wf-img { width: 200px; height: 150px; background-size: cover; background-position: center; flex-shrink: 0; border: 1px solid #333; }
+			.wf-content h3 { color: #fff; font-size: 1.5em; margin-bottom: 15px; }
+			.wf-content p { color: #888; line-height: 1.7; font-size: 0.95em; }
+			
+			/* --- 6. FOOTER --- */
+			#tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; }
+			.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; }
+			.footer-col ul { list-style: none; padding: 0; }
+			.footer-col a { color: #666; text-decoration: none; }
+			.footer-col a:hover { color: var(--mh-cyan); }
+			.social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+			.social-grid a { color: #555; transition: 0.3s; }
+			.social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+			@media (max-width: 800px) {
+				.workflow-node { flex-direction: column; text-align: center; }
+				.wf-img { width: 100%; height: 200px; }
+			}
+		</style>
+	</head>
+	<body>
+
+		<nav id="tactical-nav">
+			<a href="index.html" class="brand-link">
+				<img src="images/Logo_1.png" alt="MH LOGO">
+				MH STUDIOS™
+			</a>
+			<div class="menu-trigger" id="menu-btn">
+				<span>MENU</span>
+				<i class="fas fa-bars"></i>
+			</div>
+		</nav>
+
+		<div id="menu-overlay">
+			<div class="menu-close"><i class="fas fa-times"></i></div>
+			
+			<div class="menu-links">
+				<a href="index.html"><i class="fas fa-home" style="width:30px;"></i> Command Center</a>
+				<a href="Products_Services_Room.html"><i class="fas fa-cube" style="width:30px;"></i> The Armory</a>
+				<a href="Packages.html"><i class="fas fa-tags" style="width:30px;"></i> Clearance Levels</a>
+				
+				<div class="menu-dropdown-btn">
+					<span><i class="fas fa-layer-group" style="width:30px;"></i> PAGES</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="dropdown-container">
+					<a href="About_Us.html">About MH Studios</a>
+					<a href="Video_Design.html">Video Design</a>
+					<a href="Graphic_Design.html">Creative Arts® (Graphic)</a>
+					<a href="Web_Design.html">MH E-Services™ (Web)</a>
+					<a href="Translation_Design.html">Translation Ops</a>
+					<a href="Audio_Design.html">MH Sounds™ (Audio)</a>
+				</div>
+
+				<a href="#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
+			</div>
+			
+			<div class="menu-auth">
+				<a href="DoD_Login_Style.html" class="btn-main btn-blue" style="text-align:center;">OPERATIVE LOGIN</a>
+				<a href="DoD_Login_Style.html" class="btn-main btn-hollow" style="text-align:center;">REQUEST ACCESS</a>
+				
+				<div class="lang-grid">
+					<a href="#" class="lang-btn active" title="English"><img src="images/GB.png" alt="GB"></a>
+					<a href="#" class="lang-btn" title="Arabic"><img src="images/Ar.png" alt="AR"></a>
+					<a href="#" class="lang-btn" title="Dutch"><img src="images/Du.png" alt="NL"></a>
+					<a href="#" class="lang-btn" title="Russian"><img src="images/Ru.png" alt="RU"></a>
+				</div>
+			</div>
+		</div>
+
+		<section id="hero">
+			<div id="hero-bg"></div>
+			<div class="hero-content">
+				<h1 class="hero-title">ABOUT THE CORP</h1>
+				<div class="hero-sub">/// GLOBAL OPERATIONS & DIVISIONS ///</div>
+			</div>
+		</section>
+
+		<section id="branches-sector">
+			<div class="section-header">
+				<h2>OUR DIVISIONS</h2>
+				<span>THE 5 PILLARS OF MH STUDIOS</span>
+			</div>
+
+			<div class="branch-grid">
+				<div class="branch-card branch-eservice">
+					<div class="branch-icon"><i class="fas fa-globe"></i></div>
+					<div class="branch-title">MH E-SERVICES™</div>
+					<div class="branch-desc">The backbone of our digital operations. Specializing in Web Development, UI/UX Design, and Translation Services. We build the infrastructure that powers your business.</div>
+				</div>
+
+				<div class="branch-card branch-arts">
+					<img src="images/thinking.png" class="ca-logo" alt="Thinking">
+					<div class="branch-title">CREATIVE ARTS®</div>
+					<div class="branch-desc">Our elite design division. From branding and vector art to complex graphic compositions. The Creative Arts team ensures your visual identity is distinct and powerful.</div>
+				</div>
+
+				<div class="branch-card branch-sounds">
+					<div class="branch-icon"><i class="fas fa-music"></i></div>
+					<div class="branch-title">MH SOUNDS™</div>
+					<div class="branch-desc">Advanced audio engineering and soundscape creation. We produce voiceovers, sound effects, and musical compositions that bring your media to life.</div>
+				</div>
+
+				<div class="branch-card branch-stores">
+					<div class="branch-icon"><i class="fas fa-shopping-cart"></i></div>
+					<div class="branch-title">MH STORES™</div>
+					<div class="branch-desc">The commercial arm of the corporation. Managing the distribution of digital assets, software licenses, and direct-to-consumer products.</div>
+				</div>
+
+				<div class="branch-card branch-soft">
+					<div class="branch-icon"><i class="fas fa-terminal"></i></div>
+					<div class="branch-title">MH SOFTWARES™</div>
+					<div class="branch-desc">Custom software solutions and application development. We code the tools that solve complex problems for businesses and students alike.</div>
+				</div>
+			</div>
+		</section>
+
+		<section id="workflow-sector">
+			<div class="section-header">
+				<h2>OPERATIONAL WORKFLOW</h2>
+				<span>FROM CONCEPT TO DEPLOYMENT</span>
+			</div>
+
+			<div class="workflow-node">
+				<div class="wf-img" style="background-image: url('images/Organization.png');"></div>
+				<div class="wf-content">
+					<h3>PHASE 1: ORGANIZATION</h3>
+					<p>Fully operational collection activities. The <strong>Creative Arts®</strong> team prepares and gathers creative resources to maintain project assets. Following this, <strong>MH Designs™</strong> initiates a brainstorming operation to decide the final distribution of any design under development.</p>
+				</div>
+			</div>
+
+			<div class="workflow-node" style="border-left-color: var(--mh-gold);">
+				<div class="wf-img" style="background-image: url('images/Horsemen.png');"></div>
+				<div class="wf-content">
+					<h3>PHASE 2: OPERATION INITIATION</h3>
+					<p>The "Horsemen Team" takes command. Known for effective performance, they ascend the project from organization to deployment, tracking the scope until at least 70% of the mission objectives are complete.</p>
+				</div>
+			</div>
+
+			<div class="workflow-node" style="border-left-color: var(--mh-cyan);">
+				<div class="wf-img" style="background-image: url('images/Deployment.png');"></div>
+				<div class="wf-content">
+					<h3>PHASE 3: DEPLOYMENT & DEBUGGING</h3>
+					<p>The Execution Team carries out the final 30%. Their mission is to review final levels, eliminate bugs, optimize performance, and deploy the solution according to the planned scope.</p>
+				</div>
+			</div>
+		</section>
+
+		<footer id="tactical-footer">
+			<div class="footer-grid">
+				<div class="footer-col">
+					<h4>MH STUDIOS™</h4>
+					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+					<p>&copy; 2025 ALL RIGHTS RESERVED.</p>
+				</div>
+				<div class="footer-col">
+					<h4>SECTORS</h4>
+					<ul>
+						<li><a href="Products_Services_Room.html">The Armory</a></li>
+						<li><a href="Packages.html">Packages</a></li>
+						<li><a href="index.html#guild-sector">The Guild</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>SECURE CHANNELS</h4>
+					<div class="social-grid">
+						<a href="#"><i class="fab fa-discord"></i></a>
+						<a href="#"><i class="fab fa-github"></i></a>
+						<a href="#"><i class="fab fa-linkedin"></i></a>
+						<a href="#"><i class="fab fa-instagram"></i></a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="assets/js/jquery.min.js"></script>
+		<script>
+			// MENU LOGIC
+			$('#menu-btn').click(() => $('#menu-overlay').addClass('active'));
+			$('.menu-close').click(() => $('#menu-overlay').removeClass('active'));
+			
+			// DROPDOWN
+			$('.menu-dropdown-btn').click(function() {
+				$(this).next('.dropdown-container').slideToggle(300);
+				$(this).find('.fa-chevron-down').toggleClass('fa-rotate-180');
+			});
+
+			// LANG BUTTONS
+			$('.lang-btn').click(function(e) { e.preventDefault(); $('.lang-btn').removeClass('active'); $(this).addClass('active'); });
+		</script>
+
+	</body>
+</html>

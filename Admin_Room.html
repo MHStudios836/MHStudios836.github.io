@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>MH Studios™ | HQ Admin</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+		
+		<style>
+			:root {
+				--mh-blue: #0080FF;
+				--mh-cyan: #00e5ff;
+				--mh-gold: #FFD700;
+				--mh-red: #ff004c;
+				--mh-dark: #05070a;
+			}
+
+			body { background-color: #000; color: #fff; font-family: 'Uni Sans', sans-serif; margin: 0; }
+			
+			/* HUB LAYOUT */
+			#admin-container { display: none; padding: 40px; }
+			.admin-nav { display: flex; gap: 20px; border-bottom: 2px solid #222; margin-bottom: 30px; padding-bottom: 10px; }
+			.nav-tab { cursor: pointer; color: #666; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+			.nav-tab.active { color: var(--mh-cyan); border-bottom: 2px solid var(--mh-cyan); }
+
+			/* FINANCIAL HUD */
+			.fin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+			.stat-box { background: #0d1117; border: 1px solid #222; padding: 20px; border-left: 4px solid var(--mh-gold); }
+			.stat-box h4 { margin: 0; color: #888; font-size: 0.8em; }
+			.stat-box span { font-size: 1.8em; font-weight: 900; color: #fff; }
+
+			/* TABLES & FORMS */
+			.panel { background: #0a0e14; border: 1px solid #1a1f26; padding: 25px; margin-bottom: 30px; }
+			table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+			th { text-align: left; color: var(--mh-cyan); border-bottom: 1px solid #333; padding: 10px; font-size: 0.8em; }
+			td { padding: 12px; border-bottom: 1px solid #111; font-size: 0.9em; }
+			
+			.tac-input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 10px; margin: 10px 0; }
+			.btn-deploy { background: var(--mh-blue); color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; }
+
+			/* AUTH GATE */
+			#gate { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+		</style>
+	</head>
+	<body>
+
+		<div id="gate">
+			<h2 style="color:var(--mh-red);">[ SECURITY CLEARANCE REQUIRED ]</h2>
+			<p id="auth-status">Verifying credentials...</p>
+		</div>
+
+		<div id="admin-container">
+			<div class="admin-nav">
+				<div class="nav-tab active" onclick="showTab('dashboard')">HQ Dashboard</div>
+				<div class="nav-tab" onclick="showTab('inventory')">Asset Inventory</div>
+				<div class="nav-tab" onclick="showTab('requests')">Mission Feed</div>
+			</div>
+
+			<div id="tab-dashboard" class="tab-content">
+				<div class="fin-stats">
+					<div class="stat-box"><h4>TOTAL REVENUE</h4><span id="stat-revenue">$0.00</span></div>
+					<div class="stat-box" style="border-left-color:var(--mh-blue);"><h4>ACTIVE ASSETS</h4><span id="stat-assets">0</span></div>
+					<div class="stat-box" style="border-left-color:var(--mh-cyan);"><h4>PENDING MISSIONS</h4><span id="stat-missions">0</span></div>
+				</div>
+				
+				<div class="panel">
+					<h3>Operational Revenue Pulse</h3>
+					<p style="color:#666; font-size:0.8em;">Calculated from global sales data and service contracts.</p>
+					</div>
+			</div>
+
+			<div id="tab-inventory" class="tab-content" style="display:none;">
+				<div class="panel">
+					<h3>Deploy New Asset</h3>
+					<form id="add-product-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+						<input type="text" id="p-name" class="tac-input" placeholder="Product Name" required>
+						<input type="number" id="p-price" class="tac-input" placeholder="Price ($)" required>
+						<select id="p-branch" class="tac-input">
+							<option value="MH Stores™">MH Stores™</option>
+							<option value="Creative Arts®">Creative Arts®</option>
+							<option value="MH E-Services™">MH E-Services™</option>
+						</select>
+						<input type="file" id="p-image" class="tac-input">
+						<textarea id="p-desc" class="tac-input" placeholder="Product Description" style="grid-column: span 2;"></textarea>
+						<button type="submit" class="btn-deploy">INITIALIZE DEPLOYMENT</button>
+					</form>
+				</div>
+
+				<div class="panel">
+					<h3>Current Stockpile</h3>
+					<table>
+						<thead>
+							<tr><th>ASSET</th><th>BRANCH</th><th>PRICE</th><th>STATUS</th></tr>
+						</thead>
+						<tbody id="inventory-list">
+							</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div id="tab-requests" class="tab-content" style="display:none;">
+				<div class="panel">
+					<h3>Live Mission Stream</h3>
+					<table>
+						<thead>
+							<tr><th>CLIENT</th><th>SECTOR</th><th>URGENCY</th><th>DATE</th></tr>
+						</thead>
+						<tbody id="mission-list">
+							</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<script src="assets/js/jquery.min.js"></script>
+		<script type="module">
+			import { auth, db, storage, appId, getUserDocRef } from './assets/js/firebase-init.js';
+			import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
+			import { collection, query, onSnapshot, getDoc, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+			import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js';
+
+			// 1. SECURITY HANDSHAKE
+			onAuthStateChanged(auth, async (user) => {
+				if (user) {
+					const docRef = getUserDocRef(user.uid);
+					const snap = await getDoc(docRef);
+					if (snap.exists() && snap.data().role === 'admin') {
+						$('#gate').hide();
+						$('#admin-container').fadeIn();
+						syncHQData();
+					} else {
+						$('#auth-status').text("INSUFFICIENT CLEARANCE. EXITING...");
+						setTimeout(() => window.location.href = 'index.html', 2000);
+					}
+				} else {
+					window.location.href = 'Login_Signup.html';
+				}
+			});
+
+			// 2. HQ DATA SYNC (LIVE)
+			function syncHQData() {
+				// Products Sync
+				onSnapshot(collection(db, 'artifacts', appId, 'products'), (snap) => {
+					$('#stat-assets').text(snap.size);
+					const list = $('#inventory-list');
+					list.empty();
+					let totalVal = 0;
+					snap.forEach(doc => {
+						const p = doc.data();
+						totalVal += parseFloat(p.price);
+						list.append(`<tr><td>${p.name}</td><td>${p.branch}</td><td>$${p.price}</td><td>ACTIVE</td></tr>`);
+					});
+					$('#stat-revenue').text('$' + totalVal.toFixed(2));
+				});
+
+				// Missions Sync
+				onSnapshot(collection(db, 'artifacts', appId, 'service_requests'), (snap) => {
+					$('#stat-missions').text(snap.size);
+					const list = $('#mission-list');
+					list.empty();
+					snap.forEach(doc => {
+						const m = doc.data();
+						list.append(`<tr><td>${m.clientName}</td><td>${m.sector}</td><td style="color:var(--mh-red)">${m.urgency}</td><td>REC</td></tr>`);
+					});
+				});
+			}
+
+			// 3. TAB NAVIGATION
+			window.showTab = (tabName) => {
+				$('.tab-content').hide();
+				$('.nav-tab').removeClass('active');
+				$(`#tab-${tabName}`).show();
+				$(`.nav-tab:contains('${tabName.toUpperCase()}')`).addClass('active');
+			}
+
+			// 4. ADD PRODUCT LOGIC (With Image Upload)
+			$('#add-product-form').on('submit', async (e) => {
+				e.preventDefault();
+				const btn = $('.btn-deploy');
+				btn.text("UPLOADING...").prop('disabled', true);
+				
+				const file = $('#p-image')[0].files[0];
+				let url = "";
+
+				if(file) {
+					const sRef = ref(storage, `products/${Date.now()}_${file.name}`);
+					const upSnap = await uploadBytes(sRef, file);
+					url = await getDownloadURL(upSnap.ref);
+				}
+
+				await addDoc(collection(db, 'artifacts', appId, 'products'), {
+					name: $('#p-name').val(),
+					price: $('#p-price').val(),
+					branch: $('#p-branch').val(),
+					description: $('#p-desc').val(),
+					imageUrl: url,
+					createdAt: serverTimestamp()
+				});
+
+				alert("ASSET DEPLOYED.");
+				btn.text("INITIALIZE DEPLOYMENT").prop('disabled', false);
+			});
+		</script>
+	</body>
+</html>

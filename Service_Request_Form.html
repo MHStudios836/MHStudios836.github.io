@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>MH Studios™ | Mission Uplink</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+		
+		<style>
+			/* ==========================================================================
+			   THEME: MISSION UPLINK (TITAN SLATE)
+			   ========================================================================== */
+			:root {
+				--mh-blue: #0080FF;
+				--mh-cyan: #00e5ff;
+				--mh-dark: #05070a;
+				--mh-panel: rgba(13, 17, 23, 0.98);
+				--mh-text: #e0e0e0;
+				--mh-border: rgba(0, 128, 255, 0.2);
+			}
+
+			body {
+				background-color: #000;
+				background-image: 
+					radial-gradient(circle at 50% 50%, #0a1018 0%, #000 100%),
+					linear-gradient(rgba(0, 128, 255, 0.05) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(0, 128, 255, 0.05) 1px, transparent 1px);
+				background-size: 100% 100%, 40px 40px, 40px 40px;
+				color: var(--mh-text);
+				font-family: 'Uni Sans', sans-serif;
+				margin: 0;
+			}
+
+			/* --- 1. FORM CONTAINER --- */
+			#uplink-wrapper {
+				max-width: 900px;
+				margin: 100px auto;
+				padding: 40px;
+				background: var(--mh-panel);
+				border: 1px solid var(--mh-border);
+				box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+				position: relative;
+			}
+
+			.form-header {
+				border-bottom: 2px solid var(--mh-blue);
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-end;
+			}
+
+			.header-main h1 { font-size: 2.5em; color: #fff; margin: 0; letter-spacing: 2px; }
+			.header-main span { color: var(--mh-cyan); font-family: 'Courier New'; font-size: 0.9em; }
+
+			/* --- 2. THE TACTICAL INPUTS --- */
+			.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+			
+			.input-block { margin-bottom: 25px; }
+			.input-block label { display: block; color: #666; font-size: 0.8em; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+			
+			.tac-input {
+				width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 15px;
+				font-family: 'Courier New', monospace; outline: none; transition: 0.3s;
+			}
+			.tac-input:focus { border-color: var(--mh-blue); box-shadow: 0 0 10px rgba(0, 128, 255, 0.2); }
+			
+			select.tac-input { cursor: pointer; color: var(--mh-cyan); }
+
+			/* --- 3. UPLOAD AREA --- */
+			.upload-zone {
+				border: 2px dashed #333; padding: 40px; text-align: center; color: #555;
+				transition: 0.3s; cursor: pointer; margin-bottom: 30px;
+			}
+			.upload-zone:hover { border-color: var(--mh-cyan); color: #fff; background: rgba(0, 229, 255, 0.02); }
+			.upload-zone i { font-size: 2em; margin-bottom: 10px; display: block; }
+
+			/* --- 4. SUBMIT BUTTON --- */
+			.submit-btn {
+				width: 100%; padding: 20px; background: var(--mh-blue); color: #000; border: none;
+				font-size: 1.2em; font-weight: 900; letter-spacing: 3px; cursor: pointer;
+				text-transform: uppercase; transition: 0.3s;
+				clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+			}
+			.submit-btn:hover { background: #fff; box-shadow: 0 0 30px var(--mh-blue); transform: scale(1.02); }
+
+			/* FOOTER HUD */
+			.footer-hud {
+				margin-top: 40px; padding-top: 20px; border-top: 1px solid #222;
+				font-size: 0.7em; color: #444; font-family: 'Courier New'; display: flex; justify-content: space-between;
+			}
+
+			@media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+		</style>
+	</head>
+	<body>
+
+		<div id="uplink-wrapper">
+			<header class="form-header">
+				<div class="header-main">
+					<h1>MISSION UPLINK</h1>
+					<span>SYSTEM: SERVICE_REQUEST_PROTOCOL_V8</span>
+				</div>
+				<div style="text-align:right;">
+					<img src="images/Logo_1.png" alt="MH" style="height:40px;">
+				</div>
+			</header>
+
+			<form id="master-request-form">
+				<div class="form-grid">
+					<div class="input-block">
+						<label>OPERATIVE NAME (ALIAS)</label>
+						<input type="text" id="client-name" class="tac-input" placeholder="Enter Full Name" required>
+					</div>
+					<div class="input-block">
+						<label>COMM_CHANNEL (EMAIL)</label>
+						<input type="email" id="client-email" class="tac-input" placeholder="email@example.com" required>
+					</div>
+				</div>
+
+				<div class="form-grid">
+					<div class="input-block">
+						<label>MISSION SECTOR (BRANCH)</label>
+						<select id="mission-sector" class="tac-input">
+							<option value="web">MH E-Services™ (Web/Software)</option>
+							<option value="graphics">Creative Arts® (Graphic Design)</option>
+							<option value="video">Video Operations (Videography)</option>
+							<option value="audio">MH Sounds™ (Voice/Audio)</option>
+							<option value="translation">Translation Ops</option>
+							<option value="gaming">Project: IRONCLAD (Game Dev)</option>
+						</select>
+					</div>
+					<div class="input-block">
+						<label>URGENCY CLEARANCE</label>
+						<select id="mission-urgency" class="tac-input">
+							<option value="standard">STANDARD (3-7 DAYS)</option>
+							<option value="priority">PRIORITY (48 HOURS)</option>
+							<option value="immediate">IMMEDIATE (ASAP)</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="input-block">
+					<label>MISSION BRIEFING (PROJECT DESCRIPTION)</label>
+					<textarea id="mission-desc" class="tac-input" rows="6" placeholder="Provide complete specifications, objectives, and constraints..." required></textarea>
+				</div>
+
+				<div class="input-block">
+					<label>INTEL ATTACHMENTS (FILES/ASSETS)</label>
+					<div class="upload-zone" id="drop-zone">
+						<i class="fas fa-cloud-upload-alt"></i>
+						<span>DRAG & DROP INTEL PACKETS OR CLICK TO BROWSE</span>
+						<input type="file" id="file-input" hidden multiple>
+					</div>
+				</div>
+
+				<div style="margin-bottom:30px;">
+					<label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:0.8em; color:#888;">
+						<input type="checkbox" required> I CONFIRM THAT ALL PROVIDED INTEL IS ACCURATE AND COMPLIES WITH MH STUDIOS™ PROTOCOLS.
+					</label>
+				</div>
+
+				<button type="submit" class="submit-btn" id="submit-btn">TRANSMIT REQUEST</button>
+			</form>
+
+			<div class="footer-hud">
+				<span>ID: SECURE_FORM_836</span>
+				<span>ENCRYPTION: AES-256 ACTIVE</span>
+				<span>LATENCY: 14MS</span>
+			</div>
+		</div>
+
+		<script src="assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+		<script type="module">
+			// Import from your existing init file
+			import { db, storage, appId } from './assets/js/firebase-init.js';
+			import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+			import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js';
+
+			// Initialize EmailJS
+			emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+
+			$('#master-request-form').on('submit', async (e) => {
+				e.preventDefault();
+				
+				const btn = $('#submit-btn');
+				const fileInput = document.getElementById('file-input');
+				
+				btn.text("ESTABLISHING UPLINK...").prop('disabled', true);
+
+				try {
+					let intelLink = "No files attached.";
+
+					// 1. UPLOAD FILE IF PRESENT
+					if (fileInput.files.length > 0) {
+						const file = fileInput.files[0];
+						btn.text(`UPLOADING: ${file.name}...`);
+						
+						// Create unique reference in your Storage Bucket
+						const fileRef = ref(storage, `mission_intel/${Date.now()}_${file.name}`);
+						
+						const snapshot = await uploadBytes(fileRef, file);
+						intelLink = await getDownloadURL(snapshot.ref);
+					}
+
+					// 2. CONSTRUCT EMAIL DATA
+					const missionData = {
+						from_name: $('#client-name').val(),
+						from_email: $('#client-email').val(),
+						sector: $('#mission-sector').val(),
+						urgency: $('#mission-urgency').val(),
+						message: $('#mission-desc').val(),
+						intel_link: intelLink,
+						to_email: 'mhstudios.836@gmail.com'
+					};
+
+					// 3. SAVE TO FIRESTORE ARCHIVE
+					await addDoc(collection(db, 'artifacts', appId, 'service_requests'), {
+						...missionData,
+						timestamp: serverTimestamp()
+					});
+
+					// 4. SEND VIA EMAILJS
+					btn.text("TRANSMITTING TO HQ...");
+					await emailjs.send('service_MHStudios836', 'YOUR_TEMPLATE_ID', missionData);
+
+					alert("MISSION BRIEFING TRANSMITTED SUCCESSFULLY.");
+					window.location.href = 'index.html';
+
+				} catch (error) {
+					console.error("Uplink Error:", error);
+					alert("TRANSMISSION FAILED. ERROR: " + error.message);
+					btn.text("RETRY TRANSMISSION").prop('disabled', false);
+				}
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,41 @@
+{
+  "menu": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "designs": "Designs",
+    "get_started": "Get Started",
+    "log_in": "Log In",
+    "sign_up": "Sign Up"
+  },
+  "header": {
+    "brand_strong": "MH",
+    "brand_span": "STUDIOS™"
+  },
+  "contact": {
+    "get_in_touch": "Get in Touch",
+    "name_placeholder": "Name",
+    "email_placeholder": "Email",
+    "message_placeholder": "Message"
+  },
+  "footer": {
+    "copyright": "MH STUDIOS™ - All Rights Reserved",
+    "design_by": "Design"
+  },
+  "generic_page": {
+    "title": "Services",
+    "subtitle": "Everything you need for your digital project."
+  },
+  
+  /* --- NEW PAGE-SPECIFIC CONTENT FOR GENERIC_WEB_DESIGN_WEBSITE.HTML --- */
+  "generic_page_content": { 
+    "product_description": "MH Studios delivers fully engineered, future-proof Responsive Websites and Digital Platforms. Our process is a collaborative, two-phase operation to ensure a superior and adaptable final product.",
+    "quantity_label": "Quantity:",
+    "interested_button": "Interested",
+    "social": {
+      "like": "Like",
+      "share": "Share",
+      "comment": "Comment"
+    }
+  }
+}

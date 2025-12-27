@@ -1,0 +1,16 @@
+# Dependency Vault (Do not upload these, they are huge)
+node_modules/
+package-lock.json
+
+# The Shadow Vault (Your secret API keys)
+.env
+
+# The Build Output (This is generated locally; no need to store in Git)
+_site/
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# Keep your original protection
+assets/js/firebase-init.js

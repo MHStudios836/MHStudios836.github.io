@@ -1,0 +1,381 @@
+/* --- LOGIN/SIGNUP V2: SLICING PANEL DESIGN --- */
+
+/* 1. Base Setup: Full Screen Centering */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #111111; /* Extremely dark background */
+	/* Get the header height (approx 4.5em from main.css) and add a little more */
+    padding-top: 10vh !important;
+    
+    /* Ensure the wrapper starts below the header in the viewport */
+    margin-top: 0 !important;
+}
+
+#auth-section {
+    padding: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 2. Main Container (The Card) */
+#auth-container {
+    background-color: #1a1a1a; /* Dark card background */
+    border-radius: 12px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55), 0 10px 10px rgba(0, 0, 0, 0.52);
+    position: relative;
+    overflow: hidden; /* CRITICAL: Hides the forms that are off-screen */
+    width: 768px; /* Standard desktop width */
+    max-width: 100%;
+    min-height: 500px;
+    display: flex;
+}
+
+/* Add the cyan glow effect */
+.card-glow {
+    box-shadow: 
+        0 8px 40px rgba(0, 0, 0, 0.8), 
+        0 0 15px rgba(83, 227, 251, 0.25) inset, 
+        0 0 25px rgba(83, 227, 251, 0.4); 
+    border: 1px solid rgba(83, 227, 251, 0.3);
+}
+
+/* 3. Form Styling */
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+}
+
+.sign-in-container {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+
+.sign-up-container {
+    left: 0;
+    width: 50%;
+    opacity: 0; /* Hidden by default */
+    z-index: 1;
+}
+
+/* Style the form element itself */
+#auth-container form {
+    background-color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    padding: 0 50px;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Input Fields (Visibility and Style) */
+#auth-container input {
+    background-color: #2b2b2b !important;
+    border: none;
+    padding: 12px 15px;
+    margin: 8px 0;
+    width: 100%;
+    color: #f9f9f9 !important;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+#auth-container input:focus {
+    border-color: #53e3fb !important;
+    box-shadow: 0 0 0 1px #53e3fb !important;
+}
+
+/* ------------------------------------------------ */
+/* UPDATED 3. Form Styling: BUTTONS               */
+/* ------------------------------------------------ */
+
+/* Base Button Style (Applies to all buttons inside the container) */
+#auth-container button {
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 0.2s ease-out, background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    margin-top: 20px;
+    cursor: pointer;
+    
+    /* FIX 1: Perfect Vertical Centering */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    min-height: 40px; /* Ensures height is stable */
+    padding: 10px 45px; /* Adjusted padding for better fit with Flexbox */
+}
+
+/* Primary Button (LOG IN / SIGN UP) */
+#auth-container button:not(.ghost) {
+    border: 1px solid #53e3fb;
+    background-color: #53e3fb;
+    color: #111111 !important;
+}
+
+/* FIX 2: Hover Effect for Primary Button */
+#auth-container button:not(.ghost):hover {
+    background-color: #79f9ff; /* Brighter accent */
+    transform: scale(1.03); /* Subtle scale up */
+    box-shadow: 0 0 15px rgba(83, 227, 251, 0.7);
+}
+
+/* Ghost Button (Transition buttons on the overlay) */
+#auth-container button.ghost {
+    background-color: transparent;
+    border: 1px solid #f9f9f9;
+    color: #f9f9f9 !important;
+}
+
+/* FIX 2: Hover Effect for Ghost Button */
+#auth-container button.ghost:hover {
+    background-color: rgba(255, 255, 255, 0.15); /* Semi-transparent background */
+    border-color: #53e3fb;
+    transform: scale(1.03);
+    color: #53e3fb !important;
+}
+
+/* 4. Overlay/Transition Panel Styling */
+.overlay-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out;
+    z-index: 100; /* Highest layer */
+}
+
+.overlay {
+    background-color: #53e3fb; /* Accent color for the panel */
+    background: linear-gradient(to right, #53e3fb, #22b7d4); /* Subtle gradient */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 0 0;
+    color: #111111;
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+}
+
+.overlay-panel {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 40px;
+    text-align: center;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+}
+
+.overlay-left {
+    transform: translateX(-20%);
+}
+
+.overlay-right {
+    right: 0;
+    transform: translateX(0);
+}
+
+/* 5. ACTIVE STATE (The "Slicing Panel" Transition) */
+/* This class is added by JavaScript on the main #auth-container */
+.is-signup .sign-in-container {
+    transform: translateX(100%); /* Push Login form off-screen to the right */
+}
+
+.is-signup .sign-up-container {
+    transform: translateX(100%); /* Move Signup form into the Login area */
+    opacity: 1;
+    z-index: 5;
+    animation: show 0.6s;
+}
+
+.is-signup .overlay-container {
+    transform: translateX(-100%); /* Slide the panel over the Signup form */
+}
+
+.is-signup .overlay {
+    transform: translateX(50%); /* Slide the contents of the panel in the opposite direction */
+}
+
+.is-signup .overlay-left {
+    transform: translateX(0); /* Slide the left panel content into view */
+}
+
+.is-signup .overlay-right {
+    transform: translateX(20%); /* Push the right panel content off-screen */
+}
+
+/* --- Responsive Adjustments --- */
+@media screen and (max-width: 768px) {
+    #auth-container {
+        width: 90%;
+        min-height: 750px; /* Allow vertical stacking */
+        flex-direction: column;
+        display: block;
+    }
+
+    /* On mobile, stack forms and hide the animation panel */
+    .form-container {
+        position: relative;
+        width: 100%;
+    }
+    
+    .overlay-container {
+        display: none; /* Hide complex animation on small mobile screens */
+    }
+
+    .sign-up-container {
+        left: 0;
+        opacity: 0;
+        z-index: 1;
+        position: absolute;
+        top: 0;
+        /* Reset transformations that conflict with mobile view */
+        transform: translateX(0) !important; 
+    }
+
+    /* Mobile simple transition (JS handles this toggle) */
+    .is-signup .sign-in-container {
+        display: none;
+    }
+    .is-signup .sign-up-container {
+        opacity: 1;
+        position: relative;
+        display: block;
+        z-index: 2;
+    }
+
+    #auth-container form {
+        padding: 40px 20px;
+    }
+
+    /* Hide the Sign Up panel when Log In is active */
+    .sign-up-container {
+        display: none;
+    }
+
+    .is-signup .sign-up-container {
+        display: block;
+    }
+}
+
+/* --- HEADER STYLING OVERLAY (Ensure visibility and fix position) --- */
+
+/* 2. CORRECTED HEADER VISIBILITY BLOCK */
+#header {
+    /* CRITICAL FIX: OVERRIDES HIDDEN STATE */
+    opacity: 1 !important;        
+    visibility: visible !important; 
+
+    /* Layout restored to transparent and simple fixed position */
+    background: transparent !important; 
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 9000 !important;
+    
+    /* REMOVE all other aggressive styling like font-size, display: flex, etc. 
+       Those are handled correctly by Header_Alignment.css */
+}
+
+/* 1. Logo Zoom Hover Effect */
+#header .logo {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    /* Ensure the base font size from Header_Alignment.css is respected */
+}
+
+#header .logo:hover {
+    transform: scale(1.05); /* Subtle zoom in */
+    opacity: 0.9;
+    color: #53e3fb; /* Optional: Add accent color on hover */
+}
+
+/* 2. FORCE THE LOGO TO BE VISIBLE AND LARGE */
+#header .logo, 
+#header .logo strong, 
+#header .logo span {
+    color: #f9f9f9 !important; /* Force bright text color */
+	font-size: 1em !important; /* Force large size */
+    visibility: visible !important; /* Ensure no hidden rule is active */
+    display: block !important; /* Ensure it is not set to display: none */
+    opacity: 1 !important; /* Ensure not set to opacity: 0 */
+    text-shadow: 0 0 8px rgba(83, 227, 251, 0.8); /* Add a glow */
+}
+
+/* Ensure logo text is visible against the dark background */
+#header .logo strong, #header .logo span {
+    color: #f9f9f9; /* White text color */
+}
+
+/* Force a contrasting color and ensure display settings are correct */
+#header .logo, #header .logo strong, #header .logo span {
+    color: #f9f9f9 !important; /* Force a bright color */
+    display: inline-block !important; /* Ensure it occupies space */
+}
+
+/* Style the Search Form for the fixed header */
+#header-search-form {
+    flex-grow: 1; 
+    max-width: 500px;
+    margin: 0 2em;
+}
+
+/* 4. FORCE Search Bar visibility (often hidden in main theme CSS) */
+#header-search-form, 
+#header-search-form * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure the Menu button is visible */
+#header nav a {
+    color: #f9f9f9;
+    background-color: rgba(26, 26, 26, 0.7); /* Subtle dark background for contrast */
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out; /* Enable smooth transitions */
+}
+
+#header nav a:hover {
+    transform: scale(1.05); /* Subtle zoom in */
+    box-shadow: 0 0 10px rgba(83, 227, 251, 0.4); /* Cyan glow */
+    background-color: rgba(83, 227, 251, 0.15) !important; 
+    color: #1a1a1a;
+}
+
+#header nav a,
+#header nav a span {
+    color: #f9f9f9 !important; /* Force text color to white/bright */
+    background-color: transparent !important; /* Ensure background is transparent by default */
+}
+
+/* Restore the subtle hover effect for the menu button */
+#header nav a:hover {
+    background-color: rgba(83, 227, 251, 0.2) !important; /* Cyan glow background on hover */
+}
+
+/* 4. Search Bar Input Text Color Fix */
+#header-search-form input[type="text"] {
+    color: #f9f9f9 !important; /* Ensure text entered in the search bar is visible */
+}

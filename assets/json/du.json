@@ -1,0 +1,39 @@
+{
+  "menu": {
+    "home": "Home",
+    "about": "Over ons",
+    "services": "Diensten",
+    "designs": "Ontwerpen",
+    "get_started": "Start",
+    "log_in": "Inloggen",
+    "sign_up": "Aanmelden"
+  },
+  "header": {
+    "brand_strong": "MH",
+    "brand_span": "STUDIO'S™"
+  },
+  "contact": {
+    "get_in_touch": "Neem Contact Op",
+    "name_placeholder": "Naam",
+    "email_placeholder": "E-mail",
+    "message_placeholder": "Bericht"
+  },
+  "footer": {
+    "copyright": "MH STUDIOS™ - Alle Rechten Voorbehouden",
+    "design_by": "Ontwerp"
+  },
+  "generic_page": {
+    "title": "Diensten",
+    "subtitle": "Alles wat u nodig heeft voor uw digitale project."
+  },
+  "generic_page_content": {
+    "product_description": "MH Studios levert volledig ontworpen, toekomstbestendige Responsive Websites en Digitale Platforms. Ons proces is een samenwerkingsoperatie in twee fasen om een superieur en aanpasbaar eindproduct te garanderen.",
+    "quantity_label": "Hoeveelheid:",
+    "interested_button": "Geïnteresseerd",
+    "social": {
+      "like": "Leuk vinden",
+      "share": "Delen",
+      "comment": "Opmerking"
+    }
+  }
+}

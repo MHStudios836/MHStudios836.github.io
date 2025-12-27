@@ -1,0 +1,22 @@
+Admin_Room.html:87 DESIGN MODE BYPASS ACTIVE: Security checks are disabled.
+(anonymous) @ Admin_Room.html:87
+(anonymous) @ Admin_Room.html:162
+language-switcher.js:61  GET http://localhost:8000/json/en.json 404 (File not found)
+loadTranslations @ language-switcher.js:61
+changeLanguage @ language-switcher.js:106
+(anonymous) @ language-switcher.js:115
+language-switcher.js:64 Translation file not found or failed to load: en.json. Status: 404. Falling back to English.
+loadTranslations @ language-switcher.js:64
+await in loadTranslations
+changeLanguage @ language-switcher.js:106
+(anonymous) @ language-switcher.js:115
+language-switcher.js:67  GET http://localhost:8000/json/en.json 404 (File not found)
+loadTranslations @ language-switcher.js:67
+await in loadTranslations
+changeLanguage @ language-switcher.js:106
+(anonymous) @ language-switcher.js:115
+language-switcher.js:69 Fatal Error: Could not load 'en.json' fallback file.
+loadTranslations @ language-switcher.js:69
+await in loadTranslations
+changeLanguage @ language-switcher.js:106
+(anonymous) @ language-switcher.js:115

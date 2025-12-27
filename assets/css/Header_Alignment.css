@@ -1,0 +1,157 @@
+/* ---------------------------------------------------------------------- */
+/* 1. FLEXBOX HEADER ALIGNMENT (Override existing template header styles)  */
+/* ---------------------------------------------------------------------- */
+
+/* The main header container: enables primary alignment */
+#header {
+    display: flex; /* Activate Flexbox */
+    align-items: center; /* Vertically align all items in the center */
+    justify-content: space-between; /* Put space between the main groups (Logo, Search/Form, Right Controls) */
+    padding: 1.5em 2em; /* Increase padding for desktop view */
+    height: auto; /* Allow content to dictate height */
+    min-height: 4.5em; /* Minimum header height */
+}
+
+/* Ensure Logo/Title remains on the left */
+#header .logo {
+    flex-shrink: 0; /* Prevent the logo from shrinking */
+    margin-right: 1.5em;
+    font-size: 1.1em; /* Adjust as needed */
+}
+
+/* --- Search Form Alignment --- */
+
+/* Allow the search form to take up the majority of the available space */
+#header-search-form {
+    flex-grow: 1; /* Allows it to expand in the middle */
+    max-width: 500px; /* Limit the max width of the search bar */
+    margin: 0 2em; /* Margin left and right of the search box */
+    display: flex; /* Make search form a flex container for its input/button */
+    align-items: center;
+}
+
+#header-search-form input[type="text"] {
+    flex-grow: 1; /* Input takes up all space */
+    border-radius: 4px 0 0 4px; /* Align with button */
+    padding: 0.5em 1em;
+    height: 100%;
+}
+
+#header-search-form button {
+    flex-shrink: 0;
+    border-radius: 0 4px 4px 0;
+    background-color: #53e3fb; /* Accent color */
+    color: #ffffff;
+    height: 100%;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+#header-search-form button:hover {
+    background-color: #38c8dd;
+}
+
+/* --- Right-Side Controls (User Icon / Menu Button) --- */
+
+/* New container for the Admin/Sign In button and the Menu button */
+.header-controls {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Prevent controls from shrinking */
+    margin-left: 1.5em;
+}
+
+/* Style for the Admin/Sign In button */
+#admin-button {
+    text-decoration: none;
+    color: inherit; /* Inherit color from the header text */
+    padding: 0.5em 1em;
+    border: solid 1px rgba(255, 255, 255, 0.5); /* Light border */
+    border-radius: 4px;
+    margin-right: 1em; /* Space between icon and menu button */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+#admin-button:hover {
+    background-color: #53e3fb; /* Hover accent */
+    color: #ffffff;
+    border-color: #53e3fb;
+}
+
+
+/* ---------------------------------------------------------------------- */
+/* 2. MENU BUTTON STYLING (NEW)                                           */
+/* ---------------------------------------------------------------------- */
+
+/* The Menu Button itself (the icon that toggles the main nav) */
+#menu-button {
+    cursor: pointer;
+    font-size: 1.5em; /* Make it easily tappable */
+    color: #ffffff; /* White icon */
+    padding: 0.25em; /* Touch target area */
+    border: solid 1px transparent;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+#menu-button:hover {
+    color: #53e3fb; /* Accent color on hover */
+    border-color: #53e3fb;
+}
+
+/* Hide the old menu button from the original template for clean desktop layout */
+#header > a.toggle { 
+    display: none !important; 
+}
+
+
+/* ---------------------------------------------------------------------- */
+/* 3. RESPONSIVENESS (Mobile View)                                        */
+/* ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------- */
+/* 2.5. TABLET FIX (721px - 980px) - Tighten up header elements           */
+/* ---------------------------------------------------------------------- */
+
+/* --- FINAL ATTEMPT: TABLET FIX (721px - 980px) --- */
+/* This super-specific block overrides all desktop styles in the tablet range */
+
+@media screen and (max-width: 720px) {
+    /* 1. CRITICAL: FORCE SMALLER HEADER HEIGHT/LINE-HEIGHT */
+    #header {
+        /* Overrides the 4.5em desktop min-height */
+        min-height: 3.25em !important; 
+        height: 3.25em !important;    
+        line-height: 3.25em !important;
+        padding: 0 0.5em !important;
+    }
+
+    /* 2. CRITICAL: SHRINK LOGO AND ALLOW IT TO SHRINK */
+    #header .logo {
+        /* Overrides the flex-shrink: 0 that prevents the logo from shrinking */
+        flex-shrink: 1 !important;        
+        margin-right: 0.5em !important; 
+        padding: 0 0.5em !important;
+    }
+
+    /* 3. CRITICAL: SHRINK SEARCH BAR WIDTH */
+    #header-search-form {
+        /* Overrides the 500px desktop max-width */
+        max-width: 150px !important;    
+        flex-grow: 0 !important;        
+        flex-shrink: 1 !important;
+        margin: 0 0.5em !important;     
+    }
+
+    /* 4. TIGHTEN NAVIGATION/CONTROLS */
+    .header-controls {
+        flex-shrink: 1 !important;
+    }
+    
+    /* Ensure the menu icon button is not too wide */
+    #header nav a[href="#menu"] {
+        padding-right: 2em !important; 
+    }
+}

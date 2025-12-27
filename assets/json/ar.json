@@ -1,0 +1,39 @@
+{
+  "menu": {
+    "home": "الرئيسية",
+    "about": "نبذة عنا",
+    "services": "خدماتنا",
+    "designs": "التصاميم",
+    "get_started": "ابدأ الآن",
+    "log_in": "تسجيل الدخول",
+    "sign_up": "اشترك"
+  },
+  "header": {
+    "brand_strong": "MH",
+    "brand_span": "للاستوديوهات™"
+  },
+  "contact": {
+    "get_in_touch": "تواصل معنا",
+    "name_placeholder": "الاسم",
+    "email_placeholder": "البريد الإلكتروني",
+    "message_placeholder": "الرسالة"
+  },
+  "footer": {
+    "copyright": "MH STUDIOS™ - جميع الحقوق محفوظة",
+    "design_by": "تصميم"
+  },
+  "generic_page": {
+    "title": "الخدمات",
+    "subtitle": "كل ما تحتاجه لمشروعك الرقمي."
+  },
+  "generic_page_content": {
+    "product_description": "تقدم استوديوهات MH مواقع ويب ومنصات رقمية متجاوبة ومقاومة للمستقبل ومصممة بالكامل. تتكون عمليتنا من مرحلتين تعاونيتين لضمان منتج نهائي متفوق وقابل للتكيف.",
+    "quantity_label": "الكمية:",
+    "interested_button": "مهتم",
+    "social": {
+      "like": "إعجاب",
+      "share": "مشاركة",
+      "comment": "تعليق"
+    }
+  }
+}

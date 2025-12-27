@@ -1,0 +1,535 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>MH Studios™ | Web & Software Ops</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Elite web development, software engineering, and mobile application services by MH E-Services™." />
+		
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+		
+		<style>
+			/* ==========================================================================
+			   THEME: E-SERVICES (CYBER-CYAN / CODEBREAKER)
+			   ========================================================================== */
+			:root {
+				--mh-blue: #0080FF;
+				--mh-cyan: #00e5ff; /* Primary for E-Services */
+				--mh-dark: #020c1b; /* Deeper Navy for Code contrast */
+				--mh-panel: rgba(10, 25, 47, 0.95);
+				--mh-text: #e6f1ff;
+				--mh-code: #64ffda;
+				--mh-purple: #bd00ff;
+			}
+
+			body {
+				background-color: var(--mh-dark);
+				color: var(--mh-text);
+				font-family: 'Uni Sans', sans-serif;
+				margin: 0;
+				overflow-x: hidden;
+			}
+
+			/* --- SCROLLBAR --- */
+			::-webkit-scrollbar { width: 10px; }
+			::-webkit-scrollbar-track { background: var(--mh-dark); }
+			::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 5px; border: 2px solid var(--mh-dark); }
+			::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+
+			/* --- 1. NAVIGATION (STICKY HUD) --- */
+			#tactical-nav {
+				position: fixed; top: 0; left: 0; width: 100%;
+				padding: 15px 30px;
+				z-index: 999;
+				display: flex; justify-content: space-between; align-items: center;
+				background: rgba(2, 12, 27, 0.9);
+				backdrop-filter: blur(20px);
+				border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+				transition: 0.3s;
+			}
+			.brand-link {
+				display: flex; align-items: center; gap: 15px;
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em; text-decoration: none;
+			}
+			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-cyan)); }
+
+			.menu-trigger {
+				color: var(--mh-cyan); font-family: 'Courier New', monospace; font-weight: 700; cursor: pointer;
+				padding: 10px 25px; border: 1px solid rgba(0, 229, 255, 0.3);
+				display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
+				transition: 0.3s;
+			}
+			.menu-trigger:hover { background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); }
+
+			/* --- 2. MENU OVERLAY (TITAN V5.2 SYNC) --- */
+			#menu-overlay {
+				position: fixed; top: 0; right: -100%; width: 450px; height: 100%;
+				background: rgba(2, 12, 27, 0.98);
+				border-left: 2px solid var(--mh-cyan);
+				z-index: 1000;
+				padding: 50px;
+				display: flex; flex-direction: column;
+				transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+				overflow-y: auto;
+			}
+			#menu-overlay.active { right: 0; }
+			.menu-close { align-self: flex-end; font-size: 1.8em; color: #8892b0; cursor: pointer; margin-bottom: 40px; transition: 0.3s; }
+			.menu-close:hover { color: var(--mh-cyan); transform: rotate(90deg); }
+
+			.menu-links a, .menu-dropdown-btn {
+				display: flex; align-items: center; justify-content: space-between;
+				font-size: 1.1em; color: #ccd6f6; padding: 15px 0;
+				border-bottom: 1px solid rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 2px; cursor: pointer; text-decoration: none;
+			}
+			.menu-links a:hover, .menu-dropdown-btn:hover { color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan); }
+			
+			.dropdown-container { display: none; background: rgba(0, 229, 255, 0.03); padding-left: 20px; border-left: 1px solid var(--mh-cyan); }
+			.dropdown-container a { font-size: 0.9em; color: #8892b0; border-bottom: none; }
+			.dropdown-container a:hover { color: #fff; }
+
+			.menu-auth { margin-top: auto; display: grid; gap: 15px; }
+			
+			/* LANG GRID */
+			.lang-grid { display: flex; justify-content: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+			.lang-btn { width: 40px; height: 30px; opacity: 0.4; transition: 0.3s; border: 1px solid transparent; border-radius: 4px; padding: 2px; }
+			.lang-btn img { width: 100%; height: auto; display: block; }
+			.lang-btn:hover, .lang-btn.active { opacity: 1; border-color: var(--mh-cyan); transform: scale(1.1); }
+
+			/* --- 3. HERO SECTION (THE MATRIX) --- */
+			#hero {
+				min-height: 100vh; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden;
+				border-bottom: 1px solid var(--mh-cyan);
+				padding-top: 80px;
+			}
+			/* Animated Background Grid */
+			#hero-grid-bg {
+				position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+				background-image: 
+					linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+				background-size: 40px 40px;
+				perspective: 500px;
+				transform-style: preserve-3d;
+				animation: gridScroll 20s linear infinite;
+				z-index: 1;
+			}
+			@keyframes gridScroll { 0% { background-position: 0 0; } 100% { background-position: 0 400px; } }
+
+			.hero-content {
+				z-index: 5; text-align: center; max-width: 1000px; padding: 20px;
+				position: relative;
+			}
+			
+			/* LOGO STYLING */
+			.hero-logo-container {
+				position: relative; width: 150px; height: 150px; margin: 0 auto 30px;
+				background: radial-gradient(circle, rgba(0,229,255,0.1) 0%, transparent 70%);
+				border-radius: 50%; display: flex; justify-content: center; align-items: center;
+				animation: pulseGlow 3s infinite alternate;
+			}
+			.hero-logo { width: 100px; height: auto; filter: drop-shadow(0 0 15px var(--mh-cyan)); }
+
+			.hero-pre { font-family: 'Courier New', monospace; color: var(--mh-cyan); font-size: 1.1em; letter-spacing: 3px; margin-bottom: 10px; }
+			.hero-title {
+				font-size: 5em; font-weight: 900; letter-spacing: 5px; text-transform: uppercase; color: #fff; line-height: 1;
+				text-shadow: 0 0 30px rgba(0, 229, 255, 0.3); margin-bottom: 15px;
+			}
+			.hero-desc {
+				color: #8892b0; font-size: 1.2em; max-width: 700px; margin: 0 auto 40px; line-height: 1.6;
+			}
+
+			/* BUTTONS */
+			.btn-main {
+				padding: 18px 40px; font-weight: bold; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;
+				transition: 0.3s; position: relative; overflow: hidden; display: inline-block; font-family: 'Courier New', monospace; font-size: 0.9em;
+			}
+			.btn-cyan {
+				background: transparent; color: var(--mh-cyan); border: 1px solid var(--mh-cyan);
+			}
+			.btn-cyan::before {
+				content:''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--mh-cyan);
+				z-index: -1; transform: translateX(-101%); transition: 0.3s;
+			}
+			.btn-cyan:hover { color: #000; box-shadow: 0 0 30px rgba(0, 229, 255, 0.4); }
+			.btn-cyan:hover::before { transform: translateX(0); }
+
+			/* --- 4. LIVE TERMINAL SECTION --- */
+			#terminal-sector {
+				padding: 100px 20px; background: #0b101a; position: relative;
+			}
+			.terminal-window {
+				max-width: 900px; margin: 0 auto; background: #1e1e1e; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+				border: 1px solid #333; overflow: hidden;
+			}
+			.term-header {
+				background: #252526; padding: 10px 20px; display: flex; gap: 8px; align-items: center; border-bottom: 1px solid #333;
+			}
+			.term-dot { width: 12px; height: 12px; border-radius: 50%; }
+			.term-dot.red { background: #ff5f56; } .term-dot.yellow { background: #ffbd2e; } .term-dot.green { background: #27c93f; }
+			.term-title { margin-left: 15px; color: #888; font-family: sans-serif; font-size: 0.8em; }
+
+			.term-body {
+				padding: 30px; font-family: 'Consolas', 'Monaco', monospace; color: #d4d4d4; font-size: 0.95em; line-height: 1.6;
+				min-height: 300px; background: #1e1e1e;
+			}
+			.code-line { display: block; margin-bottom: 5px; opacity: 0; animation: fadeInCode 0.5s forwards; }
+			.c-keyword { color: #569cd6; } /* Blue */
+			.c-string { color: #ce9178; } /* Orange */
+			.c-func { color: #dcdcaa; } /* Yellow */
+			.c-comment { color: #6a9955; } /* Green */
+			
+			@keyframes fadeInCode { to { opacity: 1; } }
+
+			/* --- 5. TECH STACK MATRIX --- */
+			#stack-sector { padding: 100px 20px; background: var(--mh-dark); text-align: center; }
+			.section-header { margin-bottom: 60px; }
+			.section-header h2 { font-size: 2.5em; color: #fff; margin-bottom: 10px; }
+			.section-header span { color: var(--mh-cyan); font-family: 'Courier New'; letter-spacing: 2px; }
+
+			.stack-grid {
+				display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto;
+			}
+			.tech-card {
+				background: rgba(17, 34, 64, 0.6); padding: 30px 10px; border-radius: 4px; transition: 0.3s;
+				border: 1px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 10px;
+			}
+			.tech-card:hover { transform: translateY(-10px); background: rgba(17, 34, 64, 1); border-color: var(--mh-cyan); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+			.tech-icon { font-size: 3em; color: #8892b0; transition: 0.3s; }
+			.tech-card:hover .tech-icon { color: var(--mh-cyan); }
+			.tech-name { font-size: 0.8em; color: #ccd6f6; font-weight: bold; }
+
+			/* --- 6. SERVICES BREAKDOWN --- */
+			#services-sector { padding: 120px 20px; background: #050a14; position: relative; }
+			.srv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; max-width: 1300px; margin: 0 auto; }
+			
+			.srv-card {
+				background: var(--mh-panel); border: 1px solid rgba(0, 229, 255, 0.1); padding: 40px;
+				transition: 0.3s; position: relative; overflow: hidden;
+			}
+			.srv-card::before {
+				content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+				background: linear-gradient(90deg, transparent, var(--mh-cyan), transparent);
+				transform: translateX(-100%); transition: 0.5s;
+			}
+			.srv-card:hover::before { transform: translateX(100%); }
+			.srv-card:hover { border-color: var(--mh-cyan); transform: translateY(-5px); }
+
+			.srv-num { font-size: 4em; color: rgba(255,255,255,0.03); font-weight: 900; position: absolute; top: 10px; right: 20px; pointer-events: none; }
+			.srv-title { font-size: 1.5em; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+			.srv-title i { color: var(--mh-cyan); }
+			.srv-desc { color: #8892b0; line-height: 1.7; margin-bottom: 25px; font-size: 0.95em; }
+			.srv-list { list-style: none; padding: 0; margin: 0; }
+			.srv-list li { padding: 5px 0; color: #a8b2d1; font-size: 0.9em; display: flex; align-items: center; gap: 10px; }
+			.srv-list li::before { content: '▹'; color: var(--mh-cyan); }
+
+			/* --- 7. CTA / DEPLOYMENT --- */
+			#deploy-sector {
+				padding: 120px 20px; text-align: center;
+				background: radial-gradient(circle at 50% 50%, #112240 0%, #020c1b 100%);
+				border-top: 1px solid var(--mh-blue);
+			}
+			.deploy-box { max-width: 800px; margin: 0 auto; }
+			.deploy-title { font-size: 3em; color: #fff; font-weight: 900; margin-bottom: 20px; }
+			.deploy-sub { color: var(--mh-cyan); margin-bottom: 40px; font-size: 1.2em; font-family: 'Courier New'; }
+
+			/* --- 8. FOOTER --- */
+			#tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #8892b0; }
+			.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-cyan); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+			.footer-col ul { list-style: none; padding: 0; }
+			.footer-col li { margin-bottom: 12px; }
+			.footer-col a { color: #8892b0; text-decoration: none; transition: 0.2s; }
+			.footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; }
+			.social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+			.social-grid a { color: #8892b0; transition: 0.3s; }
+			.social-grid a:hover { color: var(--mh-cyan); transform: translateY(-3px); }
+
+			@keyframes pulseGlow { from { box-shadow: 0 0 10px rgba(0, 229, 255, 0.1); } to { box-shadow: 0 0 30px rgba(0, 229, 255, 0.4); } }
+			@media (max-width: 900px) { 
+				.hero-title { font-size: 3em; } 
+				.srv-grid { grid-template-columns: 1fr; }
+				#menu-overlay { width: 100%; }
+			}
+		</style>
+	</head>
+	<body>
+
+		<nav id="tactical-nav">
+			<a href="index.html" class="brand-link">
+				<img src="images/Logo_1.png" alt="MH LOGO">
+				MH STUDIOS™
+			</a>
+			<div class="menu-trigger" id="menu-btn">
+				<span>MENU</span>
+				<i class="fas fa-bars"></i>
+			</div>
+		</nav>
+
+		<div id="menu-overlay">
+			<div class="menu-close"><i class="fas fa-times"></i></div>
+			
+			<div class="menu-links">
+				<a href="index.html"><i class="fas fa-home"></i> Command Center</a>
+				
+				<div class="menu-dropdown-btn">
+					<span><i class="fas fa-layer-group"></i> PAGES</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="dropdown-container">
+					<a href="About_Us.html">About MH Studios</a>
+					<a href="Video_Design.html">Video Design</a>
+					<a href="Graphic_Design.html">Creative Arts®</a>
+					<a href="Web_Design.html" style="color:var(--mh-cyan);">MH E-Services™</a>
+					<a href="Translation_Design.html">Translation Ops</a>
+					<a href="Audio_Design.html">MH Sounds™</a>
+				</div>
+
+				<a href="Products_Services_Room.html"><i class="fas fa-cube"></i> The Armory</a>
+				<a href="Packages.html"><i class="fas fa-tags"></i> Clearance Levels</a>
+				<a href="index.html#black-box"><i class="fas fa-envelope"></i> Secure Comms</a>
+			</div>
+			
+			<div class="menu-auth">
+				<a href="DoD_Login_Style.html" class="btn-main btn-cyan" style="text-align:center; padding:15px; display:block;">OPERATIVE LOGIN</a>
+				<a href="DoD_Login_Style.html" class="btn-main btn-cyan" style="text-align:center; padding:15px; display:block; border-style:dashed;">REQUEST ACCESS</a>
+				
+				<div class="lang-grid">
+					<a href="#" class="lang-btn active"><img src="images/GB.png"></a>
+					<a href="#" class="lang-btn"><img src="images/Ar.png"></a>
+					<a href="#" class="lang-btn"><img src="images/Du.png"></a>
+					<a href="#" class="lang-btn"><img src="images/Ru.png"></a>
+				</div>
+			</div>
+		</div>
+
+		<section id="hero">
+			<div id="hero-grid-bg"></div>
+			
+			<div class="hero-content">
+				<div class="hero-logo-container">
+					<img src="images/Logo_5.png" alt="E-Services Logo" class="hero-logo">
+				</div>
+				
+				<div class="hero-pre">/// MH E-SERVICES™ DIVISION ///</div>
+				<h1 class="hero-title">ARCHITECTS OF<br>THE DIGITAL REALM</h1>
+				<p class="hero-desc">
+					We build the impossible. From high-performance web applications to custom software ecosystems. 
+					MH E-Services™ is the engineering core of the corporation, dedicated to precision, speed, and scalability.
+				</p>
+				
+				<div style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+					<a href="#deploy-sector" class="btn-main btn-cyan">INITIATE PROJECT</a>
+					<a href="#terminal-sector" class="btn-main btn-cyan" style="border-style:dashed;">VIEW CODEBASE</a>
+				</div>
+			</div>
+		</section>
+
+		<section id="terminal-sector">
+			<div class="section-header" style="text-align:center; margin-bottom:40px;">
+				<h2>SYSTEM CAPABILITIES</h2>
+				<span style="color:var(--mh-cyan);">[ROOT@MH-E-SERVICES ~]# EXECUTE DIAGNOSTIC</span>
+			</div>
+
+			<div class="terminal-window">
+				<div class="term-header">
+					<div class="term-dot red"></div>
+					<div class="term-dot yellow"></div>
+					<div class="term-dot green"></div>
+					<div class="term-title">dev_console — -zsh — 80x24</div>
+				</div>
+				<div class="term-body" id="code-display">
+					</div>
+			</div>
+		</section>
+
+		<section id="services-sector">
+			<div class="section-header" style="text-align:center;">
+				<h2>DEVELOPMENT MATRIX</h2>
+				<span style="color:var(--mh-cyan);">SELECT YOUR INFRASTRUCTURE</span>
+			</div>
+
+			<div class="srv-grid">
+				<div class="srv-card">
+					<div class="srv-num">01</div>
+					<div class="srv-title"><i class="fas fa-globe"></i> WEB DEVELOPMENT</div>
+					<div class="srv-desc">
+						Building next-gen websites that are fast, responsive, and SEO-optimized. We don't just use templates; we engineer experiences.
+					</div>
+					<ul class="srv-list">
+						<li>Single Page Applications (SPA)</li>
+						<li>Progressive Web Apps (PWA)</li>
+						<li>E-Commerce Solutions</li>
+						<li>Custom CMS Integration</li>
+					</ul>
+				</div>
+
+				<div class="srv-card">
+					<div class="srv-num">02</div>
+					<div class="srv-title"><i class="fas fa-mobile-alt"></i> MOBILE APPS</div>
+					<div class="srv-desc">
+						Native and cross-platform mobile applications designed for performance on iOS and Android. Seamless integration with cloud backends.
+					</div>
+					<ul class="srv-list">
+						<li>React Native Development</li>
+						<li>Flutter Cross-Platform</li>
+						<li>API Development & Integration</li>
+						<li>App Store Deployment</li>
+					</ul>
+				</div>
+
+				<div class="srv-card">
+					<div class="srv-num">03</div>
+					<div class="srv-title"><i class="fas fa-terminal"></i> CUSTOM SOFTWARE</div>
+					<div class="srv-desc">
+						Tailor-made software solutions to automate your business processes. From database management to desktop applications.
+					</div>
+					<ul class="srv-list">
+						<li>Python Automation Scripts</li>
+						<li>Desktop Applications (Electron)</li>
+						<li>Data Analysis Tools</li>
+						<li>Cloud Infrastructure Setup</li>
+					</ul>
+				</div>
+				
+				<div class="srv-card">
+					<div class="srv-num">04</div>
+					<div class="srv-title"><i class="fas fa-layer-group"></i> UI/UX DESIGN</div>
+					<div class="srv-desc">
+						The bridge between code and human interaction. We design interfaces that are intuitive, accessible, and visually stunning.
+					</div>
+					<ul class="srv-list">
+						<li>Wireframing & Prototyping</li>
+						<li>User Journey Mapping</li>
+						<li>Interactive High-Fidelity Mockups</li>
+						<li>Design Systems</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<section id="stack-sector">
+			<div class="section-header">
+				<h2>ARSENAL</h2>
+				<span>TECHNOLOGIES WE MASTER</span>
+			</div>
+
+			<div class="stack-grid">
+				<div class="tech-card"><i class="fab fa-react tech-icon"></i><span class="tech-name">REACT</span></div>
+				<div class="tech-card"><i class="fab fa-js tech-icon"></i><span class="tech-name">JAVASCRIPT</span></div>
+				<div class="tech-card"><i class="fab fa-html5 tech-icon"></i><span class="tech-name">HTML5</span></div>
+				<div class="tech-card"><i class="fab fa-css3-alt tech-icon"></i><span class="tech-name">CSS3</span></div>
+				<div class="tech-card"><i class="fab fa-node tech-icon"></i><span class="tech-name">NODE.JS</span></div>
+				<div class="tech-card"><i class="fab fa-python tech-icon"></i><span class="tech-name">PYTHON</span></div>
+				<div class="tech-card"><i class="fas fa-database tech-icon"></i><span class="tech-name">FIREBASE</span></div>
+				<div class="tech-card"><i class="fab fa-git-alt tech-icon"></i><span class="tech-name">GIT</span></div>
+			</div>
+		</section>
+
+		<section id="deploy-sector">
+			<div class="deploy-box">
+				<h2 class="deploy-title">READY TO DEPLOY?</h2>
+				<div class="deploy-sub">/// INITIALIZE YOUR DIGITAL TRANSFORMATION ///</div>
+				<p style="color:#8892b0; margin-bottom:40px; font-size:1.1em;">
+					Don't settle for average. Build with the E-Services division and gain the tactical advantage your business deserves.
+				</p>
+				<a href="Service_Description_Form.html" class="btn-main btn-cyan" style="font-size:1.2em; padding:20px 50px;">
+					<i class="fas fa-code"></i> CREATE YOUR WEBSITE NOW
+				</a>
+			</div>
+		</section>
+
+		<footer id="tactical-footer">
+			<div class="footer-grid">
+				<div class="footer-col">
+					<h4>MH STUDIOS™</h4>
+					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+					<p>&copy; 2025 ALL RIGHTS RESERVED.</p>
+				</div>
+				<div class="footer-col">
+					<h4>SECTORS</h4>
+					<ul>
+						<li><a href="Products_Services_Room.html">The Armory</a></li>
+						<li><a href="Packages.html">Packages</a></li>
+						<li><a href="index.html#guild-sector">The Guild</a></li>
+						<li><a href="DoD_Login_Style.html">Operative Login</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>LEGAL</h4>
+					<ul>
+						<li><a href="#">Privacy Protocol</a></li>
+						<li><a href="#">Terms of Service</a></li>
+						<li><a href="#">SLA Agreement</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>SECURE CHANNELS</h4>
+					<div class="social-grid">
+						<a href="#"><i class="fab fa-discord"></i></a>
+						<a href="#"><i class="fab fa-github"></i></a>
+						<a href="#"><i class="fab fa-linkedin"></i></a>
+						<a href="#"><i class="fab fa-instagram"></i></a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="assets/js/jquery.min.js"></script>
+		<script>
+			// MENU LOGIC
+			$('#menu-btn').click(() => $('#menu-overlay').addClass('active'));
+			$('.menu-close').click(() => $('#menu-overlay').removeClass('active'));
+			
+			// DROPDOWN
+			$('.menu-dropdown-btn').click(function() {
+				$(this).next('.dropdown-container').slideToggle(300);
+				$(this).find('.fa-chevron-down').toggleClass('fa-rotate-180');
+			});
+
+			// LANG BUTTONS
+			$('.lang-btn').click(function(e) { e.preventDefault(); $('.lang-btn').removeClass('active'); $(this).addClass('active'); });
+
+			// --- LIVE TERMINAL TYPING EFFECT ---
+			const terminalCode = [
+				"<span class='c-keyword'>const</span> MH_E_Services = {",
+				"&nbsp;&nbsp;branch: <span class='c-string'>'Web & Software Ops'</span>,",
+				"&nbsp;&nbsp;status: <span class='c-string'>'ONLINE'</span>,",
+				"&nbsp;&nbsp;capabilities: [<span class='c-string'>'Full-Stack'</span>, <span class='c-string'>'Mobile'</span>, <span class='c-string'>'AI'</span>],",
+				"&nbsp;&nbsp;<span class='c-func'>initiateProject</span>: <span class='c-keyword'>function</span>(client) {",
+				"&nbsp;&nbsp;&nbsp;&nbsp;<span class='c-keyword'>return</span> <span class='c-func'>buildFuture</span>(client);",
+				"&nbsp;&nbsp;}",
+				"};",
+				"",
+				"<span class='c-comment'>// Executing startup sequence...</span>",
+				"<span class='c-keyword'>await</span> MH_E_Services.<span class='c-func'>initiateProject</span>(<span class='c-string'>'YOU'</span>);",
+				"<span class='c-comment'>// Connection established. Welcome to the grid.</span>"
+			];
+
+			let lineIndex = 0;
+			function typeCode() {
+				if (lineIndex < terminalCode.length) {
+					$('#code-display').append('<div class="code-line">' + terminalCode[lineIndex] + '</div>');
+					lineIndex++;
+					setTimeout(typeCode, 300); // Speed of typing
+				}
+			}
+			
+			// Start typing when scrolled into view
+			$(window).on('scroll', function() {
+				var hT = $('#terminal-sector').offset().top,
+					hH = $('#terminal-sector').outerHeight(),
+					wH = $(window).height(),
+					wS = $(this).scrollTop();
+				if (wS > (hT+hH-wH) && lineIndex === 0){
+					typeCode();
+				}
+			});
+			// Or start immediately if near top
+			setTimeout(typeCode, 1000);
+
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "menu": {
+    "home": "Главная",
+    "about": "О нас",
+    "services": "Услуги",
+    "designs": "Дизайн",
+    "get_started": "Начать",
+    "log_in": "Войти",
+    "sign_up": "Регистрация"
+  },
+  "header": {
+    "brand_strong": "МХ",
+    "brand_span": "СТУДИИ™"
+  },
+  "contact": {
+    "get_in_touch": "Связаться",
+    "name_placeholder": "Имя",
+    "email_placeholder": "Эл. почта",
+    "message_placeholder": "Сообщение"
+  },
+  "footer": {
+    "copyright": "MH STUDIOS™ - Все права защищены",
+    "design_by": "Дизайн"
+  },
+  "generic_page": {
+    "title": "Услуги",
+    "subtitle": "Все, что нужно для вашего цифрового проекта."
+  },
+  "generic_page_content": {
+    "product_description": "MH Studios поставляет полностью спроектированные, перспективные адаптивные веб-сайты и цифровые платформы. Наш процесс представляет собой совместную двухэтапную операцию, обеспечивающую превосходный и адаптируемый конечный продукт.",
+    "quantity_label": "Количество:",
+    "interested_button": "Заинтересован",
+    "social": {
+      "like": "Нравится",
+      "share": "Поделиться",
+      "comment": "Комментарий"
+    }
+  }
+}
