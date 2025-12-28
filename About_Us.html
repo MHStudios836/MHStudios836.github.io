@@ -72,9 +72,9 @@
 			/* --- THE FIX: Change right: 0 to right: -100% --- */
 			#menu-overlay {
 				position: fixed;
-				top: 0;
+				top: 0 !important;
 				right: -100% !important; /* This hides it */
-				width: 300px;
+				width: 300px !important;
 				height: 100vh;
 				background: var(--mh-panel);
 				backdrop-filter: blur(10px);
@@ -84,11 +84,13 @@
 				padding: 2rem;
 				display: flex;
 				flex-direction: column;
+				visibility: hidden !important; /* Added as an extra layer of stealth */
 			}
 
 			/* This brings it in ONLY when the button is clicked */
 			#menu-overlay.active {
-				right: 0; 
+				right: 0;
+				visibility: hidden !important; /* Added as an extra layer of stealth */				
 			}
 			
 			.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
