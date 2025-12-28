@@ -69,18 +69,27 @@
 			}
 
 			/* --- 2. MENU OVERLAY (THE VAULT) --- */
-			#menu-overlay {
-				position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
-				background: rgba(5, 7, 10, 0.98);
+			/* --- THE FIX: Change right: 0 to right: -100% --- */
+			.menu-overlay {
+				position: fixed;
+				top: 0;
+				right: -100%; /* This hides it off-screen to the right */
+				width: 300px;
+				height: 100vh;
+				background: var(--mh-panel);
+				backdrop-filter: blur(10px);
 				border-left: 2px solid var(--mh-blue);
-				z-index: 1000;
-				padding: 40px;
-				display: flex; flex-direction: column;
-				transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-				box-shadow: -20px 0 50px rgba(0,0,0,0.8);
-				overflow-y: auto;
+				z-index: 10000;
+				transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+				padding: 2rem;
+				display: flex;
+				flex-direction: column;
 			}
-			#menu-overlay.active { right: 0; }
+
+			/* This brings it in ONLY when the button is clicked */
+			.menu-overlay.active {
+				right: 0; 
+			}
 			
 			.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
 			.menu-close:hover { color: var(--mh-red); }
