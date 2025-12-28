@@ -70,10 +70,10 @@
 
 			/* --- 2. MENU OVERLAY (THE VAULT) --- */
 			/* --- THE FIX: Change right: 0 to right: -100% --- */
-			.menu-overlay {
+			#menu-overlay {
 				position: fixed;
 				top: 0;
-				right: -100%; /* This hides it off-screen to the right */
+				right: -100% !important; /* This hides it */
 				width: 300px;
 				height: 100vh;
 				background: var(--mh-panel);
@@ -87,7 +87,7 @@
 			}
 
 			/* This brings it in ONLY when the button is clicked */
-			.menu-overlay.active {
+			#menu-overlay.active {
 				right: 0; 
 			}
 			
