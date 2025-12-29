@@ -38,341 +38,405 @@ permalink: /DoD_Login_Style.html
 				align-items: center;
 			}
 
-			/* VIDEO BACKGROUND */
-			#video-bg {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
+			/* --- 1. BACKGROUND LAYERS --- */
+			#video-layer {
+				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+				z-index: -2;
 				object-fit: cover;
-				z-index: -1;
-				opacity: 0.4;
-				filter: contrast(1.2) brightness(0.8);
+				opacity: 0.6;
 			}
 
-			/* OVERLAY SCANLINES */
-			.scanlines {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+			#mesh-layer {
+				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+				z-index: -1;
+				background-image: 
+					linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+					linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(255, 0, 0, 0.02));
 				background-size: 100% 2px, 3px 100%;
-				z-index: 0;
 				pointer-events: none;
 			}
 
-			/* --- MAIN INTERFACE CONTAINER --- */
+			/* --- 2. MAIN INTERFACE CONTAINER --- */
 			.secure-interface {
-				position: relative;
-				z-index: 10;
-				width: 450px; /* Kept your original width */
-				background: rgba(5, 7, 10, 0.85);
-				border: 1px solid var(--mh-blue);
+				display: flex;
+				width: 900px;
+				max-width: 95%;
+				height: 600px; /* Increased Height slightly */
+				background: var(--mh-glass);
+				border: 1px solid rgba(255,255,255,0.1);
 				backdrop-filter: blur(15px);
-				box-shadow: 0 0 40px rgba(0, 128, 255, 0.15);
-				padding: 0;
+				box-shadow: 0 0 80px rgba(0,0,0,0.8);
+				border-radius: 4px;
+				overflow: hidden;
+				animation: bootUp 1s ease-out;
+				transition: border-color 0.3s;
+			}
+
+			/* --- 3. LEFT PANEL (INTEL) --- */
+			.intel-panel {
+				width: 40%;
+				background: rgba(0,0,0,0.4);
+				border-right: 1px solid rgba(255,255,255,0.1);
+				padding: 40px;
 				display: flex;
 				flex-direction: column;
-				transition: 0.3s all ease;
-				overflow: hidden;
-			}
-
-			/* HEADER */
-			.interface-header {
-				background: rgba(0, 128, 255, 0.1);
-				padding: 15px 20px;
-				border-bottom: 1px solid var(--mh-blue);
-				display: flex;
 				justify-content: space-between;
-				align-items: center;
-			}
-			.interface-title {
-				font-size: 0.9rem;
-				letter-spacing: 2px;
-				color: var(--mh-cyan);
-				text-shadow: 0 0 10px var(--mh-cyan);
-			}
-			.status-light {
-				width: 8px;
-				height: 8px;
-				background-color: var(--mh-green);
-				border-radius: 50%;
-				box-shadow: 0 0 10px var(--mh-green);
-				animation: blink 2s infinite;
-			}
-
-			/* CONTENT BODY */
-			.interface-body {
-				padding: 30px;
-			}
-
-			.input-group {
 				position: relative;
-				margin-bottom: 25px;
 			}
 			
-			.input-group i {
-				position: absolute;
-				left: 15px;
-				top: 50%;
-				transform: translateY(-50%);
-				color: var(--mh-blue);
-				font-size: 1rem;
-				transition: 0.3s;
+			.brand-lockup { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+			.brand-lockup img { height: 40px; filter: drop-shadow(0 0 8px var(--mh-blue)); }
+			.brand-text { font-size: 1.2em; letter-spacing: 2px; color: #fff; font-weight: 400; }
+
+			.sys-info {
+				font-family: 'Courier New', monospace;
+				font-size: 0.75em;
+				color: #888;
+				line-height: 1.6;
+			}
+			.sys-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 5px 0; }
+			.sys-val { color: var(--mh-cyan); }
+
+			.encryption-visual {
+				height: 100px;
+				background: rgba(0,0,0,0.3);
+				border: 1px solid #333;
+				margin-top: 20px;
+				position: relative;
+				overflow: hidden;
+			}
+			.code-stream {
+				position: absolute; top: 0; left: 0;
+				font-family: 'Courier New', monospace; font-size: 10px; color: var(--mh-blue); opacity: 0.5;
+				padding: 10px;
+				animation: scrollCode 5s linear infinite;
 			}
 
+			/* --- 4. RIGHT PANEL (ACCESS FORM) - SCROLLABLE --- */
+			.access-panel {
+				width: 60%;
+				padding: 40px;
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				overflow-y: auto; /* ENABLE SCROLLING */
+				height: 100%;
+			}
+
+			/* CUSTOM SCROLLBAR (MATCHES HOMEPAGE) */
+			.access-panel::-webkit-scrollbar { width: 6px; }
+			.access-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+			.access-panel::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 3px; }
+			.access-panel::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+
+			.panel-header { text-align: center; margin-bottom: 30px; flex-shrink: 0; }
+			.panel-title { font-size: 1.8em; font-weight: 900; letter-spacing: 3px; color: #fff; margin-bottom: 5px; }
+			.panel-sub { font-family: 'Courier New', monospace; font-size: 0.7em; color: var(--mh-blue); }
+
+			/* TABS */
+			.auth-toggle {
+				display: flex;
+				background: rgba(0,0,0,0.3);
+				border-radius: 4px;
+				padding: 5px;
+				margin-bottom: 30px;
+				flex-shrink: 0;
+			}
+			.toggle-btn {
+				flex: 1;
+				text-align: center;
+				padding: 10px;
+				font-size: 0.8em;
+				cursor: pointer;
+				transition: 0.3s;
+				color: #666;
+				border-radius: 2px;
+				font-weight: bold;
+			}
+			.toggle-btn.active {
+				background: var(--mh-blue);
+				color: #000;
+				box-shadow: 0 0 15px rgba(0,128,255,0.3);
+			}
+
+			/* INPUTS */
+			.input-frame { position: relative; margin-bottom: 20px; }
+			.input-frame label {
+				display: block; font-family: 'Courier New', monospace; font-size: 0.7em; color: #aaa; margin-bottom: 8px;
+			}
 			.tac-input {
 				width: 100%;
-				background: rgba(0, 0, 0, 0.6);
-				border: 1px solid #333;
-				padding: 15px 15px 15px 45px; /* Space for icon */
+				background: rgba(255,255,255,0.05);
+				border: 1px solid rgba(255,255,255,0.1);
 				color: #fff;
-				font-family: 'Courier New', monospace;
-				font-size: 0.9rem;
-				letter-spacing: 1px;
-				transition: 0.3s;
+				padding: 12px 15px;
 				outline: none;
-				box-sizing: border-box;
+				transition: 0.3s;
+				font-family: sans-serif;
 			}
-
 			.tac-input:focus {
 				border-color: var(--mh-cyan);
-				box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
-				background: rgba(0, 0, 0, 0.8);
-			}
-			.tac-input:focus + i {
-				color: var(--mh-cyan);
+				background: rgba(0, 229, 255, 0.05);
+				box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
 			}
 
-			/* ACTION BUTTONS */
-			.action-btn {
+			/* BUTTON */
+			.execute-btn {
 				width: 100%;
+				background: transparent;
+				border: 1px solid var(--mh-cyan);
+				color: var(--mh-cyan);
 				padding: 15px;
-				background: var(--mh-blue);
-				border: none;
-				color: #fff;
-				font-family: 'Uni Sans', sans-serif;
-				font-weight: bold;
+				font-weight: 900;
 				letter-spacing: 2px;
 				cursor: pointer;
-				clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-				transition: 0.3s;
 				text-transform: uppercase;
+				transition: 0.3s;
 				margin-top: 10px;
+				position: relative;
+				overflow: hidden;
 			}
-			.action-btn:hover {
+			.execute-btn:hover {
 				background: var(--mh-cyan);
 				color: #000;
 				box-shadow: 0 0 30px var(--mh-cyan);
 			}
 
-			/* --- NEW: OAUTH & HELPERS --- */
-			.divider {
-				display: flex;
-				align-items: center;
-				text-align: center;
-				margin: 20px 0;
-				color: #555;
-				font-size: 0.7rem;
-				letter-spacing: 1px;
+			/* --- ADDED: OAUTH STYLES --- */
+			.oauth-divider {
+				display: flex; align-items: center; text-align: center; margin: 25px 0 15px 0; color: #555; font-size: 0.65em; letter-spacing: 1px;
 			}
-			.divider::before, .divider::after {
-				content: '';
-				flex: 1;
-				border-bottom: 1px solid #333;
-			}
-			.divider span { padding: 0 10px; }
+			.oauth-divider::before, .oauth-divider::after { content: ''; flex: 1; border-bottom: 1px solid #333; }
+			.oauth-divider span { padding: 0 10px; }
 
-			.oauth-grid {
-				display: grid;
-				grid-template-columns: 1fr 1fr 1fr;
-				gap: 10px;
-				margin-bottom: 20px;
-			}
+			.oauth-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
 			.oauth-btn {
-				background: rgba(255, 255, 255, 0.05);
-				border: 1px solid #333;
-				padding: 10px;
-				color: #ccc;
-				cursor: pointer;
-				transition: 0.3s;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				font-size: 1.2rem;
+				background: rgba(255,255,255,0.03); border: 1px solid #333; padding: 12px;
+				color: #aaa; font-size: 1.1em; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center;
 			}
-			.oauth-btn:hover {
-				border-color: var(--mh-cyan);
-				color: var(--mh-cyan);
-				background: rgba(0, 229, 255, 0.1);
-			}
+			.oauth-btn:hover { border-color: var(--mh-blue); color: var(--mh-blue); background: rgba(0,128,255,0.05); }
 
-			.helper-links {
-				display: flex;
-				justify-content: space-between;
-				margin-top: 15px;
-				font-size: 0.75rem;
-				font-family: 'Courier New', monospace;
+			.forgot-link {
+				display: inline-block; font-size: 0.7em; color: #666; text-decoration: none; margin-top: 10px; cursor: pointer; transition: 0.3s;
 			}
-			.helper-links span {
-				color: #666;
-				cursor: pointer;
-				text-decoration: none;
-				transition: 0.3s;
-			}
-			.helper-links span:hover { color: var(--mh-cyan); text-decoration: underline; }
+			.forgot-link:hover { color: var(--mh-cyan); text-decoration: underline; }
 
-			/* FOOTER TERMINAL */
-			.terminal-footer {
-				background: rgba(0,0,0,0.8);
-				padding: 10px 20px;
-				border-top: 1px solid #333;
-				font-family: 'Courier New', monospace;
-				font-size: 0.7rem;
-				color: #555;
-				display: flex;
-				justify-content: space-between;
+			/* ROLE CARDS */
+			.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+			.role-card {
+				background: rgba(0,0,0,0.3); border: 1px solid #333; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s;
 			}
-			#status-log { color: var(--mh-green); }
+			.role-card:hover { border-color: #666; }
+			.role-card.selected { border-color: var(--mh-blue); background: rgba(0,128,255,0.1); }
+			.role-icon { font-size: 1.5em; color: #888; margin-bottom: 5px; }
+			.role-card.selected .role-icon { color: var(--mh-blue); }
+			.role-label { font-size: 0.7em; font-weight: bold; color: #fff; }
 
-			/* UTILITIES */
+			/* UTILS */
 			.hidden { display: none; }
-			@keyframes blink { 0% {opacity:1;} 50% {opacity:0.3;} 100% {opacity:1;} }
+			.status-log { 
+				margin-top: 20px; font-family: 'Courier New', monospace; font-size: 0.75em; text-align: center; min-height: 20px; flex-shrink: 0;
+			}
+			
+			/* UPDATED HOME LINK - FLOWS WITH SCROLL */
+			.home-link {
+				margin-top: 30px;
+				margin-bottom: 10px;
+				text-align: center;
+				display: block;
+				font-size: 0.7em; 
+				color: #555; 
+				text-decoration: none;
+				flex-shrink: 0;
+			}
+			.home-link:hover { color: var(--mh-cyan); }
+
+			/* ANIMATIONS */
+			@keyframes bootUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
+
+			/* MOBILE */
+			@media (max-width: 800px) {
+				.secure-interface { flex-direction: column; height: auto; max-height: 90vh; margin: 20px; }
+				.intel-panel { width: 100%; height: 120px; flex-direction: row; padding: 20px; align-items: center; flex-shrink: 0; }
+				.access-panel { width: 100%; padding: 30px; overflow-y: auto; }
+				.encryption-visual, .sys-info { display: none; }
+			}
 		</style>
 	</head>
 	<body>
 
-		<video id="video-bg" autoplay muted loop playsinline>
-			<source src="images/video.mp4" type="video/mp4">
+		<video autoplay muted loop id="video-layer">
+			<source src="videos/DoD_BGV.mp4" type="video/mp4">
 		</video>
-		<div class="scanlines"></div>
+		<div id="mesh-layer"></div>
 
 		<div class="secure-interface">
 			
-			<div class="interface-header">
-				<div class="interface-title">MH STUDIOS™ // AUTH</div>
-				<div class="status-light"></div>
-			</div>
-
-			<div class="interface-body">
+			<div class="intel-panel">
+				<div>
+					<div class="brand-lockup">
+						<img src="images/Logo_2.png" alt="MH">
+						<div class="brand-text">MH STUDIOS™</div>
+					</div>
+					<div class="sys-info">
+						<div class="sys-row"><span>NODE_ID:</span> <span class="sys-val">ALPHA-7</span></div>
+						<div class="sys-row"><span>STATUS:</span> <span class="sys-val" style="color:var(--mh-green);">ONLINE</span></div>
+						<div class="sys-row"><span>ENCRYPTION:</span> <span class="sys-val">TLS 1.3</span></div>
+						<div class="sys-row"><span>LATENCY:</span> <span class="sys-val">12ms</span></div>
+					</div>
+				</div>
 				
-				<div id="login-view">
-					<form id="login-form">
-						<div class="input-group">
-							<i class="fas fa-id-card"></i>
-							<input type="email" id="login-email" class="tac-input" placeholder="OPERATIVE ID (EMAIL)" required>
-						</div>
-						<div class="input-group">
-							<i class="fas fa-lock"></i>
-							<input type="password" id="login-pass" class="tac-input" placeholder="ACCESS CODE" required>
-						</div>
-						
-						<button type="submit" class="action-btn">INITIATE LINK</button>
-					</form>
+				<div class="encryption-visual">
+					<div class="code-stream">
+						01010101 MH_PROTOCOL_INIT...<br>
+						VERIFYING HANDSHAKE...<br>
+						ACCESS_TOKEN: [NULL]<br>
+						WAITING FOR CREDENTIALS...<br>
+						FIREBASE_AUTH: READY<br>
+						SECURE_PIPE: ESTABLISHED<br>
+						0011010010110...
+					</div>
+				</div>
+			</div>
 
-					<div class="divider"><span>OR AUTHENTICATE VIA</span></div>
+			<div class="access-panel">
+				<div class="panel-header">
+					<div class="panel-title">LOGIN</div>
+					<div class="panel-sub">/// AUTHENTICATE IDENTITY ///</div>
+				</div>
+
+				<div class="auth-toggle">
+					<div class="toggle-btn active" id="btn-login">LOGIN</div>
+					<div class="toggle-btn" id="btn-signup">REGISTER</div>
+				</div>
+
+				<form id="login-form">
+					<div class="input-frame">
+						<label>> SECURE EMAIL</label>
+						<input type="email" class="tac-input" id="login-email" required>
+					</div>
+					<div class="input-frame">
+						<label>> PASSWORD</label>
+						<input type="password" class="tac-input" id="login-pass" required>
+						<div style="text-align: right;">
+							<a href="#" id="forgot-btn" class="forgot-link">FORGOT PASSWORD?</a>
+						</div>
+					</div>
+					<button type="submit" class="execute-btn">ACCESS DASHBOARD</button>
+
+					<div class="oauth-divider"><span>OR CONNECT WITH</span></div>
 					<div class="oauth-grid">
-						<button class="oauth-btn" id="google-btn" title="Google"><i class="fab fa-google"></i></button>
-						<button class="oauth-btn" title="Twitter (Disabled)"><i class="fab fa-twitter"></i></button>
-						<button class="oauth-btn" title="GitHub (Disabled)"><i class="fab fa-github"></i></button>
+						<button type="button" class="oauth-btn" id="google-btn" title="Google"><i class="fab fa-google"></i></button>
+						<button type="button" class="oauth-btn" id="twitter-btn" title="Twitter"><i class="fab fa-twitter"></i></button>
+						<button type="button" class="oauth-btn" id="github-btn" title="GitHub"><i class="fab fa-github"></i></button>
 					</div>
+				</form>
 
-					<div class="helper-links">
-						<span onclick="resetPassword()">FORGOT PASSWORD?</span>
-						<span onclick="toggleView('register')">NEW RECRUIT? APPLY HERE</span>
+				<form id="register-form" class="hidden">
+					<div class="input-frame">
+						<label>> FULL NAME</label>
+						<input type="text" class="tac-input" id="reg-name" required>
 					</div>
-				</div>
-
-				<div id="register-view" class="hidden">
-					<form id="register-form">
-						<div class="input-group">
-							<i class="fas fa-user"></i>
-							<input type="text" id="reg-name" class="tac-input" placeholder="FULL DESIGNATION" required>
-						</div>
-						<div class="input-group">
-							<i class="fas fa-envelope"></i>
-							<input type="email" id="reg-email" class="tac-input" placeholder="CONTACT CHANNEL" required>
-						</div>
-						<div class="input-group">
-							<i class="fas fa-key"></i>
-							<input type="password" id="reg-pass" class="tac-input" placeholder="SET PASSCODE" required>
-						</div>
-						<div class="input-group">
-							<i class="fas fa-briefcase"></i>
-							<select id="reg-role" class="tac-input" style="padding-left: 45px;">
-								<option value="student">ACADEMIC (Student)</option>
-								<option value="freelancer">OPERATIVE (Freelancer)</option>
-							</select>
-						</div>
-
-						<button type="submit" class="action-btn">SUBMIT RECORD</button>
-					</form>
+					<div class="input-frame">
+						<label>> EMAIL ADDRESS</label>
+						<input type="email" class="tac-input" id="reg-email" required>
+					</div>
 					
-					<div class="helper-links" style="justify-content: center;">
-						<span onclick="toggleView('login')"><< RETURN TO LOGIN</span>
+					<div class="input-frame">
+						<label>> DESIGNATION</label>
+						<div class="role-grid">
+							<div class="role-card selected" data-role="client">
+								<div class="role-icon"><i class="fas fa-user-graduate"></i></div>
+								<div class="role-label">STUDENT</div>
+							</div>
+							<div class="role-card" data-role="freelancer">
+								<div class="role-icon"><i class="fas fa-terminal"></i></div>
+								<div class="role-label">FREELANCER</div>
+							</div>
+						</div>
+						<input type="hidden" id="reg-role" value="client">
 					</div>
-				</div>
 
+					<div class="input-frame">
+						<label>> CREATE PASSWORD</label>
+						<input type="password" class="tac-input" id="reg-pass" required>
+					</div>
+
+					<button type="submit" class="execute-btn" style="border-color:var(--mh-blue); color:var(--mh-blue);">INITIALIZE PROFILE</button>
+				</form>
+
+				<div class="status-log" id="status-display"></div>
+				
+				<a href="index.html" class="home-link">
+					<i class="fas fa-undo"></i> ABORT OPERATION
+				</a>
 			</div>
-
-			<div class="terminal-footer">
-				<div>SYS.VER.5.2</div>
-				<div id="status-log">> READY</div>
-			</div>
-
 		</div>
 
 		<script src="assets/js/jquery.min.js"></script>
-		
-		<script type="module">
-			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-			import { 
-				getAuth, 
-				createUserWithEmailAndPassword, 
-				signInWithEmailAndPassword, 
-				sendPasswordResetEmail,
-				GoogleAuthProvider,
-				signInWithPopup
-			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-			import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// --- CONFIGURATION ---
-			const firebaseConfig = {
-				apiKey: "{{ env.FIREBASE_API_KEY }}",
-				authDomain: "mhstudios-836.firebaseapp.com",
-				projectId: "mhstudios-836",
-				storageBucket: "mhstudios-836.firebasestorage.app",
-				messagingSenderId: "37422473204",
-				appId: "1:37422473204:web:71e846067b57b983c51634"
-			};
+		<script>
+			$(document).ready(function() {
+				// TAB SWITCHING PROTOCOL
+				$('#btn-login').on('click', function() {
+					$(this).addClass('active'); $('#btn-signup').removeClass('active');
+					$('#login-form').removeClass('hidden'); $('#register-form').addClass('hidden');
+					$('.panel-title').text("LOGIN");
+				});
 
-			const app = initializeApp(firebaseConfig);
-			const auth = getAuth(app);
-			const db = getFirestore(app);
-			const appId = 'mh_studios_web_v1'; // Preserved from your original code
+				$('#btn-signup').on('click', function() {
+					$(this).addClass('active'); $('#btn-login').removeClass('active');
+					$('#register-form').removeClass('hidden'); $('#login-form').addClass('hidden');
+					$('.panel-title').text("ENLIST");
+				});
+
+				// ROLE SELECTION
+				$('.role-card').on('click', function() {
+					$('.role-card').removeClass('selected');
+					$(this).addClass('selected');
+					$('#reg-role').val($(this).data('role'));
+				});
+			});
 
 			function typeStatus(text, color) {
-				const log = $('#status-log');
-				log.css('color', color).text(text);
+				const $el = $('#status-display');
+				$el.css('color', color).text('');
+				let i = 0;
+				const speed = 30;
+				
+				function type() {
+					if (i < text.length) {
+						$el.text($el.text() + text.charAt(i));
+						i++;
+						setTimeout(type, speed);
+					}
+				}
+				type();
 			}
+		</script>
 
-			// --- 1. LOGIN HANDLER ---
+		<script type="module">
+			import { auth, db, appId } from './assets/js/firebase-init.js';
+			// ADDED: GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail
+			import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
+			import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+
+			// LOGIN HANDLER
 			$('#login-form').on('submit', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
 				const pass = $('#login-pass').val();
-
-				typeStatus("> AUTHENTICATING...", "#00e5ff");
+				
+				typeStatus("> VERIFYING ENCRYPTION KEYS...", "#fff");
 
 				try {
-					await signInWithEmailAndPassword(auth, email, pass);
-					typeStatus("> ACCESS GRANTED.", "#00ff41");
-					$('.secure-interface').css('border-color', '#00ff41');
+					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
 					
-					// DELAY FOR EFFECT THEN REDIRECT
+					// Success
+					typeStatus("> ACCESS GRANTED. LOADING DASHBOARD...", "#00ff41");
+					$('.secure-interface').css('border-color', '#00ff41'); 
+					
 					setTimeout(() => {
 						window.location.href = 'Admin_Room.html';
 					}, 1500);
@@ -385,39 +449,59 @@ permalink: /DoD_Login_Style.html
 				}
 			});
 
-			// --- 2. GOOGLE OAUTH HANDLER (NEW) ---
+			// --- ADDED: GOOGLE OAUTH HANDLER ---
 			$('#google-btn').on('click', async () => {
 				const provider = new GoogleAuthProvider();
-				typeStatus("> CONNECTING TO GOOGLE...", "#00e5ff");
+				typeStatus("> ESTABLISHING GOOGLE UPLINK...", "#00e5ff");
 				
 				try {
 					const result = await signInWithPopup(auth, provider);
-					// You can save user data here if needed, but for now we just redirect
-					typeStatus("> GOOGLE VERIFIED.", "#00ff41");
-					setTimeout(() => {
-						window.location.href = 'Admin_Room.html';
-					}, 1000);
+					const user = result.user;
+
+					// Check if user exists, if not create default student profile
+					const userRef = doc(db, 'artifacts', appId, 'users', user.uid);
+					const docSnap = await getDoc(userRef);
+
+					if (!docSnap.exists()) {
+						await setDoc(userRef, {
+							name: user.displayName,
+							email: user.email,
+							role: 'student', // Default
+							joined: new Date().toISOString(),
+							status: 'active'
+						});
+					}
+
+					typeStatus("> IDENTITY CONFIRMED via GOOGLE.", "#00ff41");
+					$('.secure-interface').css('border-color', '#00ff41');
+					setTimeout(() => { window.location.href = 'Admin_Room.html'; }, 1500);
 				} catch (error) {
 					console.error(error);
 					typeStatus("> LINK FAILED.", "#ff004c");
 				}
 			});
 
-			// --- 3. FORGOT PASSWORD HANDLER (NEW) ---
-			window.resetPassword = async () => {
-				const email = prompt("ENTER YOUR OPERATIVE EMAIL FOR RESET LINK:");
-				if(email) {
-					try {
-						await sendPasswordResetEmail(auth, email);
-						alert("RESET LINK DISPATCHED TO: " + email);
-						typeStatus("> RESET EMAIL SENT.", "#00e5ff");
-					} catch(error) {
-						alert("ERROR: " + error.message);
-					}
+			// --- ADDED: FORGOT PASSWORD HANDLER ---
+			$('#forgot-btn').on('click', async (e) => {
+				e.preventDefault();
+				const email = $('#login-email').val();
+				
+				if (!email) {
+					typeStatus("> ENTER EMAIL ABOVE FOR RECOVERY.", "#ff004c");
+					$('#login-email').focus();
+					return;
 				}
-			};
 
-			// --- 4. REGISTER HANDLER (PRESERVED) ---
+				try {
+					await sendPasswordResetEmail(auth, email);
+					typeStatus("> RECOVERY BEACON SENT TO EMAIL.", "#00e5ff");
+				} catch (error) {
+					console.error(error);
+					typeStatus("> ERROR: CHECK EMAIL FORMAT.", "#ff004c");
+				}
+			});
+
+			// REGISTER HANDLER
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -431,7 +515,7 @@ permalink: /DoD_Login_Style.html
 					const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
 					const user = userCredential.user;
 
-					// PRESERVED YOUR EXACT DATABASE PATH
+					// Write to Database
 					await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
 						name: name,
 						email: email,
@@ -441,29 +525,17 @@ permalink: /DoD_Login_Style.html
 						status: 'active'
 					});
 
-					typeStatus("> PROFILE INITIALIZED.", "#00ff41");
+					typeStatus("> PROFILE INITIALIZED. WELCOME, OPERATIVE.", "#00ff41");
 					setTimeout(() => {
 						window.location.href = 'Admin_Room.html';
-					}, 1500);
+					}, 2000);
 
 				} catch (error) {
 					console.error(error);
-					typeStatus("> REGISTRATION FAILED: " + error.code, "#ff004c");
+					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "REGISTRATION FAILED";
+					typeStatus("> ERROR: " + errorMsg, "#ff004c");
 				}
 			});
-
-			// UI TOGGLE
-			window.toggleView = (view) => {
-				if(view === 'register') {
-					$('#login-view').addClass('hidden');
-					$('#register-view').removeClass('hidden');
-					$('.interface-title').text('MH STUDIOS™ // NEW RECRUIT');
-				} else {
-					$('#register-view').addClass('hidden');
-					$('#login-view').removeClass('hidden');
-					$('.interface-title').text('MH STUDIOS™ // AUTH');
-				}
-			};
 		</script>
 	</body>
 </html>
