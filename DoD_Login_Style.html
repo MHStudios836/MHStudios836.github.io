@@ -61,7 +61,7 @@ permalink: /DoD_Login_Style.html
 				display: flex;
 				width: 900px;
 				max-width: 95%;
-				height: 600px; /* Increased Height slightly */
+				height: 600px; 
 				background: var(--mh-glass);
 				border: 1px solid rgba(255,255,255,0.1);
 				backdrop-filter: blur(15px);
@@ -112,18 +112,17 @@ permalink: /DoD_Login_Style.html
 				animation: scrollCode 5s linear infinite;
 			}
 
-			/* --- 4. RIGHT PANEL (ACCESS FORM) - SCROLLABLE --- */
+			/* --- 4. RIGHT PANEL (ACCESS FORM) --- */
 			.access-panel {
 				width: 60%;
 				padding: 40px;
 				position: relative;
 				display: flex;
 				flex-direction: column;
-				overflow-y: auto; /* ENABLE SCROLLING */
+				overflow-y: auto;
 				height: 100%;
 			}
 
-			/* CUSTOM SCROLLBAR (MATCHES HOMEPAGE) */
 			.access-panel::-webkit-scrollbar { width: 6px; }
 			.access-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
 			.access-panel::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 3px; }
@@ -202,7 +201,7 @@ permalink: /DoD_Login_Style.html
 				box-shadow: 0 0 30px var(--mh-cyan);
 			}
 
-			/* --- ADDED: OAUTH STYLES --- */
+			/* OAUTH & EXTRAS */
 			.oauth-divider {
 				display: flex; align-items: center; text-align: center; margin: 25px 0 15px 0; color: #555; font-size: 0.65em; letter-spacing: 1px;
 			}
@@ -237,21 +236,12 @@ permalink: /DoD_Login_Style.html
 			.status-log { 
 				margin-top: 20px; font-family: 'Courier New', monospace; font-size: 0.75em; text-align: center; min-height: 20px; flex-shrink: 0;
 			}
-			
-			/* UPDATED HOME LINK - FLOWS WITH SCROLL */
 			.home-link {
-				margin-top: 30px;
-				margin-bottom: 10px;
-				text-align: center;
-				display: block;
-				font-size: 0.7em; 
-				color: #555; 
-				text-decoration: none;
-				flex-shrink: 0;
+				margin-top: 30px; margin-bottom: 10px; text-align: center; display: block;
+				font-size: 0.7em; color: #555; text-decoration: none; flex-shrink: 0;
 			}
 			.home-link:hover { color: var(--mh-cyan); }
 
-			/* ANIMATIONS */
 			@keyframes bootUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
 
@@ -267,7 +257,7 @@ permalink: /DoD_Login_Style.html
 	<body>
 
 		<video autoplay muted loop id="video-layer">
-			<source src="videos/DoD_BGV.mp4" type="video/mp4">
+			<source src="images/video.mp4" type="video/mp4">
 		</video>
 		<div id="mesh-layer"></div>
 
@@ -377,8 +367,8 @@ permalink: /DoD_Login_Style.html
 		<script src="assets/js/jquery.min.js"></script>
 
 		<script>
+			// UI LOGIC (Non-Firebase)
 			$(document).ready(function() {
-				// TAB SWITCHING PROTOCOL
 				$('#btn-login').on('click', function() {
 					$(this).addClass('active'); $('#btn-signup').removeClass('active');
 					$('#login-form').removeClass('hidden'); $('#register-form').addClass('hidden');
@@ -391,7 +381,6 @@ permalink: /DoD_Login_Style.html
 					$('.panel-title').text("ENLIST");
 				});
 
-				// ROLE SELECTION
 				$('.role-card').on('click', function() {
 					$('.role-card').removeClass('selected');
 					$(this).addClass('selected');
@@ -403,13 +392,11 @@ permalink: /DoD_Login_Style.html
 				const $el = $('#status-display');
 				$el.css('color', color).text('');
 				let i = 0;
-				const speed = 30;
-				
 				function type() {
 					if (i < text.length) {
 						$el.text($el.text() + text.charAt(i));
 						i++;
-						setTimeout(type, speed);
+						setTimeout(type, 30);
 					}
 				}
 				type();
@@ -417,12 +404,39 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			import { auth, db, appId } from './assets/js/firebase-init.js';
-			// ADDED: GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail
-			import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-			import { doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+			import { 
+				getAuth, 
+				createUserWithEmailAndPassword, 
+				signInWithEmailAndPassword, 
+				sendPasswordResetEmail,
+				GoogleAuthProvider,
+				signInWithPopup 
+			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+			import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// LOGIN HANDLER
+			// --- FIXED: USING THE EXACT KEYS FROM YOUR PROMPT ---
+			const firebaseConfig = {
+				apiKey: "AIzaSyATOnkG8yomjUFdKnNiPPJO24z0tF6e5wo",
+				authDomain: "mhstudios-836.firebaseapp.com",
+				projectId: "mhstudios-836",
+				storageBucket: "mhstudios-836.firebasestorage.app",
+				messagingSenderId: "172610798643",
+				appId: "1:172610798643:web:eaa7b218e8efa3aee64f46",
+				measurementId: "G-6EMB5KYCTK"
+			};
+
+			// INITIALIZE
+			const app = initializeApp(firebaseConfig);
+			const auth = getAuth(app);
+			const db = getFirestore(app);
+			
+			// --- FIXED: DATABASE PATH MATCHING ADMIN ROOM ---
+			// In Admin_Room.html, it uses 'firebaseConfig.projectId' which is 'mhstudios-836'
+			// So we MUST use that same string here.
+			const appId = 'mhstudios-836';
+
+			// --- LOGIN HANDLER ---
 			$('#login-form').on('submit', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
@@ -431,9 +445,7 @@ permalink: /DoD_Login_Style.html
 				typeStatus("> VERIFYING ENCRYPTION KEYS...", "#fff");
 
 				try {
-					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-					
-					// Success
+					await signInWithEmailAndPassword(auth, email, pass);
 					typeStatus("> ACCESS GRANTED. LOADING DASHBOARD...", "#00ff41");
 					$('.secure-interface').css('border-color', '#00ff41'); 
 					
@@ -449,7 +461,7 @@ permalink: /DoD_Login_Style.html
 				}
 			});
 
-			// --- ADDED: GOOGLE OAUTH HANDLER ---
+			// --- GOOGLE HANDLER ---
 			$('#google-btn').on('click', async () => {
 				const provider = new GoogleAuthProvider();
 				typeStatus("> ESTABLISHING GOOGLE UPLINK...", "#00e5ff");
@@ -458,7 +470,7 @@ permalink: /DoD_Login_Style.html
 					const result = await signInWithPopup(auth, provider);
 					const user = result.user;
 
-					// Check if user exists, if not create default student profile
+					// Check/Create User DB Entry (Aligned Path)
 					const userRef = doc(db, 'artifacts', appId, 'users', user.uid);
 					const docSnap = await getDoc(userRef);
 
@@ -477,11 +489,11 @@ permalink: /DoD_Login_Style.html
 					setTimeout(() => { window.location.href = 'Admin_Room.html'; }, 1500);
 				} catch (error) {
 					console.error(error);
-					typeStatus("> LINK FAILED.", "#ff004c");
+					typeStatus("> LINK FAILED: " + error.code, "#ff004c");
 				}
 			});
 
-			// --- ADDED: FORGOT PASSWORD HANDLER ---
+			// --- FORGOT PASSWORD HANDLER ---
 			$('#forgot-btn').on('click', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
@@ -501,7 +513,7 @@ permalink: /DoD_Login_Style.html
 				}
 			});
 
-			// REGISTER HANDLER
+			// --- REGISTER HANDLER ---
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -515,7 +527,7 @@ permalink: /DoD_Login_Style.html
 					const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
 					const user = userCredential.user;
 
-					// Write to Database
+					// FIXED: USING ALIGNED APPID PATH
 					await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
 						name: name,
 						email: email,
@@ -525,7 +537,7 @@ permalink: /DoD_Login_Style.html
 						status: 'active'
 					});
 
-					typeStatus("> PROFILE INITIALIZED. WELCOME, OPERATIVE.", "#00ff41");
+					typeStatus("> PROFILE INITIALIZED. WELCOME.", "#00ff41");
 					setTimeout(() => {
 						window.location.href = 'Admin_Room.html';
 					}, 2000);
