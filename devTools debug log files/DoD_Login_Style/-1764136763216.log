@@ -1,4 +1,0 @@
-DoD_Login_Style.html:1 Access to script at 'file:///C:/Users/Yurib/Desktop/Kilo%20One%20Profile/Website/Other%20Website/MH%20Studios%20Website/assets/js/firebase-init.js' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-extension, chrome-untrusted, data, http, https, isolated-app.
-firebase-init.js:1  Failed to load resource: net::ERR_FAILED
-DoD_Login_Style.html:1 Access to script at 'file:///C:/Users/Yurib/Desktop/Kilo%20One%20Profile/Website/Other%20Website/MH%20Studios%20Website/assets/js/login-auth.js' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-extension, chrome-untrusted, data, http, https, isolated-app.
-login-auth.js:1  Failed to load resource: net::ERR_FAILED
