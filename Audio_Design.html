@@ -50,11 +50,23 @@ permalink: /Audio_Design.html
 			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-gold)); }
 
 			.menu-trigger {
-				color: var(--mh-gold); font-family: 'Uni Sans', sans-serif; font-weight: 400; cursor: pointer;
-				padding: 10px 20px; border: 1px solid rgba(255, 215, 0, 0.3);
-				display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
+				display: none; /* DEFAULT HIDDEN ON DESKTOP */
+				color: var(--mh-gold); 
+				font-family: 'Uni Sans', sans-serif; 
+				font-weight: 400; 
+				cursor: pointer;
+				padding: 10px 20px; 
+				border: 1px solid rgba(255, 215, 0, 0.3);
+				align-items: center; 
+				gap: 10px; 
+				text-transform: uppercase; 
+				letter-spacing: 1px;
 			}
-			.menu-trigger:hover { background: var(--mh-gold); color: #000; border-color: var(--mh-gold); }
+			.menu-trigger:hover { 
+				background: var(--mh-gold); 
+				color: #000; 
+				border-color: var(--mh-gold); 
+			}
 
 			/* --- 2. MENU OVERLAY --- */
 			#menu-overlay {
