@@ -33,15 +33,21 @@ permalink: /Audio_Design.html
 				overflow-x: hidden;
 			}
 
-			/* --- 1. NAVIGATION (STICKY HUD) --- */
+			/* --- 1. TACTICAL NAVIGATION (COPIED FROM INDEX) --- */
 			#tactical-nav {
 				position: fixed; top: 0; left: 0; width: 100%;
-				padding: 15px 30px;
-				z-index: 999;
+				background: rgba(5, 5, 5, 0.9);
+				border-bottom: 1px solid rgba(255, 215, 0, 0.3); /* Gold Border */
+				z-index: 1000;
+				padding: 15px 40px;
 				display: flex; justify-content: space-between; align-items: center;
-				background: rgba(5, 5, 5, 0.95);
-				backdrop-filter: blur(15px);
-				border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+				backdrop-filter: blur(10px);
+				transition: 0.3s;
+			}
+			#tactical-nav.scrolled {
+				padding: 10px 40px;
+				background: rgba(0, 0, 0, 0.95);
+				border-bottom-color: var(--mh-gold);
 			}
 			.brand-link {
 				display: flex; align-items: center; gap: 15px;
@@ -168,12 +174,12 @@ permalink: /Audio_Design.html
 			
 			/* --- CRITICAL FIX: MEDIA QUERY --- */
 			@media (max-width: 900px) {
-				.nav-links { display: none; } /* Hide text links on mobile */
-				#menu-btn { display: block; } /* Show Hamburger Icon on mobile */
+				.nav-menu { display: none; } /* Hide Desktop Links */
+				.menu-trigger { display: block; } /* Show Hamburger */
 				
-				.hero-title { font-size: 2.5em; }
+				#tactical-nav { padding: 15px 20px; }
+				.hero-title { font-size: 2.2em; }
 				.section-container { padding: 60px 5%; }
-			}
 			
 		</style>
 	</head>
