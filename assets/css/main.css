@@ -5052,4 +5052,10 @@ body.is-loading #wrapper {
     opacity: 0;
 }
 
+a, a:visited, a:hover, a:active, a:focus {
+    border-bottom: none !important;
+    outline: none !important; /* Removes the dotted box when clicked */
+    text-decoration: none !important;
+}
+
 /* --- END CUSTOM STYLES --- */
