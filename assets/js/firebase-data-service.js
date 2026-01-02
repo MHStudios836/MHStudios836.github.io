@@ -1,36 +1,36 @@
 // assets/js/firebase-data-service.js
+// STATUS: SYNCED [VERSION 10.7.1]
 
-import { db, appId } from './firebase-init.js'; // Use your initialised db object
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+import { db, dbID } from './firebase-init.js';
+import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /**
- * Standard function to get product data from the 'products' collection.
- * @param {string} productId - The ID of the product to fetch.
- * @returns {Promise<Object|null>} The product data or null if not found.
+ * Fetch a single product by ID
  */
-async function fetchProduct(productId) {
-    const productRef = doc(db, 'artifacts', appId, 'products', productId);
+export async function fetchProduct(productId) {
+    const productRef = doc(db, 'artifacts', dbID, 'products', productId);
     try {
         const productSnap = await getDoc(productRef);
         if (productSnap.exists()) {
             return { id: productSnap.id, ...productSnap.data() };
         } else {
-            console.log("No such product document!");
+            console.log("Artifact not found.");
             return null;
         }
     } catch (error) {
-        console.error("Error fetching product:", error);
+        console.error("Error fetching artifact:", error);
         throw error;
     }
 }
 
 /**
- * Fetches all products marked as 'available'.
- * @returns {Promise<Array>} An array of product objects.
+ * Fetch all available products
  */
-async function fetchAvailableProducts() {
-    const productsCollectionRef = collection(db, 'artifacts', appId, 'products');
-    const q = query(productsCollectionRef, where("status", "==", "available"));
+export async function fetchAvailableProducts() {
+    const productsRef = collection(db, 'artifacts', dbID, 'products');
+    // Example: Only show items that have price > 0 or status 'active'
+    // For now, we fetch all to be safe
+    const q = query(productsRef); 
     
     try {
         const querySnapshot = await getDocs(q);
@@ -40,9 +40,7 @@ async function fetchAvailableProducts() {
         });
         return products;
     } catch (error) {
-        console.error("Error fetching available products:", error);
-        throw error;
+        console.error("Error loading Armory:", error);
+        return [];
     }
 }
-
-export { fetchProduct, fetchAvailableProducts };

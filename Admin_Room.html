@@ -119,91 +119,62 @@ permalink: /Admin_Room.html
 
 		<script src="assets/js/jquery.min.js"></script>
 		<script type="module">
-			import { auth, db, storage, appId, getUserDocRef } from './assets/js/firebase-init.js';
-			import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-			import { collection, query, onSnapshot, getDoc, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
-			import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js';
+			// 1. IMPORT MASTER KEYS & CORE LOGIC
+			import { auth, db, storage, dbID } from './assets/js/firebase-init.js';
+			import './assets/js/admin-core.js'; // This handles Security, Users, and Missions!
 
-			// 1. SECURITY HANDSHAKE
-			onAuthStateChanged(auth, async (user) => {
-				if (user) {
-					const docRef = getUserDocRef(user.uid);
-					const snap = await getDoc(docRef);
-					if (snap.exists() && snap.data().role === 'admin') {
-						$('#gate').hide();
-						$('#admin-container').fadeIn();
-						syncHQData();
-					} else {
-						$('#auth-status').text("INSUFFICIENT CLEARANCE. EXITING...");
-						setTimeout(() => window.location.href = 'index.html', 2000);
-					}
-				} else {
-					window.location.href = 'Login_Signup.html';
-				}
-			});
+			// 2. IMPORT FIREBASE TOOLS (For Product Uploads)
+			import { 
+				collection, addDoc, serverTimestamp 
+			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+			import { 
+				ref, uploadBytes, getDownloadURL 
+			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-			// 2. HQ DATA SYNC (LIVE)
-			function syncHQData() {
-				// Products Sync
-				onSnapshot(collection(db, 'artifacts', appId, 'products'), (snap) => {
-					$('#stat-assets').text(snap.size);
-					const list = $('#inventory-list');
-					list.empty();
-					let totalVal = 0;
-					snap.forEach(doc => {
-						const p = doc.data();
-						totalVal += parseFloat(p.price);
-						list.append(`<tr><td>${p.name}</td><td>${p.branch}</td><td>$${p.price}</td><td>ACTIVE</td></tr>`);
-					});
-					$('#stat-revenue').text('$' + totalVal.toFixed(2));
-				});
-
-				// Missions Sync
-				onSnapshot(collection(db, 'artifacts', appId, 'service_requests'), (snap) => {
-					$('#stat-missions').text(snap.size);
-					const list = $('#mission-list');
-					list.empty();
-					snap.forEach(doc => {
-						const m = doc.data();
-						list.append(`<tr><td>${m.clientName}</td><td>${m.sector}</td><td style="color:var(--mh-red)">${m.urgency}</td><td>REC</td></tr>`);
-					});
-				});
-			}
-
-			// 3. TAB NAVIGATION
+			// 3. TAB NAVIGATION (UI Logic)
 			window.showTab = (tabName) => {
 				$('.tab-content').hide();
 				$('.nav-tab').removeClass('active');
 				$(`#tab-${tabName}`).show();
 				$(`.nav-tab:contains('${tabName.toUpperCase()}')`).addClass('active');
-			}
+			};
 
-			// 4. ADD PRODUCT LOGIC (With Image Upload)
+			// 4. ADD PRODUCT LOGIC (Synced to MH_STUDIOS_V1)
 			$('#add-product-form').on('submit', async (e) => {
 				e.preventDefault();
 				const btn = $('.btn-deploy');
+				const originalText = btn.text();
 				btn.text("UPLOADING...").prop('disabled', true);
 				
 				const file = $('#p-image')[0].files[0];
 				let url = "";
 
-				if(file) {
-					const sRef = ref(storage, `products/${Date.now()}_${file.name}`);
-					const upSnap = await uploadBytes(sRef, file);
-					url = await getDownloadURL(upSnap.ref);
+				try {
+					// A. Upload Image (If exists)
+					if(file) {
+						const sRef = ref(storage, `products/${Date.now()}_${file.name}`);
+						const upSnap = await uploadBytes(sRef, file);
+						url = await getDownloadURL(upSnap.ref);
+					}
+
+					// B. Save to Database (Using 'dbID')
+					await addDoc(collection(db, 'artifacts', dbID, 'products'), {
+						name: $('#p-name').val(),
+						price: $('#p-price').val(),
+						branch: $('#p-branch').val(),
+						description: $('#p-desc').val(),
+						imageUrl: url,
+						createdAt: serverTimestamp()
+					});
+
+					alert("ASSET DEPLOYED SUCCESSFULLY.");
+					$('#add-product-form')[0].reset();
+
+				} catch (err) {
+					console.error(err);
+					alert("ERROR: " + err.message);
 				}
-
-				await addDoc(collection(db, 'artifacts', appId, 'products'), {
-					name: $('#p-name').val(),
-					price: $('#p-price').val(),
-					branch: $('#p-branch').val(),
-					description: $('#p-desc').val(),
-					imageUrl: url,
-					createdAt: serverTimestamp()
-				});
-
-				alert("ASSET DEPLOYED.");
-				btn.text("INITIALIZE DEPLOYMENT").prop('disabled', false);
+				btn.text(originalText).prop('disabled', false);
 			});
 		</script>
 	</body>

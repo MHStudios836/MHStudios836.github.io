@@ -1,49 +1,43 @@
-// --- assets/js/admin-products.js (INVENTORY CONTROL) ---
+// assets/js/admin-products.js
+// STATUS: SYNCED [VERSION 10.7.1]
 
-import { db, appId } from './firebase-init.js';
-import { collection, getDocs, limit, query, where } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+import { db, dbID } from './firebase-init.js';
+import { collection, getDocs, limit, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// UI Reference
 const $terminal = $('#live-terminal');
 
-/**
- * Initialize Product Scan
- */
+function logToTerminal(msg) {
+    const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+    if ($terminal.length) {
+        $terminal.prepend(`<div class="log-entry"><span class="log-time">[${time}]</span> ${msg}</div>`);
+    } else {
+        console.log(msg);
+    }
+}
+
 export async function initProducts() {
-    logToTerminal("Scanning Inventory Databases...");
+    logToTerminal("SCANNING ARMORY DATABASE...");
 
     try {
-        const productsRef = collection(db, 'artifacts', appId, 'products');
-        // Fetch up to 50 items
+        // Correct Path: artifacts > MH_STUDIOS_V1 > products
+        const productsRef = collection(db, 'artifacts', dbID, 'products');
         const q = query(productsRef, limit(50));
         
         const snapshot = await getDocs(q);
         
         if (snapshot.empty) {
-            logToTerminal("[WARN] Inventory Empty. No artifacts found.");
+            logToTerminal("[WARN] ARMORY EMPTY. NO ASSETS FOUND.");
             return;
         }
 
         const count = snapshot.size;
-        logToTerminal(`[SUCCESS] Inventory Synced. ${count} items loaded.`);
-
-        // In the future, this is where we render the "Products Table"
-        // snapshot.forEach(doc => { ...render logic... });
+        logToTerminal(`[SUCCESS] ARMORY SYNCED. ${count} ASSETS LOADED.`);
+        
+        // If you have a table for products, you can render it here
+        // renderProductTable(snapshot);
 
     } catch (error) {
         console.error("Product Sync Failed:", error);
-        logToTerminal(`[ERR] Inventory Sync Failed: ${error.message}`);
-    }
-}
-
-/**
- * Helper to write to the dashboard terminal
- */
-function logToTerminal(msg) {
-    const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
-    // Check if terminal exists before appending
-    if ($terminal.length) {
-        $terminal.append(`<div class="log-line"><span style="color:#555;">[${time}]</span> ${msg}</div>`);
-        $terminal.scrollTop($terminal[0].scrollHeight);
+        logToTerminal(`[ERR] SYNC FAILED: ${error.message}`);
     }
 }

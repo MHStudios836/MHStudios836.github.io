@@ -404,39 +404,27 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+			// 1. IMPORT THE MASTER KEYS
+			import { auth, db, dbID } from './assets/js/firebase-init.js';
+
+			// 2. IMPORT FIREBASE ACTIONS
+			// --- ADDED 'signOut' HERE SO THE KILL SWITCH WORKS ---
 			import { 
-				getAuth, 
-				createUserWithEmailAndPassword, 
 				signInWithEmailAndPassword, 
+				createUserWithEmailAndPassword, 
 				sendPasswordResetEmail,
 				GoogleAuthProvider,
-				signInWithPopup 
+				signInWithPopup,
+				signOut 
 			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-			import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-			// --- FIXED: USING THE EXACT KEYS FROM YOUR PROMPT ---
-			const firebaseConfig = {
-				apiKey: "AIzaSyATOnkG8yomjUFdKnNiPPJO24z0tF6e5wo",
-				authDomain: "mhstudios-836.firebaseapp.com",
-				projectId: "mhstudios-836",
-				storageBucket: "mhstudios-836.firebasestorage.app",
-				messagingSenderId: "172610798643",
-				appId: "1:172610798643:web:eaa7b218e8efa3aee64f46",
-				measurementId: "G-6EMB5KYCTK"
-			};
-
-			// INITIALIZE
-			const app = initializeApp(firebaseConfig);
-			const auth = getAuth(app);
-			const db = getFirestore(app);
 			
-			// --- FIXED: DATABASE PATH MATCHING ADMIN ROOM ---
-			// In Admin_Room.html, it uses 'firebaseConfig.projectId' which is 'mhstudios-836'
-			// So we MUST use that same string here.
-			const appId = 'mhstudios-836';
+			import { 
+				doc, 
+				setDoc, 
+				getDoc 
+			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// --- LOGIN HANDLER ---
+			// --- LOGIN HANDLER (SYNCED & SECURE) ---
 			$('#login-form').on('submit', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
@@ -445,17 +433,49 @@ permalink: /DoD_Login_Style.html
 				typeStatus("> VERIFYING ENCRYPTION KEYS...", "#fff");
 
 				try {
-					await signInWithEmailAndPassword(auth, email, pass);
-					typeStatus("> ACCESS GRANTED. LOADING DASHBOARD...", "#00ff41");
-					$('.secure-interface').css('border-color', '#00ff41'); 
-					
-					setTimeout(() => {
-						window.location.href = 'Admin_Room.html';
-					}, 1500);
+					// 1. Authenticate
+					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+					const user = userCredential.user;
+
+					typeStatus("> ID CONFIRMED. CHECKING CLEARANCE LEVEL...", "#fff");
+
+					// 2. Check Role in Database
+					const docRef = doc(db, 'artifacts', dbID, 'users', user.uid);
+					const docSnap = await getDoc(docRef);
+
+					// --- DATABASE CHECK ---
+					if (docSnap.exists()) {
+						const role = docSnap.data().role;
+
+						// --- A. THE KILL SWITCH (CHECK FIRST) ---
+						if (role === 'banned') {
+							typeStatus("> ERROR: ACCOUNT TERMINATED BY HQ.", "#ff004c");
+							$('.secure-interface').css('border-color', '#ff004c');
+							
+							// Force logout immediately
+							await signOut(auth); 
+							return; // STOP HERE.
+						}
+
+						// --- B. SUCCESS LOGIC (Only if not banned) ---
+						typeStatus(`> CLEARANCE: ${role.toUpperCase()}. REDIRECTING...`, "#00ff41");
+						$('.secure-interface').css('border-color', '#00ff41');
+
+						// Traffic Cop Redirect
+						setTimeout(() => {
+							if(role === 'admin') window.location.href = 'Admin_Room.html';
+							else if(role === 'student') window.location.href = 'Student_Room.html';
+							else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
+							else window.location.href = 'index.html'; 
+						}, 1500);
+
+					} else {
+						throw new Error("NO_DATA_FOUND");
+					}
 
 				} catch (error) {
 					console.error(error);
-					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "CONNECTION FAILED";
+					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "ACCESS DENIED";
 					typeStatus("> ERROR: " + errorMsg, "#ff004c");
 					$('.secure-interface').css('border-color', '#ff004c');
 				}
@@ -470,45 +490,52 @@ permalink: /DoD_Login_Style.html
 					const result = await signInWithPopup(auth, provider);
 					const user = result.user;
 
-					// Check/Create User DB Entry (Aligned Path)
-					const userRef = doc(db, 'artifacts', appId, 'users', user.uid);
+					// Check/Create User DB Entry
+					const userRef = doc(db, 'artifacts', dbID, 'users', user.uid);
 					const docSnap = await getDoc(userRef);
 
 					if (!docSnap.exists()) {
+						// New Google User = Student (Default)
 						await setDoc(userRef, {
 							name: user.displayName,
 							email: user.email,
-							role: 'student', // Default
+							role: 'student', 
 							joined: new Date().toISOString(),
 							status: 'active'
 						});
+						window.location.href = 'Student_Room.html';
+					} else {
+						// Existing User = Check Role (Logic simplified for Google, but you can add Kill Switch here too if needed)
+						const role = docSnap.data().role;
+						if (role === 'banned') {
+							typeStatus("> ERROR: ACCOUNT TERMINATED.", "#ff004c");
+							await signOut(auth);
+							return;
+						}
+						
+						if(role === 'admin') window.location.href = 'Admin_Room.html';
+						else window.location.href = 'Student_Room.html';
 					}
 
-					typeStatus("> IDENTITY CONFIRMED via GOOGLE.", "#00ff41");
-					$('.secure-interface').css('border-color', '#00ff41');
-					setTimeout(() => { window.location.href = 'Admin_Room.html'; }, 1500);
 				} catch (error) {
 					console.error(error);
 					typeStatus("> LINK FAILED: " + error.code, "#ff004c");
 				}
 			});
 
-			// --- FORGOT PASSWORD HANDLER ---
+			// --- FORGOT PASSWORD ---
 			$('#forgot-btn').on('click', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
-				
 				if (!email) {
 					typeStatus("> ENTER EMAIL ABOVE FOR RECOVERY.", "#ff004c");
 					$('#login-email').focus();
 					return;
 				}
-
 				try {
 					await sendPasswordResetEmail(auth, email);
 					typeStatus("> RECOVERY BEACON SENT TO EMAIL.", "#00e5ff");
 				} catch (error) {
-					console.error(error);
 					typeStatus("> ERROR: CHECK EMAIL FORMAT.", "#ff004c");
 				}
 			});
@@ -527,8 +554,7 @@ permalink: /DoD_Login_Style.html
 					const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
 					const user = userCredential.user;
 
-					// FIXED: USING ALIGNED APPID PATH
-					await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
+					await setDoc(doc(db, 'artifacts', dbID, 'users', user.uid), {
 						name: name,
 						email: email,
 						role: role,
@@ -538,12 +564,15 @@ permalink: /DoD_Login_Style.html
 					});
 
 					typeStatus("> PROFILE INITIALIZED. WELCOME.", "#00ff41");
+					
+					// Redirect based on the role they just chose
 					setTimeout(() => {
-						window.location.href = 'Admin_Room.html';
+						if(role === 'student') window.location.href = 'Student_Room.html';
+						else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
+						else window.location.href = 'index.html'; 
 					}, 2000);
 
 				} catch (error) {
-					console.error(error);
 					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "REGISTRATION FAILED";
 					typeStatus("> ERROR: " + errorMsg, "#ff004c");
 				}
