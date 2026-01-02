@@ -416,74 +416,71 @@ permalink: /DoD_Login_Style.html
 			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// 2. DEFINE UI TOOLS (The missing piece!)
+			// 2. UI TOOL: DEFINING THE MISSING FUNCTION
 			function typeStatus(text, color) {
 				const statusBox = $('#auth-status');
 				if(statusBox.length) {
 					statusBox.text(text).css('color', color || '#fff').fadeIn();
 				} else {
-					console.log("STATUS:", text);
+					console.log("STATUS UPDATE:", text);
 				}
 			}
 
-			// 3. FORCE UI REVEAL (The "Curtain Opener")
-			// This runs immediately when the page is ready.
+			// 3. THE REVEALER: OPENS THE INTERFACE
 			$(document).ready(() => {
-				console.log("SYSTEM: Initializing Interface...");
-				$('#page-loader').fadeOut(500); // Remove the loading screen
-				$('.login-container').delay(200).fadeIn(1000); // Show the form
+				console.log("SYSTEM READY: REVEALING INTERFACE...");
+				// This line removes the video loop overlay
+				$('#page-loader').fadeOut(800); 
+				// This line brings the login container into view
+				$('.login-container').delay(400).fadeIn(1000);
 			});
 
-			// 4. LOGIN LOGIC
+			// 4. LOGIN HANDLER
 			$('#login-form').on('submit', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
 				const pass = $('#login-pass').val();
 				
-				typeStatus("> AUTHENTICATING...", "#fff");
+				typeStatus("> VERIFYING OPERATIVE CREDENTIALS...", "#fff");
 
 				try {
-					// A. Authenticate
 					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
 					const user = userCredential.user;
 
-					// B. Check Database
 					const docRef = doc(db, 'artifacts', dbID, 'users', user.uid);
 					const docSnap = await getDoc(docRef);
 
 					if (docSnap.exists()) {
 						const role = docSnap.data().role;
 
-						// C. Kill Switch
 						if (role === 'banned') {
-							typeStatus("> ERROR: ACCOUNT TERMINATED.", "#ff004c");
+							typeStatus("> ERROR: ACCESS PERMANENTLY REVOKED.", "#ff004c");
 							$('.secure-interface').css('border-color', '#ff004c');
 							await signOut(auth); 
 							return;
 						}
 
-						// D. Success Redirect
-						typeStatus(`> WELCOME, ${role.toUpperCase()}.`, "#00ff41");
+						typeStatus(`> CLEARANCE: ${role.toUpperCase()}. ACCESS GRANTED.`, "#00ff41");
 						$('.secure-interface').css('border-color', '#00ff41');
-						
+
 						setTimeout(() => {
 							if(role === 'admin') window.location.href = 'Admin_Room.html';
 							else if(role === 'student') window.location.href = 'Student_Room.html';
 							else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
 							else window.location.href = 'index.html'; 
-						}, 1000);
+						}, 1500);
 					} else {
-						throw new Error("NO_PROFILE_FOUND");
+						throw new Error("NO_DATA_FOUND");
 					}
 				} catch (error) {
 					console.error(error);
-					let msg = error.code ? error.code.replace('auth/', '').toUpperCase() : "ACCESS DENIED";
-					typeStatus("> ERROR: " + msg, "#ff004c");
+					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "ACCESS DENIED";
+					typeStatus("> ERROR: " + errorMsg, "#ff004c");
 					$('.secure-interface').css('border-color', '#ff004c');
 				}
-			});
+			}); // Fixed missing closing braces
 
-			// 5. GOOGLE LOGIN
+			// 5. GOOGLE UPLINK
 			$('#google-btn').on('click', async () => {
 				const provider = new GoogleAuthProvider();
 				typeStatus("> ESTABLISHING GOOGLE UPLINK...", "#00e5ff");
@@ -506,21 +503,18 @@ permalink: /DoD_Login_Style.html
 					} else {
 						const role = docSnap.data().role;
 						if(role === 'banned') {
-							typeStatus("> ACCOUNT TERMINATED.", "#ff004c");
+							typeStatus("> ACCESS REVOKED.", "#ff004c");
 							await signOut(auth);
-						} else if(role === 'admin') {
-							window.location.href = 'Admin_Room.html';
 						} else {
-							window.location.href = 'Student_Room.html';
+							window.location.href = (role === 'admin') ? 'Admin_Room.html' : 'Student_Room.html';
 						}
 					}
 				} catch (error) {
-					console.error(error);
 					typeStatus("> LINK FAILED.", "#ff004c");
 				}
 			});
 
-			// 6. REGISTER LOGIC
+			// 6. REGISTER HANDLER
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -528,7 +522,7 @@ permalink: /DoD_Login_Style.html
 				const pass = $('#reg-pass').val();
 				const role = $('#reg-role').val();
 
-				typeStatus("> CREATING PROFILE...", "#fff");
+				typeStatus("> ENCRYPTING PROFILE DATA...", "#fff");
 
 				try {
 					const cred = await createUserWithEmailAndPassword(auth, email, pass);
@@ -540,13 +534,10 @@ permalink: /DoD_Login_Style.html
 						status: 'active'
 					});
 
-					typeStatus("> SUCCESS. REDIRECTING...", "#00ff41");
+					typeStatus("> ENROLLMENT COMPLETE. WELCOME.", "#00ff41");
 					setTimeout(() => {
-						if(role === 'student') window.location.href = 'Student_Room.html';
-						else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
-						else window.location.href = 'index.html'; 
-					}, 1500);
-					
+						window.location.href = (role === 'student') ? 'Student_Room.html' : 'Freelancers_Room.html';
+					}, 2000);
 				} catch (error) {
 					typeStatus("> ERROR: " + error.code, "#ff004c");
 				}
