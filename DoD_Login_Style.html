@@ -285,7 +285,7 @@ permalink: /DoD_Login_Style.html
 		</div>
 
 		<video autoplay muted loop id="video-layer">
-			<source src="videos/DoD_BGV.mp4" type="video/mp4"
+			<source src="videos/DoD_BGV.mp4" type="video/mp4">
 		</video>
 		<div id="mesh-layer"></div>
 		
@@ -434,32 +434,34 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			// 1. IMPORTS MUST ALWAYS BE FIRST
+			// 1. IMPORTS (Must be exactly like this)
 			import { auth, db, dbID } from './assets/js/firebase-init.js';
 			import { 
 				signInWithEmailAndPassword, 
 				createUserWithEmailAndPassword, 
-				sendPasswordResetEmail,
 				GoogleAuthProvider,
 				signInWithPopup,
 				signOut 
 			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// 2. UI TOOLS (Helper Functions)
+			// 2. THE MISSING UI FUNCTION (Critical for status updates)
 			function typeStatus(text, color) {
 				const statusBox = $('#auth-status');
 				if(statusBox.length) {
 					statusBox.text(text).css('color', color || '#fff').fadeIn();
+				} else {
+					console.log("LOG:", text);
 				}
 			}
 
-			// 3. THE HUD REVEALER (The block you mentioned)
-			// We place it here so it triggers as soon as the imports are finished.
+			// 3. THE REVEALER (The piece that removes the video loop)
 			$(document).ready(() => {
-				console.log("CONNECTION STABLE. OPENING HUD...");
-				$('#page-loader').fadeOut(500);     // Hides the video loop
-				$('.login-container').fadeIn(1000); // Shows the login box
+				console.log("TERMINAL LINK ESTABLISHED.");
+				// Fade out the "Establishing Connection" overlay
+				$('#page-loader').fadeOut(800); 
+				// Reveal the actual login form container
+				$('.login-container').delay(400).fadeIn(1000);
 			});
 
 			// 4. LOGIN HANDLER
@@ -468,76 +470,53 @@ permalink: /DoD_Login_Style.html
 				const email = $('#login-email').val();
 				const pass = $('#login-pass').val();
 				
-				typeStatus("> VERIFYING OPERATIVE CREDENTIALS...", "#fff");
+				typeStatus("> VERIFYING OPERATIVE...", "#fff");
 
 				try {
-					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-					const user = userCredential.user;
-
-					const docRef = doc(db, 'artifacts', dbID, 'users', user.uid);
-					const docSnap = await getDoc(docRef);
+					const cred = await signInWithEmailAndPassword(auth, email, pass);
+					const userRef = doc(db, 'artifacts', dbID, 'users', cred.user.uid);
+					const docSnap = await getDoc(userRef);
 
 					if (docSnap.exists()) {
 						const role = docSnap.data().role;
-
 						if (role === 'banned') {
-							typeStatus("> ERROR: ACCESS PERMANENTLY REVOKED.", "#ff004c");
-							$('.secure-interface').css('border-color', '#ff004c');
-							await signOut(auth); 
+							typeStatus("> ERROR: ACCESS REVOKED.", "#ff004c");
+							await signOut(auth);
 							return;
 						}
-
-						typeStatus(`> CLEARANCE: ${role.toUpperCase()}. ACCESS GRANTED.`, "#00ff41");
-						$('.secure-interface').css('border-color', '#00ff41');
-
+						typeStatus(`> WELCOME, ${role.toUpperCase()}.`, "#00ff41");
 						setTimeout(() => {
 							if(role === 'admin') window.location.href = 'Admin_Room.html';
 							else if(role === 'student') window.location.href = 'Student_Room.html';
 							else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
-							else window.location.href = 'index.html'; 
-						}, 1500);
-					} else {
-						throw new Error("NO_DATA_FOUND");
+							else window.location.href = 'index.html';
+						}, 1000);
 					}
 				} catch (error) {
-					console.error(error);
-					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "ACCESS DENIED";
-					typeStatus("> ERROR: " + errorMsg, "#ff004c");
-					$('.secure-interface').css('border-color', '#ff004c');
+					typeStatus("> ACCESS DENIED: " + error.code.replace('auth/', '').toUpperCase(), "#ff004c");
 				}
 			});
 
 			// 5. GOOGLE UPLINK
 			$('#google-btn').on('click', async () => {
 				const provider = new GoogleAuthProvider();
-				typeStatus("> ESTABLISHING GOOGLE UPLINK...", "#00e5ff");
-				
 				try {
 					const result = await signInWithPopup(auth, provider);
-					const user = result.user;
-					const userRef = doc(db, 'artifacts', dbID, 'users', user.uid);
+					const userRef = doc(db, 'artifacts', dbID, 'users', result.user.uid);
 					const docSnap = await getDoc(userRef);
 
 					if (!docSnap.exists()) {
 						await setDoc(userRef, {
-							name: user.displayName,
-							email: user.email,
+							name: result.user.displayName,
+							email: result.user.email,
 							role: 'student', 
 							joined: new Date().toISOString(),
 							status: 'active'
 						});
-						window.location.href = 'Student_Room.html';
-					} else {
-						const role = docSnap.data().role;
-						if(role === 'banned') {
-							typeStatus("> ACCESS REVOKED.", "#ff004c");
-							await signOut(auth);
-						} else {
-							window.location.href = (role === 'admin') ? 'Admin_Room.html' : 'Student_Room.html';
-						}
 					}
+					window.location.href = 'Student_Room.html';
 				} catch (error) {
-					typeStatus("> LINK FAILED.", "#ff004c");
+					typeStatus("> GOOGLE LINK FAILED.", "#ff004c");
 				}
 			});
 
@@ -549,7 +528,7 @@ permalink: /DoD_Login_Style.html
 				const pass = $('#reg-pass').val();
 				const role = $('#reg-role').val();
 
-				typeStatus("> ENCRYPTING PROFILE DATA...", "#fff");
+				typeStatus("> INITIALIZING PROFILE...", "#fff");
 
 				try {
 					const cred = await createUserWithEmailAndPassword(auth, email, pass);
@@ -560,13 +539,10 @@ permalink: /DoD_Login_Style.html
 						joined: new Date().toISOString(),
 						status: 'active'
 					});
-
-					typeStatus("> ENROLLMENT COMPLETE. WELCOME.", "#00ff41");
-					setTimeout(() => {
-						window.location.href = (role === 'student') ? 'Student_Room.html' : 'Freelancers_Room.html';
-					}, 2000);
+					typeStatus("> REGISTRATION SUCCESS.", "#00ff41");
+					setTimeout(() => window.location.reload(), 1500);
 				} catch (error) {
-					typeStatus("> ERROR: " + error.code, "#ff004c");
+					typeStatus("> ERROR: " + error.message, "#ff004c");
 				}
 			});
 		</script>
