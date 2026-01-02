@@ -1,117 +1,104 @@
-// --- assets/js/student-core.js ---
-// STATUS: CLIENT-SIDE LOGIC
+// assets/js/student-core.js
+// STATUS: SYNCED & SECURED
 
-import { auth, db, appId } from './firebase-init.js';
-import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-import { collection, addDoc, query, where, onSnapshot, serverTimestamp, getDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+// 1. IMPORT MASTER KEYS (Borrowing from firebase-init.js)
+import { auth, db, dbID } from './firebase-init.js';
+
+// 2. IMPORT FIREBASE TOOLS
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    collection, addDoc, query, where, onSnapshot, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let currentUser = null;
 
-// 1. AUTH & INIT
-onAuthStateChanged(auth, async (user) => {
+// 3. SECURITY & DASHBOARD LOADER
+onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        console.log("[STUDENT] Operative Identified:", user.uid);
+        console.log("STUDENT CONFIRMED: " + user.email);
         
-        // Load Profile Name
-        const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid));
-        if (userDoc.exists()) {
-            $('#student-name').text(userDoc.data().name.toUpperCase());
-        }
-
-        // Start Data Streams
-        loadMyMissions(user.uid);
+        // Update Name on Screen
+        $('#student-name').text(user.displayName || "Operative");
+        
+        // Load THEIR Missions
+        loadStudentMissions(user);
     } else {
+        console.log("NO USER. REDIRECTING...");
         window.location.href = 'DoD_Login_Style.html';
     }
 });
 
-// 2. LOAD MISSIONS (REAL-TIME LISTENER)
-function loadMyMissions(uid) {
-    const q = query(collection(db, 'artifacts', appId, 'missions'), where('ownerId', '==', uid));
-    
-    onSnapshot(q, (snapshot) => {
-        let activeHtml = '';
-        let historyHtml = '';
-        let activeCount = 0;
-        let pendingCount = 0;
+// 4. LOAD MISSIONS FUNCTION
+function loadStudentMissions(user) {
+    const q = query(
+        collection(db, 'artifacts', dbID, 'missions'), 
+        where("ownerId", "==", user.uid)
+    );
 
-        snapshot.forEach((doc) => {
+    onSnapshot(q, (snap) => {
+        // Update the "Active Count" number
+        $('#active-count').text(snap.size); 
+        
+        const list = $('#active-projects-list');
+        list.empty();
+        
+        snap.forEach(doc => {
             const m = doc.data();
-            const id = doc.id.substr(0,6).toUpperCase();
             
-            // Status Badge Logic
-            let badgeClass = 'status-open';
-            if(m.status === 'ASSIGNED') badgeClass = 'status-assigned';
-            if(m.status === 'CLOSED') badgeClass = 'status-closed';
+            // Status Color Logic
+            let color = 'var(--mh-cyan)';
+            if(m.status === 'IN_PROGRESS') color = 'var(--mh-orange)';
+            if(m.status === 'COMPLETED') color = 'var(--mh-green)';
 
-            const row = `
-                <tr>
-                    <td style="font-family:monospace; color:var(--mh-cyan);">#${id}</td>
-                    <td style="font-weight:bold; color:#fff;">${m.title}</td>
-                    <td>${m.deadline || '---'}</td>
-                    <td><span class="status-badge ${badgeClass}">${m.status}</span></td>
-                </tr>
-            `;
-
-            if(m.status === 'CLOSED') {
-                historyHtml += row;
-            } else {
-                activeHtml += row;
-                activeCount++;
-                if(m.status === 'OPEN') pendingCount++;
-            }
+            list.append(`
+                <div class="project-card" style="border-left: 3px solid ${color}; background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <h4 style="margin:0;">${m.title}</h4>
+                        <span style="color:${color}; font-weight:bold; font-size:0.8em;">${m.status}</span>
+                    </div>
+                    <div style="font-size:0.8em; color:#aaa; margin-top:5px;">
+                        ${m.type} | Budget: ${m.budget}
+                    </div>
+                </div>
+            `);
         });
-
-        // Update UI
-        $('#mission-table-body').html(activeHtml);
-        $('#history-table-body').html(historyHtml);
-        $('#stat-active').text(activeCount);
-        $('#stat-pending').text(pendingCount);
-
-        if(activeCount === 0) $('#no-missions-msg').show();
-        else $('#no-missions-msg').hide();
     });
 }
 
-// 3. DEPLOY MISSION HANDLER
+// 5. DEPLOY NEW MISSION (Form Handler)
 $('#student-mission-form').on('submit', async (e) => {
     e.preventDefault();
-    const btn = $(this).find('button');
+    const btn = $(e.target).find('button');
     btn.text("TRANSMITTING...").prop('disabled', true);
 
-    const missionData = {
-        title: $('#req-title').val(),
-        budget: $('#req-budget').val(),
-        deadline: $('#req-deadline').val(),
-        type: $('#req-type').val(),
-        description: $('#req-desc').val(),
-        status: 'OPEN',
-        ownerId: currentUser.uid,
-        ownerName: $('#student-name').text(),
-        timestamp: serverTimestamp()
-    };
-
     try {
-        await addDoc(collection(db, 'artifacts', appId, 'missions'), missionData);
-        alert("MISSION BROADCASTED SUCCESSFULLY.\nStand by for operative assignment.");
-        $('#student-mission-form')[0].reset();
+        if(!currentUser) throw new Error("Authentication Lost.");
+
+        await addDoc(collection(db, 'artifacts', dbID, 'missions'), {
+            title: $('#req-title').val(),
+            budget: $('#req-budget').val(),
+            deadline: $('#req-deadline').val(),
+            type: $('#req-type').val(),
+            description: $('#req-desc').val(),
+            status: 'OPEN',
+            ownerId: currentUser.uid,
+            ownerName: currentUser.displayName || "Unknown Client",
+            timestamp: serverTimestamp()
+        });
+
+        alert("MISSION UPLOADED TO HQ.");
+        e.target.reset(); // Clear the form
         
-        // Switch back to dashboard to see the new mission
-        $('.content-panel').removeClass('active');
-        $('#dashboard-panel').addClass('active');
-        $('.page-title').text("MISSION STATUS");
-    } catch (error) {
-        console.error(error);
-        alert("DEPLOYMENT FAILED: " + error.message);
+    } catch (err) {
+        console.error(err);
+        alert("ERROR: " + err.message);
     }
-    btn.text("INITIATE PROTOCOL").prop('disabled', false);
+    btn.text("TRANSMIT REQUEST").prop('disabled', false);
 });
 
-// 4. LOGOUT
-$('#btn-logout').click(async () => {
-    if(confirm("ABORT SESSION?")) {
-        await signOut(auth);
-        window.location.href = 'DoD_Login_Style.html';
-    }
+// 6. LOGOUT
+$('#sidebar-logout, #menu-logout').click(async () => {
+    await signOut(auth);
+    window.location.href = 'DoD_Login_Style.html';
 });

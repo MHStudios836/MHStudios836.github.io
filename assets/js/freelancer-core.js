@@ -1,160 +1,138 @@
-// --- assets/js/freelancer-core.js ---
-// STATUS: MERCENARY LOGIC
+// assets/js/freelancer-core.js
+// STATUS: SYNCED & SECURED
 
-import { auth, db, appId } from './firebase-init.js';
-import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-import { collection, query, where, onSnapshot, getDoc, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+// 1. IMPORT MASTER KEYS (Borrowing from firebase-init.js)
+import { auth, db, dbID } from './firebase-init.js';
+
+// 2. IMPORT FIREBASE TOOLS
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let currentUser = null;
 
-// 1. AUTH CHECK
-onAuthStateChanged(auth, async (user) => {
+// 3. SECURITY & DASHBOARD LOADER
+onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        console.log("[MERCENARY] ID Verified:", user.uid);
+        console.log("MERCENARY ACTIVE: " + user.email);
         
-        // Load Profile Name
-        const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid));
-        if (userDoc.exists()) {
-            $('#freelancer-name').text(userDoc.data().name.toUpperCase());
-        }
-
-        // Initialize Streams
-        loadOpenJobs();
-        loadMyOps(user.uid);
+        // Update Name
+        $('#freelancer-name').text(user.displayName || "Contractor");
+        
+        // Start Job Feeds
+        loadJobBoard();     // Available Jobs
+        loadMyActiveJobs(); // My Current Jobs
     } else {
+        console.log("NO USER. REDIRECTING...");
         window.location.href = 'DoD_Login_Style.html';
     }
 });
 
-// 2. LOAD JOB BOARD (OPEN MISSIONS)
-function loadOpenJobs() {
-    const q = query(collection(db, 'artifacts', appId, 'missions'), where('status', '==', 'OPEN'));
-    
-    onSnapshot(q, (snapshot) => {
-        let html = '';
-        let count = 0;
+// 4. LOAD "OPEN" JOBS (The Public Board)
+function loadJobBoard() {
+    // Query: Show me missions that are OPEN
+    const q = query(
+        collection(db, 'artifacts', dbID, 'missions'),
+        where("status", "==", "OPEN")
+    );
 
-        snapshot.forEach((doc) => {
-            const m = doc.data();
-            const id = doc.id;
-            count++;
+    onSnapshot(q, (snap) => {
+        $('#available-jobs-count').text(snap.size);
+        const list = $('#job-board-list'); // Make sure you have this ID in HTML
+        
+        if(list.length) {
+            list.empty();
+            snap.forEach(docSnap => {
+                const m = docSnap.data();
+                const id = docSnap.id;
 
-            html += `
-                <div class="job-card">
-                    <div class="job-header">
-                        <span class="job-id">MISSION: #${id.substr(0,6).toUpperCase()}</span>
-                        <span class="job-bounty">$${m.budget}</span>
+                list.append(`
+                    <div class="job-card" style="border:1px solid #333; padding:15px; margin-bottom:10px; border-radius:5px; background:rgba(0,0,0,0.5);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h4 style="color:var(--mh-gold); margin:0;">${m.title}</h4>
+                            <span style="background:#333; padding:2px 8px; font-size:0.7em;">${m.budget}</span>
+                        </div>
+                        <p style="color:#aaa; font-size:0.9em; margin:5px 0;">${m.description}</p>
+                        <button onclick="window.acceptMission('${id}')" style="width:100%; background:var(--mh-blue); border:none; color:white; padding:8px; cursor:pointer; margin-top:10px;">
+                            ACCEPT CONTRACT
+                        </button>
                     </div>
-                    <div class="job-title">${m.title}</div>
-                    <div class="job-meta">
-                        <span><i class="fas fa-clock"></i> ${m.deadline}</span>
-                        <span><i class="fas fa-tag"></i> ${m.type.toUpperCase()}</span>
-                    </div>
-                    <div class="job-desc">${m.description}</div>
-                    // NEW LINE (Linking to Contract Form):
-					<button class="accept-btn" onclick="window.location.href='Contract_Form.html?id=${id}'">INSPECT INTEL</button>
-                </div>
-            `;
-        });
-
-        $('#job-board-grid').html(html);
-        $('#stat-available').text(count);
-
-        if(count === 0) $('#no-jobs-msg').show();
-        else $('#no-jobs-msg').hide();
+                `);
+            });
+        }
     });
 }
 
-// 3. LOAD MY OPS (ASSIGNED TO ME)
-function loadMyOps(uid) {
-    const q = query(collection(db, 'artifacts', appId, 'missions'), where('freelancerId', '==', uid));
-    
-    onSnapshot(q, (snapshot) => {
-        let activeHtml = '';
-        let earningsHtml = '';
-        let activeCount = 0;
-        let totalEarnings = 0;
+// 5. LOAD "MY" JOBS (Active Contracts)
+function loadMyActiveJobs() {
+    if(!currentUser) return;
 
-        snapshot.forEach((doc) => {
-            const m = doc.data();
-            const id = doc.id.substr(0,6).toUpperCase();
+    // Query: Show missions where I am the freelancer AND status is IN_PROGRESS
+    const q = query(
+        collection(db, 'artifacts', dbID, 'missions'),
+        where("freelancerId", "==", currentUser.uid),
+        where("status", "==", "IN_PROGRESS")
+    );
 
-            // Active Missions Table
-            if(m.status === 'ASSIGNED') {
-                activeHtml += `
-                    <tr>
-                        <td style="color:var(--mh-orange);">#${id}</td>
-                        <td style="font-weight:bold;">${m.title}</td>
-                        <td>${m.deadline}</td>
-                        <td style="color:var(--mh-green);">$${m.budget}</td>
-                        <td><span style="color:var(--mh-orange); border:1px solid var(--mh-orange); padding:2px 5px; font-size:0.7em;">IN PROGRESS</span></td>
-                        <td><button style="background:var(--mh-green); border:none; color:#000; padding:5px 10px; font-weight:bold; cursor:pointer;" onclick="window.completeMission('${doc.id}')">COMPLETE</button></td>
-                    </tr>
-                `;
-                activeCount++;
-            }
+    onSnapshot(q, (snap) => {
+        const list = $('#my-active-list'); // Make sure you have this ID in HTML
+        if(list.length) {
+            list.empty();
+            snap.forEach(docSnap => {
+                const m = docSnap.data();
+                const id = docSnap.id;
 
-            // Completed / Earnings
-            if(m.status === 'COMPLETED') {
-                earningsHtml += `
-                    <tr>
-                        <td>${m.completedDate || '---'}</td>
-                        <td>${m.title}</td>
-                        <td style="color:var(--mh-green); font-weight:bold;">$${m.budget}</td>
-                        <td>PAID</td>
-                    </tr>
-                `;
-                totalEarnings += parseFloat(m.budget || 0);
-            }
-        });
-
-        $('#my-missions-body').html(activeHtml);
-        $('#earnings-body').html(earningsHtml);
-        $('#stat-active').text(activeCount);
-        $('#stat-earnings').text('$' + totalEarnings.toFixed(2));
+                list.append(`
+                    <div class="job-card" style="border-left:3px solid var(--mh-orange); padding:15px; margin-bottom:10px; background:rgba(255,174,0,0.05);">
+                        <h4 style="margin:0;">${m.title}</h4>
+                        <div style="font-size:0.8em; color:#aaa;">Client: ${m.ownerName}</div>
+                        <button onclick="window.markComplete('${id}')" style="margin-top:10px; background:var(--mh-green); color:#000; border:none; padding:5px 15px; cursor:pointer;">
+                            MARK COMPLETE
+                        </button>
+                    </div>
+                `);
+            });
+        }
     });
 }
 
-// 4. GLOBAL ACTIONS (ACCEPT / COMPLETE)
-// We attach these to 'window' so the HTML onclick="" can see them
+// 6. GLOBAL ACTIONS (Attach to window for button clicks)
 window.acceptMission = async (missionId) => {
-    if(!confirm("ACCEPT THIS CONTRACT? It will be assigned to your profile.")) return;
-    
+    if(!confirm("Confirm Contract Acceptance? This binds you to the mission.")) return;
     try {
-        const missionRef = doc(db, 'artifacts', appId, 'missions', missionId);
+        const missionRef = doc(db, 'artifacts', dbID, 'missions', missionId);
         await updateDoc(missionRef, {
-            status: 'ASSIGNED',
+            status: "IN_PROGRESS",
             freelancerId: currentUser.uid,
-            freelancerName: $('#freelancer-name').text()
+            freelancerName: currentUser.displayName || "Unknown",
+            startDate: serverTimestamp()
         });
-        alert("CONTRACT SECURED. Check 'My Missions'.");
-    } catch (e) {
+        alert("CONTRACT SECURED. Mission moved to 'Active' tab.");
+    } catch(e) { 
         console.error(e);
-        alert("ERROR: Could not accept mission.");
+        alert("ERROR: " + e.message); 
     }
 };
 
-window.completeMission = async (missionId) => {
-    if(!confirm("MARK MISSION AS COMPLETE? Ensure deliverables are sent.")) return;
-    
+window.markComplete = async (missionId) => {
+    if(!confirm("Confirm Mission Completion? Client will be notified.")) return;
     try {
-        const missionRef = doc(db, 'artifacts', appId, 'missions', missionId);
+        const missionRef = doc(db, 'artifacts', dbID, 'missions', missionId);
         await updateDoc(missionRef, {
-            status: 'COMPLETED',
-            completedDate: new Date().toISOString().split('T')[0]
+            status: "COMPLETED",
+            completedDate: serverTimestamp()
         });
-        alert("MISSION COMPLETE. Funds pending transfer.");
-    } catch (e) {
+        alert("MISSION ACCOMPLISHED. Payment pending verification.");
+    } catch(e) { 
         console.error(e);
-        alert("ERROR: System failure.");
+        alert("ERROR: " + e.message); 
     }
 };
 
-// 5. LOGOUT
-$('#btn-logout').click(async () => {
-    if(confirm("ABORT SESSION?")) {
-        await signOut(auth);
-        window.location.href = 'DoD_Login_Style.html';
-    }
+// 7. LOGOUT
+$('#sidebar-logout, #menu-logout').click(async () => {
+    await signOut(auth);
+    window.location.href = 'DoD_Login_Style.html';
 });
