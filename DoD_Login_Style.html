@@ -55,7 +55,27 @@ permalink: /DoD_Login_Style.html
 				background-size: 100% 2px, 3px 100%;
 				pointer-events: none;
 			}
+			
+			/* --- UI VISIBILITY CONTROL --- */
+			/* 1. Hide the login container so it can Fade In */
+			.login-container {
+				display: none; 
+			}
 
+			/* 2. Ensure the loader is ABOVE everything else */
+			#page-loader {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: #000;
+				z-index: 9999; /* Higher than everything else */
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			
 			/* --- 2. MAIN INTERFACE CONTAINER --- */
 			.secure-interface {
 				display: flex;
@@ -255,12 +275,21 @@ permalink: /DoD_Login_Style.html
 		</style>
 	</head>
 	<body>
+	
+		<div id="page-loader">
+			<div style="text-align:center;">
+				<div class="spinner"></div> <p style="font-family:'Courier New'; color:var(--mh-cyan); letter-spacing:2px;">
+					ESTABLISHING SECURE CONNECTION...
+				</p>
+			</div>
+		</div>
 
 		<video autoplay muted loop id="video-layer">
 			<source src="videos/DoD_BGV.mp4" type="video/mp4"
 		</video>
 		<div id="mesh-layer"></div>
-
+		
+	<div class="login-container">
 		<div class="secure-interface">
 			
 			<div class="intel-panel">
@@ -363,6 +392,7 @@ permalink: /DoD_Login_Style.html
 				</a>
 			</div>
 		</div>
+	</div>
 
 		<script src="assets/js/jquery.min.js"></script>
 
@@ -404,7 +434,7 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			// 1. IMPORT MASTER KEYS
+			// 1. IMPORTS MUST ALWAYS BE FIRST
 			import { auth, db, dbID } from './assets/js/firebase-init.js';
 			import { 
 				signInWithEmailAndPassword, 
@@ -416,23 +446,20 @@ permalink: /DoD_Login_Style.html
 			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// 2. UI TOOL: DEFINING THE MISSING FUNCTION
+			// 2. UI TOOLS (Helper Functions)
 			function typeStatus(text, color) {
 				const statusBox = $('#auth-status');
 				if(statusBox.length) {
 					statusBox.text(text).css('color', color || '#fff').fadeIn();
-				} else {
-					console.log("STATUS UPDATE:", text);
 				}
 			}
 
-			// 3. THE REVEALER: OPENS THE INTERFACE
+			// 3. THE HUD REVEALER (The block you mentioned)
+			// We place it here so it triggers as soon as the imports are finished.
 			$(document).ready(() => {
-				console.log("SYSTEM READY: REVEALING INTERFACE...");
-				// This line removes the video loop overlay
-				$('#page-loader').fadeOut(800); 
-				// This line brings the login container into view
-				$('.login-container').delay(400).fadeIn(1000);
+				console.log("CONNECTION STABLE. OPENING HUD...");
+				$('#page-loader').fadeOut(500);     // Hides the video loop
+				$('.login-container').fadeIn(1000); // Shows the login box
 			});
 
 			// 4. LOGIN HANDLER
@@ -478,7 +505,7 @@ permalink: /DoD_Login_Style.html
 					typeStatus("> ERROR: " + errorMsg, "#ff004c");
 					$('.secure-interface').css('border-color', '#ff004c');
 				}
-			}); // Fixed missing closing braces
+			});
 
 			// 5. GOOGLE UPLINK
 			$('#google-btn').on('click', async () => {
