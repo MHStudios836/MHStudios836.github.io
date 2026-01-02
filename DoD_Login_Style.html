@@ -445,22 +445,23 @@ permalink: /DoD_Login_Style.html
 			} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-			// 2. DEFINE THE MISSING FUNCTION (Must be defined BEFORE it is used)
+			// 2. DEFINE FUNCTIONS (Must be defined BEFORE they are called)
 			function typeStatus(text, color) {
 				const statusBox = $('#auth-status');
 				if(statusBox.length) {
 					statusBox.text(text).css('color', color || '#fff').fadeIn();
+				} else {
+					console.log("MH-LOG:", text);
 				}
 			}
 
-			// 3. THE REVEALER (The ONLY code that kills the loading screen)
+			// 3. THE REVEALER (The command that kills the loading screen)
 			$(document).ready(() => {
-				console.log("TERMINAL LINK ESTABLISHED.");
-				// This removes the "Establishing Connection" video/text
-				$('#page-loader').fadeOut(600, function() {
-					// This reveals the Login container AFTER the loader is gone
-					$('.login-container').fadeIn(800);
-				});
+				console.log("MH STUDIOS: TERMINAL LINK ESTABLISHED.");
+				// This removes the "Establishing..." overlay
+				$('#page-loader').fadeOut(600); 
+				// This reveals the Login box
+				$('.login-container').delay(300).fadeIn(800);
 			});
 
 			// 4. LOGIN HANDLER
