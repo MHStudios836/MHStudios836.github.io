@@ -293,7 +293,7 @@ permalink: /DoD_Login_Style.html
 			<div class="access-panel">
 				<div class="panel-header">
 					<div class="panel-title">LOGIN</div>
-					<div class="panel-sub">/// AUTHENTICATE IDENTITY ///</div>
+					<div class="panel-sub">| AUTHENTICATE IDENTITY |</div>
 				</div>
 
 				<div class="auth-toggle">
@@ -404,11 +404,8 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			// 1. IMPORT THE MASTER KEYS
+			// 1. IMPORT MASTER KEYS
 			import { auth, db, dbID } from './assets/js/firebase-init.js';
-
-			// 2. IMPORT FIREBASE ACTIONS
-			// --- ADDED 'signOut' HERE SO THE KILL SWITCH WORKS ---
 			import { 
 				signInWithEmailAndPassword, 
 				createUserWithEmailAndPassword, 
@@ -417,71 +414,76 @@ permalink: /DoD_Login_Style.html
 				signInWithPopup,
 				signOut 
 			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-			
-			import { 
-				doc, 
-				setDoc, 
-				getDoc 
-			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// --- LOGIN HANDLER (SYNCED & SECURE) ---
+			// 2. DEFINE UI TOOLS (The missing piece!)
+			function typeStatus(text, color) {
+				const statusBox = $('#auth-status');
+				if(statusBox.length) {
+					statusBox.text(text).css('color', color || '#fff').fadeIn();
+				} else {
+					console.log("STATUS:", text);
+				}
+			}
+
+			// 3. FORCE UI REVEAL (The "Curtain Opener")
+			// This runs immediately when the page is ready.
+			$(document).ready(() => {
+				console.log("SYSTEM: Initializing Interface...");
+				$('#page-loader').fadeOut(500); // Remove the loading screen
+				$('.login-container').delay(200).fadeIn(1000); // Show the form
+			});
+
+			// 4. LOGIN LOGIC
 			$('#login-form').on('submit', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
 				const pass = $('#login-pass').val();
 				
-				typeStatus("> VERIFYING ENCRYPTION KEYS...", "#fff");
+				typeStatus("> AUTHENTICATING...", "#fff");
 
 				try {
-					// 1. Authenticate
+					// A. Authenticate
 					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
 					const user = userCredential.user;
 
-					typeStatus("> ID CONFIRMED. CHECKING CLEARANCE LEVEL...", "#fff");
-
-					// 2. Check Role in Database
+					// B. Check Database
 					const docRef = doc(db, 'artifacts', dbID, 'users', user.uid);
 					const docSnap = await getDoc(docRef);
 
-					// --- DATABASE CHECK ---
 					if (docSnap.exists()) {
 						const role = docSnap.data().role;
 
-						// --- A. THE KILL SWITCH (CHECK FIRST) ---
+						// C. Kill Switch
 						if (role === 'banned') {
-							typeStatus("> ERROR: ACCOUNT TERMINATED BY HQ.", "#ff004c");
+							typeStatus("> ERROR: ACCOUNT TERMINATED.", "#ff004c");
 							$('.secure-interface').css('border-color', '#ff004c');
-							
-							// Force logout immediately
 							await signOut(auth); 
-							return; // STOP HERE.
+							return;
 						}
 
-						// --- B. SUCCESS LOGIC (Only if not banned) ---
-						typeStatus(`> CLEARANCE: ${role.toUpperCase()}. REDIRECTING...`, "#00ff41");
+						// D. Success Redirect
+						typeStatus(`> WELCOME, ${role.toUpperCase()}.`, "#00ff41");
 						$('.secure-interface').css('border-color', '#00ff41');
-
-						// Traffic Cop Redirect
+						
 						setTimeout(() => {
 							if(role === 'admin') window.location.href = 'Admin_Room.html';
 							else if(role === 'student') window.location.href = 'Student_Room.html';
 							else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
 							else window.location.href = 'index.html'; 
-						}, 1500);
-
+						}, 1000);
 					} else {
-						throw new Error("NO_DATA_FOUND");
+						throw new Error("NO_PROFILE_FOUND");
 					}
-
 				} catch (error) {
 					console.error(error);
-					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "ACCESS DENIED";
-					typeStatus("> ERROR: " + errorMsg, "#ff004c");
+					let msg = error.code ? error.code.replace('auth/', '').toUpperCase() : "ACCESS DENIED";
+					typeStatus("> ERROR: " + msg, "#ff004c");
 					$('.secure-interface').css('border-color', '#ff004c');
 				}
 			});
 
-			// --- GOOGLE HANDLER ---
+			// 5. GOOGLE LOGIN
 			$('#google-btn').on('click', async () => {
 				const provider = new GoogleAuthProvider();
 				typeStatus("> ESTABLISHING GOOGLE UPLINK...", "#00e5ff");
@@ -489,13 +491,10 @@ permalink: /DoD_Login_Style.html
 				try {
 					const result = await signInWithPopup(auth, provider);
 					const user = result.user;
-
-					// Check/Create User DB Entry
 					const userRef = doc(db, 'artifacts', dbID, 'users', user.uid);
 					const docSnap = await getDoc(userRef);
 
 					if (!docSnap.exists()) {
-						// New Google User = Student (Default)
 						await setDoc(userRef, {
 							name: user.displayName,
 							email: user.email,
@@ -505,42 +504,23 @@ permalink: /DoD_Login_Style.html
 						});
 						window.location.href = 'Student_Room.html';
 					} else {
-						// Existing User = Check Role (Logic simplified for Google, but you can add Kill Switch here too if needed)
 						const role = docSnap.data().role;
-						if (role === 'banned') {
-							typeStatus("> ERROR: ACCOUNT TERMINATED.", "#ff004c");
+						if(role === 'banned') {
+							typeStatus("> ACCOUNT TERMINATED.", "#ff004c");
 							await signOut(auth);
-							return;
+						} else if(role === 'admin') {
+							window.location.href = 'Admin_Room.html';
+						} else {
+							window.location.href = 'Student_Room.html';
 						}
-						
-						if(role === 'admin') window.location.href = 'Admin_Room.html';
-						else window.location.href = 'Student_Room.html';
 					}
-
 				} catch (error) {
 					console.error(error);
-					typeStatus("> LINK FAILED: " + error.code, "#ff004c");
+					typeStatus("> LINK FAILED.", "#ff004c");
 				}
 			});
 
-			// --- FORGOT PASSWORD ---
-			$('#forgot-btn').on('click', async (e) => {
-				e.preventDefault();
-				const email = $('#login-email').val();
-				if (!email) {
-					typeStatus("> ENTER EMAIL ABOVE FOR RECOVERY.", "#ff004c");
-					$('#login-email').focus();
-					return;
-				}
-				try {
-					await sendPasswordResetEmail(auth, email);
-					typeStatus("> RECOVERY BEACON SENT TO EMAIL.", "#00e5ff");
-				} catch (error) {
-					typeStatus("> ERROR: CHECK EMAIL FORMAT.", "#ff004c");
-				}
-			});
-
-			// --- REGISTER HANDLER ---
+			// 6. REGISTER LOGIC
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -548,33 +528,27 @@ permalink: /DoD_Login_Style.html
 				const pass = $('#reg-pass').val();
 				const role = $('#reg-role').val();
 
-				typeStatus("> GENERATING OPERATIVE ID...", "#fff");
+				typeStatus("> CREATING PROFILE...", "#fff");
 
 				try {
-					const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-					const user = userCredential.user;
-
-					await setDoc(doc(db, 'artifacts', dbID, 'users', user.uid), {
+					const cred = await createUserWithEmailAndPassword(auth, email, pass);
+					await setDoc(doc(db, 'artifacts', dbID, 'users', cred.user.uid), {
 						name: name,
 						email: email,
 						role: role,
 						joined: new Date().toISOString(),
-						credits: 0,
 						status: 'active'
 					});
 
-					typeStatus("> PROFILE INITIALIZED. WELCOME.", "#00ff41");
-					
-					// Redirect based on the role they just chose
+					typeStatus("> SUCCESS. REDIRECTING...", "#00ff41");
 					setTimeout(() => {
 						if(role === 'student') window.location.href = 'Student_Room.html';
 						else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
 						else window.location.href = 'index.html'; 
-					}, 2000);
-
+					}, 1500);
+					
 				} catch (error) {
-					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "REGISTRATION FAILED";
-					typeStatus("> ERROR: " + errorMsg, "#ff004c");
+					typeStatus("> ERROR: " + error.code, "#ff004c");
 				}
 			});
 		</script>
