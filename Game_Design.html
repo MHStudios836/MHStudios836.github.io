@@ -61,13 +61,14 @@ permalink: /Game_Design.html
 				background: linear-gradient(90deg, transparent 50%, rgba(255,174,0,0.05) 50%);
 				background-size: 4px 100%; pointer-events: none;
 			}
-
+			
 			.brand-link {
 				display: flex; align-items: center; gap: 15px;
-				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 900; letter-spacing: 2px; font-size: 1.4em; text-decoration: none; text-transform: uppercase;
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em;
 			}
-			.brand-link img { height: 40px; filter: drop-shadow(0 0 5px var(--mh-orange)); }
-
+			.brand-link:hover { color: var(--mh-cyan); text-shadow: 0 0 10px var(--mh-cyan); }
+			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-orange)); }
+			
 			.menu-trigger {
 				color: var(--mh-orange); font-family: 'Courier New', monospace; font-weight: 700; cursor: pointer;
 				padding: 8px 20px; border: 1px solid var(--mh-orange); background: rgba(255,174,0,0.1);
@@ -322,7 +323,8 @@ permalink: /Game_Design.html
 
 		<div id="menu-overlay">
 			<div class="menu-close"><i class="fas fa-times"></i></div>
-			
+			<div class="menu-auth">
+    </div>
 			<div style="margin-bottom:40px; border-bottom:1px solid #333; padding-bottom:20px;">
 				<h3 style="color:#fff; margin:0;">PROJECT: IRONCLAD</h3>
 				<span style="color:var(--mh-orange); font-family:'Courier New';">ALPHA BUILD v0.7.2</span>
@@ -347,15 +349,17 @@ permalink: /Game_Design.html
 				<a href="index.html#black-box"><i class="fas fa-envelope"></i> Secure Comms</a>
 			</div>
 
-			<div style="margin-top:auto;">
+				<div id="dynamic-auth-buttons" style="margin-bottom: 20px;">
 				<a href="DoD_Login_Style.html" class="menu-trigger" style="justify-content:center; margin-bottom:10px;">OPERATIVE LOGIN</a>
+				<a href="DoD_Login_Style.html" class="menu-trigger" style="justify-content:center; margin-bottom:10px;">REQUEST ACCESS</a>
+				</div>
+				
 				<div class="lang-grid">
 					<a href="#" class="lang-btn active"><img src="images/GB.png"></a>
 					<a href="#" class="lang-btn"><img src="images/Ar.png"></a>
 					<a href="#" class="lang-btn"><img src="images/Du.png"></a>
 					<a href="#" class="lang-btn"><img src="images/Ru.png"></a>
 				</div>
-			</div>
 		</div>
 
 		<section id="hero">

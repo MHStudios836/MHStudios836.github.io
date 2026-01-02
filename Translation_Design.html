@@ -117,7 +117,9 @@ permalink: /Translation_Design.html
 			.hero-sub { font-family: 'Courier New', monospace; color: var(--mh-cyan); font-size: 1.1em; margin-bottom: 40px; letter-spacing: 3px; }
 			
 			@keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
+			
+			.btn-hollow { background: transparent; border: 1px solid var(--mh-cyan); color: var(--mh-cyan); }
+			.btn-hollow:hover { background: rgba(0,128,255,0.1); color: #fff; border-color: #fff; }
 			.btn-main {
 				padding: 18px 50px; font-weight: 900; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;
 				transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); font-size: 0.9em; display: inline-block;
@@ -191,7 +193,8 @@ permalink: /Translation_Design.html
 
 		<div id="menu-overlay">
 			<div class="menu-close"><i class="fas fa-times"></i></div>
-			
+			<div class="menu-auth">
+    </div>
 			<div class="menu-links">
 				<a href="index.html"><i class="fas fa-home" style="width:30px;"></i> Command Center</a>
 				<a href="Products_Services_Room.html"><i class="fas fa-cube" style="width:30px;"></i> The Armory</a>
@@ -214,9 +217,10 @@ permalink: /Translation_Design.html
 				<a href="index.html#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
 			</div>
 			
-			<div class="menu-auth">
+				<div id="dynamic-auth-buttons" style="margin-bottom: 20px;">
 				<a href="DoD_Login_Style.html" class="btn-main btn-cyan" style="text-align:center;">OPERATIVE LOGIN</a>
-				<a href="DoD_Login_Style.html" class="btn-main" style="text-align:center; border:1px solid var(--mh-cyan); background:transparent; color:var(--mh-cyan);">REQUEST ACCESS</a>
+				<a href="DoD_Login_Style.html" class="btn-main btn-hollow" style="text-align:center;">REQUEST ACCESS</a>
+				</div>
 				
 				<div class="lang-grid">
 					<a href="#" class="lang-btn active"><img src="images/GB.png"></a>
@@ -224,7 +228,6 @@ permalink: /Translation_Design.html
 					<a href="#" class="lang-btn"><img src="images/Du.png"></a>
 					<a href="#" class="lang-btn"><img src="images/Ru.png"></a>
 				</div>
-			</div>
 		</div>
 
 		<section id="hero">
