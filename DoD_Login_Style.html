@@ -266,65 +266,43 @@ permalink: /DoD_Login_Style.html
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
 
 			/* ==========================================================================
-			   MOBILE RESPONSIVENESS (PATCH v1.0)
-			   Target: Phones & Vertical Tablets (Max-width 768px)
+			   MOBILE FIX v2.0 (NO CROP)
+			   Target: Phones & Vertical Tablets
 			   ========================================================================== */
 			@media screen and (max-width: 768px) {
 				
-				/* 1. Reset the Main Container Width */
-				.login-container, .secure-interface {
-					width: 90% !important;   /* Occupy 90% of screen width */
-					min-width: unset !important; /* Remove any hard limits */
-					margin: 20px auto;       /* Center it */
-					padding: 1.5rem !important; /* Reduce internal padding */
-					top: 50% !important;     /* Ensure it stays vertically centered */
-					transform: translateY(-50%) !important;
+				.login-container {
+					/* 1. DISABLE Floating/Centering */
+					position: relative !important; 
+					top: auto !important;
+					left: auto !important;
+					transform: none !important;
+					
+					/* 2. Simple Layout */
+					width: 90% !important;
+					margin: 50px auto 50px auto !important; /* 50px from top, centered horizontally */
+					display: block !important;
+					height: auto !important;
 				}
 
-				/* 2. Adjust Text Sizes for Small Screens */
-				.panel-title {
-					font-size: 1.8rem !important; /* Smaller Header */
-					margin-bottom: 1rem !important;
-				}
-				
-				p, label, span {
-					font-size: 0.9rem !important; /* Readable text */
+				.secure-interface {
+					width: 100% !important; /* Fit inside the container */
+					padding: 20px !important;
 				}
 
-				/* 3. Fix Input Fields & Buttons (Touch Friendly) */
-				input, select {
-					font-size: 16px !important; /* Prevents iOS/Android Zoom on focus */
-					height: 45px !important;    /* Taller touch target */
-				}
+				/* 3. Text & Input Adjustments */
+				.panel-title { font-size: 1.5rem !important; }
+				input, select { height: 50px !important; font-size: 16px !important; }
+				.role-selection { flex-direction: column !important; gap: 10px; }
+				.role-card { width: 100% !important; }
 
-				.action-btn, .google-btn {
-					padding: 12px !important;
-					font-size: 1rem !important;
-				}
-
-				/* 4. Fix the Role Selection Cards (Stack them vertically) */
-				.role-selection {
-					flex-direction: column !important; /* Stack top-to-bottom */
-					gap: 10px !important;
-				}
-
-				.role-card {
-					width: 100% !important; /* Full width cards */
-					margin-bottom: 5px;
-				}
-
-				/* 5. Handle the Video Background */
-				/* Optional: Hide video on mobile to save battery/data and show a static image */
+				/* 4. Disable Video on Phone (Optional - better for battery/layout) */
 				#video-layer {
-					/* display: none; */ /* Uncomment this line if video lags on phone */
-					background: url('images/bg-fallback.jpg') no-repeat center center/cover;
+					position: fixed;
+					height: 100vh;
+					width: 100vw;
+					object-fit: cover;
 				}
-			}
-			
-			/* Extra Small Screens (Old Phones / Narrow View) */
-			@media screen and (max-width: 380px) {
-				.panel-title { font-size: 1.4rem !important; }
-				.secure-interface { padding: 1rem !important; }
 			}
 		</style>
 	</head>
