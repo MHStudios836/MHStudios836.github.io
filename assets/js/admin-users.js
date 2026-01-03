@@ -2,7 +2,7 @@
 // STATUS: SYNCED [VERSION 10.7.1]
 
 import { db, dbID } from './firebase-init.js';
-import { collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const $userTableBody = $('.mh-table tbody'); // Ensure your HTML table has this class
 

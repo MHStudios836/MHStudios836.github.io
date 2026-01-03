@@ -2,7 +2,7 @@
 // STATUS: SYNCED [VERSION 10.7.1]
 
 import { db, dbID } from './firebase-init.js';
-import { collection, getDocs, limit, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, limit, query } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const $terminal = $('#live-terminal');
 

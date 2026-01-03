@@ -1,20 +1,14 @@
 // --- assets/js/firebase-init.js (MERGED & FULL) ---
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js';
-import { 
-    getAuth, 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, 
     signInAnonymously,
     setPersistence,
     browserSessionPersistence,
-    onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-import { 
-    getFirestore, 
-    doc 
-} from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
-
-// 1. ADD THIS IMPORT FOR STORAGE
-import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js';
+    onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, 
+    doc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "{{ env.FIREBASE_API_KEY }}",
@@ -27,8 +21,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+export const dbID = "MH_STUDIOS_V1";
 
 // 2. INITIALIZE STORAGE
 const storage = getStorage(app);
