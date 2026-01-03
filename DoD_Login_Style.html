@@ -265,12 +265,66 @@ permalink: /DoD_Login_Style.html
 			@keyframes bootUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
 
-			/* MOBILE */
-			@media (max-width: 800px) {
-				.secure-interface { flex-direction: column; height: auto; max-height: 90vh; margin: 20px; }
-				.intel-panel { width: 100%; height: 120px; flex-direction: row; padding: 20px; align-items: center; flex-shrink: 0; }
-				.access-panel { width: 100%; padding: 30px; overflow-y: auto; }
-				.encryption-visual, .sys-info { display: none; }
+			/* ==========================================================================
+			   MOBILE RESPONSIVENESS (PATCH v1.0)
+			   Target: Phones & Vertical Tablets (Max-width 768px)
+			   ========================================================================== */
+			@media screen and (max-width: 768px) {
+				
+				/* 1. Reset the Main Container Width */
+				.login-container, .secure-interface {
+					width: 90% !important;   /* Occupy 90% of screen width */
+					min-width: unset !important; /* Remove any hard limits */
+					margin: 20px auto;       /* Center it */
+					padding: 1.5rem !important; /* Reduce internal padding */
+					top: 50% !important;     /* Ensure it stays vertically centered */
+					transform: translateY(-50%) !important;
+				}
+
+				/* 2. Adjust Text Sizes for Small Screens */
+				.panel-title {
+					font-size: 1.8rem !important; /* Smaller Header */
+					margin-bottom: 1rem !important;
+				}
+				
+				p, label, span {
+					font-size: 0.9rem !important; /* Readable text */
+				}
+
+				/* 3. Fix Input Fields & Buttons (Touch Friendly) */
+				input, select {
+					font-size: 16px !important; /* Prevents iOS/Android Zoom on focus */
+					height: 45px !important;    /* Taller touch target */
+				}
+
+				.action-btn, .google-btn {
+					padding: 12px !important;
+					font-size: 1rem !important;
+				}
+
+				/* 4. Fix the Role Selection Cards (Stack them vertically) */
+				.role-selection {
+					flex-direction: column !important; /* Stack top-to-bottom */
+					gap: 10px !important;
+				}
+
+				.role-card {
+					width: 100% !important; /* Full width cards */
+					margin-bottom: 5px;
+				}
+
+				/* 5. Handle the Video Background */
+				/* Optional: Hide video on mobile to save battery/data and show a static image */
+				#video-layer {
+					/* display: none; */ /* Uncomment this line if video lags on phone */
+					background: url('images/bg-fallback.jpg') no-repeat center center/cover;
+				}
+			}
+			
+			/* Extra Small Screens (Old Phones / Narrow View) */
+			@media screen and (max-width: 380px) {
+				.panel-title { font-size: 1.4rem !important; }
+				.secure-interface { padding: 1rem !important; }
 			}
 		</style>
 	</head>
