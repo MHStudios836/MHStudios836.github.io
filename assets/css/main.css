@@ -697,7 +697,7 @@ section, summary, time, mark, audio, video {
 	border: 0;
 	font-size: 100%;
 	font: inherit;
-	vertical-align: baseline;
+	vertical-align: middle;
 	font-family: "Uni Sans", sans-serif !important;
 	}
 
