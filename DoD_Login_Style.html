@@ -500,7 +500,7 @@ permalink: /DoD_Login_Style.html
 				}
 			});
 
-			// E. REGISTER HANDLER
+			// E. REGISTER HANDLER (UPDATED: AUTO-REDIRECT)
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -511,7 +511,10 @@ permalink: /DoD_Login_Style.html
 				typeStatus("> ENCRYPTING DATA...", "#fff");
 
 				try {
+					// 1. Create Auth User
 					const cred = await createUserWithEmailAndPassword(auth, email, pass);
+					
+					// 2. Create Database Entry
 					await setDoc(doc(db, 'artifacts', dbID, 'users', cred.user.uid), {
 						name: name,
 						email: email,
@@ -519,9 +522,17 @@ permalink: /DoD_Login_Style.html
 						joined: new Date().toISOString(),
 						status: 'active'
 					});
+
+					// 3. SUCCESS & REDIRECT (Fixed: No more reload)
 					typeStatus("> ID CREATED. REDIRECTING...", "#00ff41");
-					setTimeout(() => window.location.reload(), 1500);
+					setTimeout(() => {
+						if (role === 'student') window.location.href = 'Student_Room.html';
+						else if (role === 'freelancer') window.location.href = 'Freelancers_Room.html';
+						else window.location.href = 'index.html';
+					}, 1500);
+
 				} catch (error) {
+					console.error(error);
 					typeStatus("> ERROR: " + error.code, "#ff004c");
 				}
 			});
