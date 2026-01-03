@@ -395,46 +395,51 @@ permalink: /DoD_Login_Style.html
 	</div>
 
 		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
 
 		<script>
-			// UI LOGIC (Non-Firebase)
 			$(document).ready(function() {
+				console.log("MH CORE: UI Initialized.");
+
+				// --- A. TAB SWITCHING (Login vs Signup) ---
 				$('#btn-login').on('click', function() {
 					$(this).addClass('active'); $('#btn-signup').removeClass('active');
+					$('.login-container').removeClass('hidden'); // Ensure container is visible
 					$('#login-form').removeClass('hidden'); $('#register-form').addClass('hidden');
 					$('.panel-title').text("LOGIN");
 				});
 
 				$('#btn-signup').on('click', function() {
 					$(this).addClass('active'); $('#btn-login').removeClass('active');
+					$('.login-container').removeClass('hidden'); // Ensure container is visible
 					$('#register-form').removeClass('hidden'); $('#login-form').addClass('hidden');
 					$('.panel-title').text("ENLIST");
 				});
 
+				// --- B. ROLE SELECTION ---
 				$('.role-card').on('click', function() {
 					$('.role-card').removeClass('selected');
 					$(this).addClass('selected');
 					$('#reg-role').val($(this).data('role'));
 				});
-			});
 
-			function typeStatus(text, color) {
-				const $el = $('#status-display');
-				$el.css('color', color).text('');
-				let i = 0;
-				function type() {
-					if (i < text.length) {
-						$el.text($el.text() + text.charAt(i));
-						i++;
-						setTimeout(type, 30);
+				// --- C. THE SAFETY TIMER (CRITICAL FIX) ---
+				// If the Firebase Module fails to load (due to CORS/Desktop), this opens the door anyway after 2.5 seconds.
+				setTimeout(function() {
+					if ($('#page-loader').is(':visible')) {
+						console.warn("Security Block Detected? Forcing Interface Open...");
+						$('#page-loader').fadeOut(600);
+						$('.login-container').css('display', 'flex').hide().fadeIn(800);
 					}
-				}
-				type();
-			}
+				}, 2500);
+			});
 		</script>
 
 		<script type="module">
-			// 1. UPDATED IMPORTS (v12.7.0)
+			// A. IMPORTS
 			import { auth, db, dbID } from './assets/js/firebase-init.js';
 			import { 
 				signInWithEmailAndPassword, 
@@ -445,9 +450,9 @@ permalink: /DoD_Login_Style.html
 			} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-			// 2. DEFINE FUNCTIONS (Must be defined BEFORE they are called)
+			// B. UI STATUS FUNCTION (Checks both ID possibilities)
 			function typeStatus(text, color) {
-				const statusBox = $('#auth-status');
+				const statusBox = $('#status-display, #auth-status').first();
 				if(statusBox.length) {
 					statusBox.text(text).css('color', color || '#fff').fadeIn();
 				} else {
@@ -455,22 +460,20 @@ permalink: /DoD_Login_Style.html
 				}
 			}
 
-			// 3. THE REVEALER (The command that kills the loading screen)
+			// C. CONNECTION SUCCESS REVEALER
 			$(document).ready(() => {
-				console.log("MH STUDIOS: TERMINAL LINK ESTABLISHED.");
-				// This removes the "Establishing..." overlay
+				console.log("MH CLOUD: CONNECTION ESTABLISHED.");
 				$('#page-loader').fadeOut(600); 
-				// This reveals the Login box
-				$('.login-container').delay(300).fadeIn(800);
+				$('.login-container').css('display', 'flex').hide().delay(300).fadeIn(800);
 			});
 
-			// 4. LOGIN HANDLER
+			// D. LOGIN HANDLER
 			$('#login-form').on('submit', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
 				const pass = $('#login-pass').val();
 				
-				typeStatus("> VERIFYING OPERATIVE...", "#fff");
+				typeStatus("> VERIFYING CREDENTIALS...", "#fff");
 
 				try {
 					const cred = await signInWithEmailAndPassword(auth, email, pass);
@@ -488,13 +491,16 @@ permalink: /DoD_Login_Style.html
 						setTimeout(() => {
 							window.location.href = (role === 'admin') ? 'Admin_Room.html' : 'index.html';
 						}, 1000);
+					} else {
+						// Fallback if user exists in Auth but not Database
+						typeStatus("> ERROR: NO PROFILE DATA.", "#ff004c");
 					}
 				} catch (error) {
-					typeStatus("> ERROR: " + error.code.toUpperCase(), "#ff004c");
+					typeStatus("> ERROR: " + error.code.replace('auth/', '').toUpperCase(), "#ff004c");
 				}
 			});
 
-			// 5. REGISTER HANDLER
+			// E. REGISTER HANDLER
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -502,7 +508,7 @@ permalink: /DoD_Login_Style.html
 				const pass = $('#reg-pass').val();
 				const role = $('#reg-role').val();
 
-				typeStatus("> ENCRYPTING PROFILE...", "#fff");
+				typeStatus("> ENCRYPTING DATA...", "#fff");
 
 				try {
 					const cred = await createUserWithEmailAndPassword(auth, email, pass);
@@ -513,10 +519,34 @@ permalink: /DoD_Login_Style.html
 						joined: new Date().toISOString(),
 						status: 'active'
 					});
-					typeStatus("> REGISTRATION SUCCESS.", "#00ff41");
+					typeStatus("> ID CREATED. REDIRECTING...", "#00ff41");
 					setTimeout(() => window.location.reload(), 1500);
 				} catch (error) {
 					typeStatus("> ERROR: " + error.code, "#ff004c");
+				}
+			});
+
+			// F. GOOGLE LOGIN
+			$('#google-btn').on('click', async () => {
+				const provider = new GoogleAuthProvider();
+				try {
+					const result = await signInWithPopup(auth, provider);
+					const userRef = doc(db, 'artifacts', dbID, 'users', result.user.uid);
+					const docSnap = await getDoc(userRef);
+
+					if (!docSnap.exists()) {
+						await setDoc(userRef, {
+							name: result.user.displayName,
+							email: result.user.email,
+							role: 'student', 
+							joined: new Date().toISOString(),
+							status: 'active'
+						});
+					}
+					window.location.href = 'Student_Room.html';
+				} catch (error) {
+					console.error(error);
+					typeStatus("> GOOGLE LINK FAILED.", "#ff004c");
 				}
 			});
 		</script>
