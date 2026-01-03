@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		
 		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
 		
 		<style>
@@ -40,7 +40,11 @@
 				width: 250px; background: #000; border-right: 1px solid var(--mh-orange);
 				padding: 20px; display: flex; flex-direction: column; z-index: 10;
 			}
-			.brand { color: var(--mh-orange); font-size: 1.2em; margin-bottom: 40px; font-weight: bold; letter-spacing: 1px; }
+			.brand-link {
+				display: flex; align-items: center; gap: 15px;
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1em; text-decoration: none;
+			}
+			.brand-link img { height: 32px; filter: drop-shadow(0 0 5px var(--mh-orange)); }
 			
 			.nav-btn {
 				padding: 15px; margin-bottom: 5px; cursor: pointer; color: #666; transition: 0.3s;
@@ -106,7 +110,7 @@
 		<div id="menu-overlay">
 			<div class="menu-close"><i class="fas fa-times"></i></div>
 			<div class="menu-links">
-				<div data-target="board-panel">OPEN CONTRACTS</div>
+				<div data-target="board-panel"><i class="fas fa-file-signature"></i>OPEN CONTRACTS</div>
 				<div data-target="active-panel">MY MISSIONS</div>
 				<div data-target="earnings-panel">EARNINGS</div>
 				
@@ -123,8 +127,10 @@
 
 		<div id="app-container">
 			<div class="sidebar">
-				<div class="brand"><i class="fas fa-crosshairs"></i> MERCENARY OPS</div>
-				
+				<a href="index.html" class="brand-link">
+				<img src="images/Logo_2.png" alt="MH LOGO">
+				MH STUDIOS™
+			</a>
 				<div class="nav-btn active" data-target="board-panel">> OPEN CONTRACTS</div>
 				<div class="nav-btn" data-target="active-panel">> MY MISSIONS</div>
 				<div class="nav-btn" data-target="earnings-panel">> EARNINGS</div>
