@@ -1,6 +1,3 @@
----
-permalink: /DoD_Login_Style.html
----
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
@@ -38,6 +35,21 @@ permalink: /DoD_Login_Style.html
 				align-items: center;
 			}
 
+			/* --- GLOBAL SCROLLBAR THEME (Requested Blue/Cyan) --- */
+			::-webkit-scrollbar {
+				width: 6px;
+			}
+			::-webkit-scrollbar-track {
+				background: rgba(0, 0, 0, 0.3);
+			}
+			::-webkit-scrollbar-thumb {
+				background: var(--mh-blue);
+				border-radius: 3px;
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background: var(--mh-cyan);
+			}
+
 			/* --- 1. BACKGROUND LAYERS --- */
 			#video-layer {
 				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -57,23 +69,12 @@ permalink: /DoD_Login_Style.html
 			}
 			
 			/* --- UI VISIBILITY CONTROL --- */
-			/* 1. Hide the login container so it can Fade In */
-			.login-container {
-				display: none; 
-			}
+			.login-container { display: none; }
 
-			/* 2. Ensure the loader is ABOVE everything else */
 			#page-loader {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: #000;
-				z-index: 9999; /* Higher than everything else */
-				display: flex;
-				justify-content: center;
-				align-items: center;
+				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+				background: #000; z-index: 9999;
+				display: flex; justify-content: center; align-items: center;
 			}
 			
 			/* --- 2. MAIN INTERFACE CONTAINER --- */
@@ -140,16 +141,11 @@ permalink: /DoD_Login_Style.html
 				display: flex;
 				flex-direction: column;
 				overflow-y: auto;
-				height: 70%;
+				height: 100%;
 			}
 
-			.access-panel::-webkit-scrollbar { width: 6px; }
-			.access-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-			.access-panel::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 3px; }
-			.access-panel::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
-
 			.panel-header { text-align: center; margin-bottom: 30px; flex-shrink: 0; }
-			.panel-title { font-size: 1.8em; font-weight: 600; letter-spacing: 3px; color: #fff; margin-bottom: 5px; }
+			.panel-title { font-size: 1.8em; font-weight: 900; letter-spacing: 3px; color: #fff; margin-bottom: 5px; }
 			.panel-sub { font-family: 'Courier New', monospace; font-size: 0.7em; color: var(--mh-blue); }
 
 			/* TABS */
@@ -162,41 +158,46 @@ permalink: /DoD_Login_Style.html
 				flex-shrink: 0;
 			}
 			.toggle-btn {
-				flex: 1;
-				text-align: center;
-				padding: 10px;
-				font-size: 0.8em;
-				cursor: pointer;
-				transition: 0.3s;
-				color: #666;
-				border-radius: 2px;
-				font-weight: bold;
+				flex: 1; text-align: center; padding: 10px; font-size: 0.8em;
+				cursor: pointer; transition: 0.3s; color: #666; border-radius: 2px; font-weight: bold;
 			}
 			.toggle-btn.active {
-				background: var(--mh-blue);
-				color: #000;
-				box-shadow: 0 0 15px rgba(0,128,255,0.3);
+				background: var(--mh-blue); color: #000; box-shadow: 0 0 15px rgba(0,128,255,0.3);
 			}
 
-			/* INPUTS */
+			/* INPUTS (Updated for Visibility) */
 			.input-frame { position: relative; margin-bottom: 20px; }
 			.input-frame label {
 				display: block; font-family: 'Courier New', monospace; font-size: 0.7em; color: #aaa; margin-bottom: 8px;
 			}
+			
 			.tac-input {
 				width: 100%;
 				background: rgba(255,255,255,0.05);
 				border: 1px solid rgba(255,255,255,0.1);
-				color: #fff;
+				color: #fff; /* White Text Default */
 				padding: 12px 15px;
 				outline: none;
 				transition: 0.3s;
 				font-family: sans-serif;
 			}
+			
+			/* FOCUS STATE: Glows Cyan & Text turns Cyan */
 			.tac-input:focus {
 				border-color: var(--mh-cyan);
+				color: var(--mh-cyan); 
 				background: rgba(0, 229, 255, 0.05);
 				box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
+			}
+
+			/* FIX FOR CHROME AUTOFILL (Prevents black text on dark background) */
+			input:-webkit-autofill,
+			input:-webkit-autofill:hover, 
+			input:-webkit-autofill:focus, 
+			input:-webkit-autofill:active {
+				-webkit-text-fill-color: var(--mh-cyan) !important;
+				-webkit-box-shadow: 0 0 0px 1000px #05070a inset;
+				transition: background-color 5000s ease-in-out 0s;
 			}
 
 			/* BUTTON */
@@ -266,11 +267,11 @@ permalink: /DoD_Login_Style.html
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
 
 			/* ==========================================================================
-			   MOBILE OPTIMIZATION (Unified Scroll & Fixed Selectors)
+			   RESPONSIVE DESIGN (Tecno Spark 6 Go / 721px Ceiling)
 			   ========================================================================== */
 			@media screen and (max-width: 721px) {
 				
-				/* 1. MAIN CONTAINER: The 'Window' that holds everything */
+				/* MAIN CONTAINER: The 'Window' that holds everything */
 				.secure-interface {
 					flex-direction: column; /* Stack top-to-bottom */
 					
@@ -278,19 +279,19 @@ permalink: /DoD_Login_Style.html
 					width: 96%;
 					max-width: 500px;
 					
-					/* KEY FIX: Make the WHOLE box scrollable, not just the form */
+					/* KEY FIX: Make the WHOLE box scrollable */
 					height: auto;
-					max-height: 90vh;       /* Leave a little room at top/bottom */
-					overflow-y: auto;       /* This enables the scrollbar for Logo + Form */
+					max-height: 90vh;       
+					overflow-y: auto;       /* This enables the Blue Scrollbar */
 					
-					margin: 0 auto;         /* Centered */
+					margin: 0 auto;         
 					padding: 0;
 				}
 
-				/* 2. LOGO PANEL (Intel) - Now it scrolls with the page! */
+				/* LEFT PANEL (Logo) - Now it scrolls with the page */
 				.intel-panel {
 					width: 100%;
-					min-height: auto;       /* Let it shrink to fit content */
+					min-height: auto;       
 					padding: 15px;
 					border-right: none;
 					border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -301,10 +302,10 @@ permalink: /DoD_Login_Style.html
 					align-items: center;
 					justify-content: center;
 					gap: 15px;
-					flex-shrink: 0;         /* Prevent it from getting crushed */
+					flex-shrink: 0;         
 				}
 
-				/* 3. LOGO RESIZING (Fixed Selector: .brand-lockup instead of .logo-container) */
+				/* LOGO RESIZING (Fixed Selector) */
 				.brand-lockup {
 					margin: 0;
 					gap: 10px;
@@ -314,52 +315,52 @@ permalink: /DoD_Login_Style.html
 					width: auto;
 				}
 				.brand-text {
-					font-size: 1rem;        /* Smaller text */
+					font-size: 1rem;        
 				}
 
-				/* 4. FORM PANEL - Remove internal scroll so it flows naturally */
+				/* FORM PANEL - Natural Flow */
 				.access-panel {
 					width: 100%;
-					height: auto;           /* Grow with content */
-					overflow: visible;      /* Disable internal scrollbar */
-					padding: 2rem;          /* Fixed typo (was 2.5 rem) */
+					height: auto;           
+					overflow: visible;      /* No internal scroll */
+					padding: 2rem;          
 				}
 
-				/* 5. INPUTS - Big and Easy to Tap */
+				/* INPUTS - Big and Easy to Tap */
 				.tac-input {
 					width: 100%;
-					box-sizing: border-box; /* Ensures padding doesn't break width */
-					font-size: 16px;        /* 16px prevents iOS/Android zoom on focus */
+					box-sizing: border-box; 
+					font-size: 16px;        /* Prevents zoom */
 					padding: 15px;
 					height: 50px;
 				}
 
-				/* 6. BUTTONS */
+				/* BUTTONS */
 				.execute-btn {
 					width: 100%;
 					padding: 15px;
 					font-size: 1rem;
 				}
 
-				/* Hide unnecessary elements on mobile */
+				/* Hide extra visuals on mobile */
 				.encryption-visual, 
 				.sys-info {
 					display: none; 
 				}
 			}
 
-			/* KEYBOARD FIX: When screen gets short (typing), reduce padding */
+			/* KEYBOARD FIX: When screen gets short */
 			@media screen and (max-height: 600px) {
 				.secure-interface {
-					max-height: 100vh;      /* Use full available height */
+					max-height: 100vh;      
 					border: none;
 					border-radius: 0;
 				}
 				.intel-panel {
-					padding: 10px;          /* Shrink header */
+					padding: 10px;          
 				}
 				.access-panel {
-					padding: 1.5rem;        /* Less padding around form */
+					padding: 1.5rem;        
 				}
 			}
 		</style>
@@ -414,7 +415,7 @@ permalink: /DoD_Login_Style.html
 			<div class="access-panel">
 				<div class="panel-header">
 					<div class="panel-title">LOGIN</div>
-					<div class="panel-sub">|   AUTHENTICATE IDENTITY   |</div>
+					<div class="panel-sub">| AUTHENTICATE IDENTITY |</div>
 				</div>
 
 				<div class="auth-toggle">
@@ -499,14 +500,14 @@ permalink: /DoD_Login_Style.html
 				// --- A. TAB SWITCHING (Login vs Signup) ---
 				$('#btn-login').on('click', function() {
 					$(this).addClass('active'); $('#btn-signup').removeClass('active');
-					$('.login-container').removeClass('hidden'); // Ensure container is visible
+					$('.login-container').removeClass('hidden'); 
 					$('#login-form').removeClass('hidden'); $('#register-form').addClass('hidden');
 					$('.panel-title').text("LOGIN");
 				});
 
 				$('#btn-signup').on('click', function() {
 					$(this).addClass('active'); $('#btn-login').removeClass('active');
-					$('.login-container').removeClass('hidden'); // Ensure container is visible
+					$('.login-container').removeClass('hidden'); 
 					$('#register-form').removeClass('hidden'); $('#login-form').addClass('hidden');
 					$('.panel-title').text("ENLIST");
 				});
@@ -519,7 +520,6 @@ permalink: /DoD_Login_Style.html
 				});
 
 				// --- C. THE SAFETY TIMER (CRITICAL FIX) ---
-				// If the Firebase Module fails to load (due to CORS/Desktop), this opens the door anyway after 2.5 seconds.
 				setTimeout(function() {
 					if ($('#page-loader').is(':visible')) {
 						console.warn("Security Block Detected? Forcing Interface Open...");
@@ -542,7 +542,7 @@ permalink: /DoD_Login_Style.html
 			} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-			// B. UI STATUS FUNCTION (Checks both ID possibilities)
+			// B. UI STATUS FUNCTION
 			function typeStatus(text, color) {
 				const statusBox = $('#status-display, #auth-status').first();
 				if(statusBox.length) {
@@ -584,7 +584,6 @@ permalink: /DoD_Login_Style.html
 							window.location.href = (role === 'admin') ? 'Admin_Room.html' : 'index.html';
 						}, 1000);
 					} else {
-						// Fallback if user exists in Auth but not Database
 						typeStatus("> ERROR: NO PROFILE DATA.", "#ff004c");
 					}
 				} catch (error) {
@@ -592,7 +591,7 @@ permalink: /DoD_Login_Style.html
 				}
 			});
 
-			// E. REGISTER HANDLER (UPDATED: AUTO-REDIRECT)
+			// E. REGISTER HANDLER
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -603,10 +602,7 @@ permalink: /DoD_Login_Style.html
 				typeStatus("> ENCRYPTING DATA...", "#fff");
 
 				try {
-					// 1. Create Auth User
 					const cred = await createUserWithEmailAndPassword(auth, email, pass);
-					
-					// 2. Create Database Entry
 					await setDoc(doc(db, 'artifacts', dbID, 'users', cred.user.uid), {
 						name: name,
 						email: email,
@@ -615,7 +611,6 @@ permalink: /DoD_Login_Style.html
 						status: 'active'
 					});
 
-					// 3. SUCCESS & REDIRECT (Fixed: No more reload)
 					typeStatus("> ID CREATED. REDIRECTING...", "#00ff41");
 					setTimeout(() => {
 						if (role === 'student') window.location.href = 'Student_Room.html';
