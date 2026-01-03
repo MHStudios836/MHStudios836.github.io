@@ -269,63 +269,82 @@ permalink: /DoD_Login_Style.html
 			   RESPONSIVE DESIGN (Targeting Tecno Spark 6 Go & Similar)
 			   ========================================================================== */
 
-			/* 1. MOBILE & TABLET (Devices up to 721px wide) */
 			@media screen and (max-width: 721px) {
 				
-				/* TARGET THE CORRECT CLASS: .secure-interface */
+				/* MAIN CONTAINER: WIDER & BIGGER */
 				.secure-interface {
 					flex-direction: column; /* Stack panels vertically */
-					width: 95%;             /* Fit screen width */
-					height: auto;           /* Let height grow with content */
-					max-height: 90vh;
-					margin: 20px auto;      /* Center it */
+					
+					/* WIDER WIDTH: 96% of screen, capped at 550px */
+					width: 96%;             
+					max-width: 550px;       
+					
+					height: auto;
+					margin: 15px auto;      /* Less margin = more space */
+					
+					/* REDUCED PADDING inside the box so inputs can be wider */
+					padding: 0;             
 				}
 
-				/* Hide the left "Intel" panel to save space on mobile, 
-				   OR make it small header-like if you prefer */
+				/* LEFT PANEL (Intel) - Keep it compact */
 				.intel-panel {
 					width: 100%;
-					height: auto;
-					padding: 20px;
+					padding: 15px;
 					border-right: none;
 					border-bottom: 1px solid rgba(255,255,255,0.1);
+					
+					/* Flex adjustments for mobile header look */
+					display: flex;
 					flex-direction: row;
 					align-items: center;
 					justify-content: center;
+					gap: 15px;
 				}
 
-				/* Adjust the right "Form" panel */
+				/* RIGHT PANEL (Login Form) - MAXIMIZE SPACE */
 				.access-panel {
 					width: 100%;
-					padding: 20px;
+					padding: 1.5rem; /* Enough space for touch, but wide enough */
 				}
 
-				/* Hide complex animations/visuals on phone to save space */
+				/* MAKE INPUTS BIGGER & WIDER */
+				.tac-input {
+					width: 100%;        /* Force full width */
+					font-size: 1.1rem;  /* Larger text */
+					padding: 15px;      /* Taller input box */
+					margin-bottom: 15px;
+				}
+
+				/* MAKE BUTTONS BIGGER */
+				.execute-btn {
+					width: 100%;
+					font-size: 1.1rem;
+					padding: 15px;
+				}
+
+				/* HIDE NON-ESSENTIALS TO SAVE SPACE */
 				.encryption-visual, 
 				.sys-info {
 					display: none; 
 				}
-
-				/* Fix Input Sizes for Touch */
-				.tac-input, 
-				.execute-btn {
-					font-size: 1rem; /* Prevent zooming on tap */
-					padding: 15px;
+				
+				/* Resize Logo for Header Mode */
+				.logo-container img {
+					max-width: 80px;
 				}
 			}
 
-			/* 2. TALL SCREEN / KEYBOARD FIX (For 20:9 Aspect Ratio) */
+			/* KEYBOARD SAFETY (When keyboard pops up) */
 			@media screen and (max-height: 600px) {
 				.secure-interface {
 					margin-top: 5px;
-					height: 100%;
 					border: none;
 				}
-				.panel-header {
-					margin-bottom: 10px;
+				.intel-panel {
+					padding: 10px;
 				}
-				.brand-lockup {
-					margin-bottom: 0;
+				.logo-container img {
+					max-width: 50px;
 				}
 			}
 		</style>
