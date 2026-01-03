@@ -1,8 +1,8 @@
 // assets/js/firebase-data-service.js
-// STATUS: SYNCED [VERSION 10.7.1]
+// STATUS: UPGRADED [VERSION 12.7.0]
 
 import { db, dbID } from './firebase-init.js';
-import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 /**
  * Fetch a single product by ID

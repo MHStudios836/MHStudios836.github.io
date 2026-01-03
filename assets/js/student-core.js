@@ -5,10 +5,10 @@
 import { auth, db, dbID } from './firebase-init.js';
 
 // 2. IMPORT FIREBASE TOOLS
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import { 
     collection, addDoc, query, where, onSnapshot, serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 let currentUser = null;
 
