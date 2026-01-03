@@ -55,27 +55,7 @@ permalink: /DoD_Login_Style.html
 				background-size: 100% 2px, 3px 100%;
 				pointer-events: none;
 			}
-			
-			/* --- UI VISIBILITY CONTROL --- */
-			/* 1. Hide the login container so it can Fade In */
-			.login-container {
-				display: none; 
-			}
 
-			/* 2. Ensure the loader is ABOVE everything else */
-			#page-loader {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: #000;
-				z-index: 9999; /* Higher than everything else */
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
-			
 			/* --- 2. MAIN INTERFACE CONTAINER --- */
 			.secure-interface {
 				display: flex;
@@ -275,21 +255,12 @@ permalink: /DoD_Login_Style.html
 		</style>
 	</head>
 	<body>
-	
-		<div id="page-loader">
-			<div style="text-align:center;">
-				<div class="spinner"></div> <p style="font-family:'Courier New'; color:var(--mh-cyan); letter-spacing:2px;">
-					ESTABLISHING SECURE CONNECTION...
-				</p>
-			</div>
-		</div>
 
 		<video autoplay muted loop id="video-layer">
-			<source src="videos/DoD_BGV.mp4" type="video/mp4">
+			<source src="videos/DoD_BGV.mp4" type="video/mp4"
 		</video>
 		<div id="mesh-layer"></div>
-		
-	<div class="login-container">
+
 		<div class="secure-interface">
 			
 			<div class="intel-panel">
@@ -322,7 +293,7 @@ permalink: /DoD_Login_Style.html
 			<div class="access-panel">
 				<div class="panel-header">
 					<div class="panel-title">LOGIN</div>
-					<div class="panel-sub">| AUTHENTICATE IDENTITY |</div>
+					<div class="panel-sub">/// AUTHENTICATE IDENTITY ///</div>
 				</div>
 
 				<div class="auth-toggle">
@@ -392,7 +363,6 @@ permalink: /DoD_Login_Style.html
 				</a>
 			</div>
 		</div>
-	</div>
 
 		<script src="assets/js/jquery.min.js"></script>
 
@@ -434,80 +404,64 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			// 1. IMPORTS MUST ALWAYS BE FIRST
-			import { auth, db, dbID } from './assets/js/firebase-init.js';
+			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 			import { 
-				signInWithEmailAndPassword, 
+				getAuth, 
 				createUserWithEmailAndPassword, 
+				signInWithEmailAndPassword, 
 				sendPasswordResetEmail,
 				GoogleAuthProvider,
-				signInWithPopup,
-				signOut 
+				signInWithPopup 
 			} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+			import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-			// 2. UI TOOLS (Helper Functions)
-			function typeStatus(text, color) {
-				const statusBox = $('#auth-status');
-				if(statusBox.length) {
-					statusBox.text(text).css('color', color || '#fff').fadeIn();
-				}
-			}
+			// --- FIXED: USING THE EXACT KEYS FROM YOUR PROMPT ---
+			const firebaseConfig = {
+				apiKey: "AIzaSyATOnkG8yomjUFdKnNiPPJO24z0tF6e5wo",
+				authDomain: "mhstudios-836.firebaseapp.com",
+				projectId: "mhstudios-836",
+				storageBucket: "mhstudios-836.firebasestorage.app",
+				messagingSenderId: "172610798643",
+				appId: "1:172610798643:web:eaa7b218e8efa3aee64f46",
+				measurementId: "G-6EMB5KYCTK"
+			};
 
-			// 3. THE HUD REVEALER (The block you mentioned)
-			// We place it here so it triggers as soon as the imports are finished.
-			$(document).ready(() => {
-				console.log("CONNECTION STABLE. OPENING HUD...");
-				$('#page-loader').fadeOut(500);     // Hides the video loop
-				$('.login-container').fadeIn(1000); // Shows the login box
-			});
+			// INITIALIZE
+			const app = initializeApp(firebaseConfig);
+			const auth = getAuth(app);
+			const db = getFirestore(app);
+			
+			// --- FIXED: DATABASE PATH MATCHING ADMIN ROOM ---
+			// In Admin_Room.html, it uses 'firebaseConfig.projectId' which is 'mhstudios-836'
+			// So we MUST use that same string here.
+			const appId = 'mhstudios-836';
 
-			// 4. LOGIN HANDLER
+			// --- LOGIN HANDLER ---
 			$('#login-form').on('submit', async (e) => {
 				e.preventDefault();
 				const email = $('#login-email').val();
 				const pass = $('#login-pass').val();
 				
-				typeStatus("> VERIFYING OPERATIVE CREDENTIALS...", "#fff");
+				typeStatus("> VERIFYING ENCRYPTION KEYS...", "#fff");
 
 				try {
-					const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-					const user = userCredential.user;
+					await signInWithEmailAndPassword(auth, email, pass);
+					typeStatus("> ACCESS GRANTED. LOADING DASHBOARD...", "#00ff41");
+					$('.secure-interface').css('border-color', '#00ff41'); 
+					
+					setTimeout(() => {
+						window.location.href = 'Admin_Room.html';
+					}, 1500);
 
-					const docRef = doc(db, 'artifacts', dbID, 'users', user.uid);
-					const docSnap = await getDoc(docRef);
-
-					if (docSnap.exists()) {
-						const role = docSnap.data().role;
-
-						if (role === 'banned') {
-							typeStatus("> ERROR: ACCESS PERMANENTLY REVOKED.", "#ff004c");
-							$('.secure-interface').css('border-color', '#ff004c');
-							await signOut(auth); 
-							return;
-						}
-
-						typeStatus(`> CLEARANCE: ${role.toUpperCase()}. ACCESS GRANTED.`, "#00ff41");
-						$('.secure-interface').css('border-color', '#00ff41');
-
-						setTimeout(() => {
-							if(role === 'admin') window.location.href = 'Admin_Room.html';
-							else if(role === 'student') window.location.href = 'Student_Room.html';
-							else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
-							else window.location.href = 'index.html'; 
-						}, 1500);
-					} else {
-						throw new Error("NO_DATA_FOUND");
-					}
 				} catch (error) {
 					console.error(error);
-					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "ACCESS DENIED";
+					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "CONNECTION FAILED";
 					typeStatus("> ERROR: " + errorMsg, "#ff004c");
 					$('.secure-interface').css('border-color', '#ff004c');
 				}
 			});
 
-			// 5. GOOGLE UPLINK
+			// --- GOOGLE HANDLER ---
 			$('#google-btn').on('click', async () => {
 				const provider = new GoogleAuthProvider();
 				typeStatus("> ESTABLISHING GOOGLE UPLINK...", "#00e5ff");
@@ -515,33 +469,51 @@ permalink: /DoD_Login_Style.html
 				try {
 					const result = await signInWithPopup(auth, provider);
 					const user = result.user;
-					const userRef = doc(db, 'artifacts', dbID, 'users', user.uid);
+
+					// Check/Create User DB Entry (Aligned Path)
+					const userRef = doc(db, 'artifacts', appId, 'users', user.uid);
 					const docSnap = await getDoc(userRef);
 
 					if (!docSnap.exists()) {
 						await setDoc(userRef, {
 							name: user.displayName,
 							email: user.email,
-							role: 'student', 
+							role: 'student', // Default
 							joined: new Date().toISOString(),
 							status: 'active'
 						});
-						window.location.href = 'Student_Room.html';
-					} else {
-						const role = docSnap.data().role;
-						if(role === 'banned') {
-							typeStatus("> ACCESS REVOKED.", "#ff004c");
-							await signOut(auth);
-						} else {
-							window.location.href = (role === 'admin') ? 'Admin_Room.html' : 'Student_Room.html';
-						}
 					}
+
+					typeStatus("> IDENTITY CONFIRMED via GOOGLE.", "#00ff41");
+					$('.secure-interface').css('border-color', '#00ff41');
+					setTimeout(() => { window.location.href = 'Admin_Room.html'; }, 1500);
 				} catch (error) {
-					typeStatus("> LINK FAILED.", "#ff004c");
+					console.error(error);
+					typeStatus("> LINK FAILED: " + error.code, "#ff004c");
 				}
 			});
 
-			// 6. REGISTER HANDLER
+			// --- FORGOT PASSWORD HANDLER ---
+			$('#forgot-btn').on('click', async (e) => {
+				e.preventDefault();
+				const email = $('#login-email').val();
+				
+				if (!email) {
+					typeStatus("> ENTER EMAIL ABOVE FOR RECOVERY.", "#ff004c");
+					$('#login-email').focus();
+					return;
+				}
+
+				try {
+					await sendPasswordResetEmail(auth, email);
+					typeStatus("> RECOVERY BEACON SENT TO EMAIL.", "#00e5ff");
+				} catch (error) {
+					console.error(error);
+					typeStatus("> ERROR: CHECK EMAIL FORMAT.", "#ff004c");
+				}
+			});
+
+			// --- REGISTER HANDLER ---
 			$('#register-form').on('submit', async (e) => {
 				e.preventDefault();
 				const name = $('#reg-name').val();
@@ -549,24 +521,31 @@ permalink: /DoD_Login_Style.html
 				const pass = $('#reg-pass').val();
 				const role = $('#reg-role').val();
 
-				typeStatus("> ENCRYPTING PROFILE DATA...", "#fff");
+				typeStatus("> GENERATING OPERATIVE ID...", "#fff");
 
 				try {
-					const cred = await createUserWithEmailAndPassword(auth, email, pass);
-					await setDoc(doc(db, 'artifacts', dbID, 'users', cred.user.uid), {
+					const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+					const user = userCredential.user;
+
+					// FIXED: USING ALIGNED APPID PATH
+					await setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
 						name: name,
 						email: email,
 						role: role,
 						joined: new Date().toISOString(),
+						credits: 0,
 						status: 'active'
 					});
 
-					typeStatus("> ENROLLMENT COMPLETE. WELCOME.", "#00ff41");
+					typeStatus("> PROFILE INITIALIZED. WELCOME.", "#00ff41");
 					setTimeout(() => {
-						window.location.href = (role === 'student') ? 'Student_Room.html' : 'Freelancers_Room.html';
+						window.location.href = 'Admin_Room.html';
 					}, 2000);
+
 				} catch (error) {
-					typeStatus("> ERROR: " + error.code, "#ff004c");
+					console.error(error);
+					let errorMsg = error.code ? error.code.replace('auth/', '').toUpperCase() : "REGISTRATION FAILED";
+					typeStatus("> ERROR: " + errorMsg, "#ff004c");
 				}
 			});
 		</script>
