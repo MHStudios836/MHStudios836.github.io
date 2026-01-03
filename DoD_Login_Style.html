@@ -265,33 +265,55 @@ permalink: /DoD_Login_Style.html
 			@keyframes bootUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
 
-			/* 1. BASE STYLES (Mobile-First) */
-			/* This covers your Tecno Spark 6 Go (360px viewport) and newer tall phones */
-			.login-container {
-				width: 90%;            /* Responsive width */
-				max-width: 400px;     /* Prevents it from getting too wide */
-				margin: 20px auto;
-				padding: 1.5rem;
-				background: var(--mh-glass);
-				border: 1px solid var(--mh-blue);
-				backdrop-filter: blur(10px);
-			}
+			/* ==========================================================================
+			   RESPONSIVE DESIGN (Targeting Tecno Spark 6 Go & Similar)
+			   ========================================================================== */
 
-			/* 2. TABLET / SMALL LAPTOP (768px and up) */
-			@media screen and (min-width: 768px) {
+			/* 1. MOBILE & TABLET (Devices up to 721px wide) 
+			   We use 721px to safely include your Tecno Spark 6 Go's resolution 
+			   and account for any sub-pixel variance. */
+			@media screen and (max-width: 721px) {
 				.login-container {
-					width: 450px;
-					padding: 2rem;
+					width: 90%;             /* Fits perfectly within the screen */
+					max-width: none;        /* Removes any desktop caps */
+					margin-top: 20px;       /* Less top margin on mobile */
+					padding: 1.5rem;
+				}
+
+				.logo-container img {
+					max-width: 100px;       /* Smaller logo for mobile screens */
+				}
+				
+				/* Adjust font sizes for readability on the 720px width */
+				h2 {
+					font-size: 1.5rem;
 				}
 			}
 
-			/* 3. TALL SCREEN OPTIMIZATION (For 20:9 aspect ratios like your KE5k) */
-			@media screen and (max-height: 700px) and (orientation: portrait) {
+			/* 2. TALL SCREEN / KEYBOARD FIX (For 20:9 Aspect Ratio)
+			   The Spark 6 Go is tall (1600px). When the keyboard opens, height shrinks.
+			   This rule detects that shrinkage and adjusts layout. */
+			@media screen and (max-height: 600px) {
 				.login-container {
-					margin-top: 10px; /* Pulls content up if the keyboard overlaps */
+					margin-top: 5px;
+					padding: 1rem;
 				}
 				.logo-container img {
-					max-width: 120px; /* Shrinks logo to save vertical space */
+					width: 60px; /* Shrink logo drastically so input fields are visible */
+					margin-bottom: 5px;
+				}
+				/* Hide the footer or extra text when typing to save space */
+				.footer-text {
+					display: none;
+				}
+			}
+
+			/* 3. DESKTOP overrides (Only for screens WIDER than 721px) */
+			@media screen and (min-width: 722px) {
+				.login-container {
+					width: 450px;
+					margin: 50px auto;
+					padding: 3rem;
 				}
 			}
 			
