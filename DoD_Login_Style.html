@@ -266,85 +266,100 @@ permalink: /DoD_Login_Style.html
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
 
 			/* ==========================================================================
-			   RESPONSIVE DESIGN (Targeting Tecno Spark 6 Go & Similar)
+			   MOBILE OPTIMIZATION (Unified Scroll & Fixed Selectors)
 			   ========================================================================== */
-
 			@media screen and (max-width: 721px) {
 				
-				/* MAIN CONTAINER: WIDER & BIGGER */
+				/* 1. MAIN CONTAINER: The 'Window' that holds everything */
 				.secure-interface {
-					flex-direction: column; /* Stack panels vertically */
+					flex-direction: column; /* Stack top-to-bottom */
 					
-					/* WIDER WIDTH: 96% of screen, capped at 550px */
-					width: 96%;             
-					max-width: 550px;       
+					/* Dimensions */
+					width: 96%;
+					max-width: 500px;
 					
+					/* KEY FIX: Make the WHOLE box scrollable, not just the form */
 					height: auto;
-					margin: 15px auto;      /* Less margin = more space */
+					max-height: 90vh;       /* Leave a little room at top/bottom */
+					overflow-y: auto;       /* This enables the scrollbar for Logo + Form */
 					
-					/* REDUCED PADDING inside the box so inputs can be wider */
-					padding: 0;             
+					margin: 0 auto;         /* Centered */
+					padding: 0;
 				}
 
-				/* LEFT PANEL (Intel) - Keep it compact */
+				/* 2. LOGO PANEL (Intel) - Now it scrolls with the page! */
 				.intel-panel {
 					width: 100%;
+					min-height: auto;       /* Let it shrink to fit content */
 					padding: 15px;
 					border-right: none;
 					border-bottom: 1px solid rgba(255,255,255,0.1);
 					
-					/* Flex adjustments for mobile header look */
+					/* Layout */
 					display: flex;
 					flex-direction: row;
 					align-items: center;
 					justify-content: center;
 					gap: 15px;
+					flex-shrink: 0;         /* Prevent it from getting crushed */
 				}
 
-				/* RIGHT PANEL (Login Form) - MAXIMIZE SPACE */
+				/* 3. LOGO RESIZING (Fixed Selector: .brand-lockup instead of .logo-container) */
+				.brand-lockup {
+					margin: 0;
+					gap: 10px;
+				}
+				.brand-lockup img {
+					height: 30px;           /* Smaller logo for mobile */
+					width: auto;
+				}
+				.brand-text {
+					font-size: 1rem;        /* Smaller text */
+				}
+
+				/* 4. FORM PANEL - Remove internal scroll so it flows naturally */
 				.access-panel {
 					width: 100%;
-					padding: 2 rem; /* Enough space for touch, but wide enough */
+					height: auto;           /* Grow with content */
+					overflow: visible;      /* Disable internal scrollbar */
+					padding: 2rem;          /* Fixed typo (was 2.5 rem) */
 				}
 
-				/* MAKE INPUTS BIGGER & WIDER */
+				/* 5. INPUTS - Big and Easy to Tap */
 				.tac-input {
-					width: 100%;        /* Force full width */
-					font-size: 1.1rem;  /* Larger text */
-					padding: 15px;      /* Taller input box */
-					margin-bottom: 15px;
+					width: 100%;
+					box-sizing: border-box; /* Ensures padding doesn't break width */
+					font-size: 16px;        /* 16px prevents iOS/Android zoom on focus */
+					padding: 15px;
+					height: 50px;
 				}
 
-				/* MAKE BUTTONS BIGGER */
+				/* 6. BUTTONS */
 				.execute-btn {
 					width: 100%;
-					font-size: 1.1rem;
 					padding: 15px;
+					font-size: 1rem;
 				}
 
-				/* HIDE NON-ESSENTIALS TO SAVE SPACE */
+				/* Hide unnecessary elements on mobile */
 				.encryption-visual, 
 				.sys-info {
 					display: none; 
 				}
-				
-				/* Resize Logo for Header Mode */
-				.logo-container img {
-					max-width: 80px;
-				}
 			}
 
-			/* KEYBOARD SAFETY (When keyboard pops up) */
+			/* KEYBOARD FIX: When screen gets short (typing), reduce padding */
 			@media screen and (max-height: 600px) {
 				.secure-interface {
-					margin-top: 5px;
+					max-height: 100vh;      /* Use full available height */
 					border: none;
+					border-radius: 0;
 				}
 				.intel-panel {
-					padding: 10px;
+					padding: 10px;          /* Shrink header */
 				}
-				.logo-container img {
-					max-width: 50px;
+				.access-panel {
+					padding: 1.5rem;        /* Less padding around form */
 				}
 			}
 		</style>
