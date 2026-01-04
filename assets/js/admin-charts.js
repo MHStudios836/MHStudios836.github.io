@@ -1,77 +1,84 @@
-// --- assets/js/admin-charts.js (INTELLIGENCE) ---
+/* assets/js/admin-charts.js - TACTICAL ANALYTICS */
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { app } from "./firebase-init.js";
 
-// Note: Chart.js is loaded via CDN in the HTML head, so 'Chart' is a global variable.
+const db = getFirestore(app);
+const appId = 'mhstudios-836';
 
-let mainTrafficChart = null;
+export async function initDashboardCharts() {
+    console.log("INITIALIZING WAR ROOM ANALYTICS...");
 
-export function initCharts() {
-    const ctx = document.getElementById('mainChart');
-    if (!ctx) return; // Safety check
+    // 1. FETCH DATA (Parallel Fetch for Speed)
+    const [usersSnap, missionsSnap] = await Promise.all([
+        getDocs(collection(db, 'artifacts', appId, 'users')),
+        getDocs(collection(db, 'artifacts', appId, 'missions'))
+    ]);
 
-    console.log("[CHARTS] Initializing Tactical Display...");
+    // 2. PROCESS USER DATA
+    let students = 0, freelancers = 0, admins = 0;
+    usersSnap.forEach(doc => {
+        const role = doc.data().role;
+        if (role === 'student') students++;
+        if (role === 'freelancer') freelancers++;
+        if (role === 'admin') admins++;
+    });
 
-    // Destroy existing chart if re-initializing to prevent "glitching" overlay
-    const chartStatus = Chart.getChart("mainChart"); 
-    if (chartStatus != undefined) {
-        chartStatus.destroy();
-    }
+    // 3. PROCESS MISSION DATA
+    let active = 0, completed = 0, open = 0;
+    missionsSnap.forEach(doc => {
+        const status = doc.data().status;
+        if (status === 'OPEN') open++;
+        if (status === 'ASSIGNED') active++;
+        if (status === 'COMPLETED') completed++;
+    });
 
-    // --- 1. THE SETUP ---
-    // Create a cool gradient for the line
-    const context = ctx.getContext('2d');
-    const gradient = context.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(0, 128, 255, 0.6)'); // MH Blue (Top)
-    gradient.addColorStop(1, 'rgba(0, 128, 255, 0)');   // Transparent (Bottom)
+    // 4. RENDER CHARTS
+    renderUserChart(students, freelancers, admins);
+    renderMissionChart(open, active, completed);
+}
 
-    // --- 2. THE DATA (Simulated Real-Time) ---
-    // In Phase 4, we will fetch this from Firestore Stats
-    const dataPoints = [15, 25, 20, 45, 30, 60, 75]; 
-    const labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'];
+function renderUserChart(s, f, a) {
+    const ctx = document.getElementById('chart-users');
+    if (!ctx) return;
 
-    // --- 3. THE RENDER ---
-    mainTrafficChart = new Chart(ctx, {
-        type: 'line',
+    new Chart(ctx, {
+        type: 'doughnut',
         data: {
-            labels: labels,
+            labels: ['INFANTRY (Students)', 'MERCENARIES (Freelancers)', 'COMMAND (Admins)'],
             datasets: [{
-                label: 'Encrypted Traffic',
-                data: dataPoints,
-                backgroundColor: gradient,
-                borderColor: '#0080FF',
-                borderWidth: 2,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#0080FF',
-                pointHoverRadius: 6,
-                fill: true,
-                tension: 0.4 // Smooth curves
+                data: [s, f, a],
+                backgroundColor: ['#0080FF', '#ffae00', '#ff004c'],
+                borderColor: '#000',
+                borderWidth: 2
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false, // Fits the container height
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    titleColor: '#0080FF',
-                    bodyFont: { family: "'Courier New', monospace" }
-                }
-            },
+            plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } }
+        }
+    });
+}
+
+function renderMissionChart(open, active, comp) {
+    const ctx = document.getElementById('chart-ops');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['OPEN BOUNTIES', 'ACTIVE OPS', 'COMPLETED'],
+            datasets: [{
+                label: 'Mission Status',
+                data: [open, active, comp],
+                backgroundColor: ['#00e5ff', '#ffae00', '#00ff41']
+            }]
+        },
+        options: {
             scales: {
-                x: {
-                    grid: { display: false }, // Cleaner look
-                    ticks: { color: '#666' }
-                },
-                y: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#666' },
-                    beginAtZero: true
-                }
+                y: { grid: { color: '#333' }, ticks: { color: '#fff' } },
+                x: { ticks: { color: '#fff' } }
             },
-            animation: {
-                duration: 2000,
-                easing: 'easeOutQuart'
-            }
+            plugins: { legend: { display: false } }
         }
     });
 }

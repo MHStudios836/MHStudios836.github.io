@@ -68,3 +68,45 @@ export async function transmitMessage(senderName, role, text) {
         console.error("COMMS_FAILURE:", err);
     }
 }
+
+/**
+ * INITIALIZE ENCRYPTED COMMS
+ * @param {string} channelKey - The "Clearance" (e.g., 'student', 'freelancer', 'admin')
+ * @param {HTMLElement} displayContainer 
+ */
+export function initComms(channelKey, displayContainer) {
+    // SECURITY FILTER: Only fetch messages belonging to this channel
+    // Admins bypass this by listening to a different query if needed
+    const q = query(
+        collection(db, 'artifacts', appId, 'messages'),
+        where('channel', '==', channelKey),
+        orderBy('timestamp', 'desc'),
+        limit(50)
+    );
+
+    onSnapshot(q, (snapshot) => {
+        displayContainer.innerHTML = '';
+        const docs = snapshot.docs.reverse();
+        docs.forEach(doc => renderMessage(displayContainer, doc.data()));
+        displayContainer.scrollTop = displayContainer.scrollHeight;
+        playSound('notify'); 
+    });
+}
+
+/**
+ * TRANSMIT ENCRYPTED MESSAGE
+ */
+export async function transmitMessage(senderName, role, text, channelKey) {
+    if (!text.trim()) return;
+    try {
+        await addDoc(collection(db, 'artifacts', appId, 'messages'), {
+            sender: senderName,
+            role: role,
+            text: text,
+            channel: channelKey, // The Encryption Key
+            timestamp: serverTimestamp()
+        });
+    } catch (err) {
+        console.error("ENCRYPTION_FAILURE:", err);
+    }
+}

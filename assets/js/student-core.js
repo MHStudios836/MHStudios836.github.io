@@ -102,3 +102,19 @@ $('#sidebar-logout, #menu-logout').click(async () => {
     await signOut(auth);
     window.location.href = 'DoD_Login_Style.html';
 });
+
+// Inside createTaskCardHTML...
+let actionButton = '';
+
+// If the mission is done but not paid, show the Pay button
+if (data.status === 'REVIEW_PENDING' && data.paymentStatus !== 'PAID') {
+    actionButton = `
+        <button class="btn-pay-now" onclick="triggerPayout('${id}', '${data.freelancerId}', '${data.budget}')">
+            <i class="fas fa-money-bill-wave"></i> RELEASE FUNDS ($${data.budget})
+        </button>
+    `;
+} else if (data.paymentStatus === 'PAID') {
+    actionButton = `<div class="badge-paid">FUNDS RELEASED</div>`;
+}
+
+// Insert ${actionButton} somewhere in your card HTML, perhaps at the bottom

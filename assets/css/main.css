@@ -5098,5 +5098,50 @@ a, a:visited, a:hover, a:active, a:focus {
 .mh-notification-content h5 { 
     margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #888; 
 }
+
 .mh-notification-content p { margin: 2px 0 0; font-size: 0.9rem; font-weight: bold; }
+
+/* GLOBAL TICKER STYLES */
+#mh-ticker-wrap {
+    width: 100%;
+    height: 30px;
+    background: #000;
+    border-bottom: 2px solid var(--mh-cyan);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000; /* Above everything */
+    overflow: hidden;
+    display: none; /* Hidden by default */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+}
+
+.ticker-content {
+    white-space: nowrap;
+    position: absolute;
+    top: 6px;
+    left: 100%;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    animation: scroll-left 20s linear infinite;
+}
+
+.alert-prefix {
+    background: #222;
+    padding: 2px 5px;
+    margin-right: 10px;
+    border: 1px solid currentColor;
+}
+
+@keyframes scroll-left {
+    0% { left: 100%; }
+    100% { left: -100%; }
+}
+
+/* Push the rest of the page down so the ticker doesn't hide content */
+body.has-ticker {
+    padding-top: 30px;
+}
 /* --- END CUSTOM STYLES --- */

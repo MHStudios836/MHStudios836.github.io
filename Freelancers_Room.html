@@ -532,6 +532,15 @@ permalink: /Freelancers_Room.html
 		<script type="module" src="assets/js/freelancer-core.js"></script>
 		
 		<script>
+		import { startSessionMonitor } from './assets/js/session-monitor.js';
+			import { attachHoverSounds, playSound } from './assets/js/sound-engine.js';
+			import { initGlobalTicker } from './assets/js/global-alert-ticker.js';
+
+			document.addEventListener('DOMContentLoaded', () => {
+				initGlobalTicker();
+				// ... rest of your code
+			});
+			
 			$(document).ready(function() {
 				// 1. Navigation Logic
 				$('.nav-btn, .menu-links div').click(function() {

@@ -1,61 +1,85 @@
-// assets/js/Social-Interactions.js
+/* assets/js/social-interactions.js - ENGAGEMENT ENGINE */
+import { getFirestore, doc, updateDoc, arrayUnion, arrayRemove, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { app } from "./firebase-init.js";
+import { playSound } from "./sound-engine.js";
+import { notify } from "./notification-hub.js";
 
-// Ensure the code runs after the page structure is loaded using jQuery
-$(document).ready(function() {
+const db = getFirestore(app);
+const appId = 'mhstudios-836';
+
+/**
+ * TOGGLE LIKE ON A MISSION/PROJECT
+ * @param {string} collectionName - 'missions' or 'projects'
+ * @param {string} docId - The ID of the item
+ * @param {string} userId - The current user's ID
+ */
+export async function toggleLike(collectionName, docId, userId) {
+    const ref = doc(db, 'artifacts', appId, collectionName, docId);
     
-    // --- 1. Like Button Logic (Existing) ---
-    const $likeButton = $('#like-button');
-    
-    $likeButton.on('click', function(e) {
-        e.preventDefault(); 
-        $(this).toggleClass('liked'); // Toggles the 'liked' class for the blue color
-        console.log($(this).hasClass('liked') ? 'Post liked!' : 'Post un-liked.');
-    });
+    try {
+        const snapshot = await getDoc(ref);
+        if (!snapshot.exists()) return;
 
+        const data = snapshot.data();
+        const likes = data.likes || [];
+        const isLiked = likes.includes(userId);
 
-    // --- 2. Share and Comment Button Logic (New) ---
-
-    // Function to handle the click interaction for sharing and commenting
-    function handleMicroInteraction(e) {
-        e.preventDefault(); 
-        const $button = $(this);
-
-        // For Share and Comment, we simply toggle a generic 'active' state
-        $button.toggleClass('active'); 
-        
-        // Custom logic for the console/server action
-        if ($button.attr('id') === 'share-button') {
-            console.log($button.hasClass('active') ? 'Share initiated/saved.' : 'Share action cancelled.');
-            // Add specific sharing API call here if needed (e.g., window.open(shareUrl))
-        } else if ($button.attr('id') === 'comment-button') {
-            console.log($button.hasClass('active') ? 'Comment box opened/active.' : 'Comment action closed.');
-            // Add specific logic here to reveal a comment input field
+        if (isLiked) {
+            // UNLIKE logic
+            await updateDoc(ref, {
+                likes: arrayRemove(userId),
+                likeCount: increment(-1)
+            });
+            updateLikeButton(docId, false);
+        } else {
+            // LIKE logic
+            await updateDoc(ref, {
+                likes: arrayUnion(userId),
+                likeCount: increment(1)
+            });
+            playSound('notify'); // Satisfying 'blip' sound
+            updateLikeButton(docId, true);
         }
+    } catch (err) {
+        console.error("INTERACTION ERROR:", err);
+        notify("Error", "Like system jamming. Retrying...", "error");
     }
-			// Attach the new handler to the Share and Comment buttons
-			$('#share-button').on('click', handleMicroInteraction);
-			$('#comment-button').on('click', handleMicroInteraction);
-			
-			// --- Language Dropdown Toggle Logic ---
-		$('#lang-toggle-btn').on('click', function(e) {
-			e.preventDefault();
-			e.stopPropagation(); // Prevent main.js or other scripts from interfering
-			
-			const $dropdown = $('#language-list');
-			
-			// Toggle the 'active' class to show/hide the dropdown
-			$dropdown.toggleClass('active');
-			
-			// Update the aria attribute for accessibility
-			$(this).attr('aria-expanded', $dropdown.hasClass('active'));
-		});
+}
 
-		// Hide the dropdown if the user clicks anywhere else on the page
-		$(document).on('click', function(e) {
-			if (!$(e.target).closest('.lang-dropdown-container').length) {
-				$('#language-list').removeClass('active');
-				$('#lang-toggle-btn').attr('aria-expanded', 'false');
-			}
-		});
-			
-});
+/**
+ * MARK INTEREST (For Freelancers claiming a task)
+ */
+export async function toggleInterest(docId, userId) {
+    const ref = doc(db, 'artifacts', appId, 'missions', docId);
+    // Logic similar to likes, but adds to an 'interestedUsers' array
+    // This allows the Admin to see who wants the job
+    try {
+        await updateDoc(ref, {
+            interestedOperatives: arrayUnion(userId)
+        });
+        playSound('granted');
+        notify("Interest Registered", "The Admin has been notified.", "success");
+        
+        // Update UI to show "PENDING"
+        $(`#btn-interest-${docId}`).text("INTEREST SENT").addClass('disabled');
+    } catch (err) {
+        notify("System Error", "Could not register interest.", "error");
+    }
+}
+
+// UI HELPER
+function updateLikeButton(id, isActive) {
+    const btn = $(`#btn-like-${id}`);
+    const countSpan = $(`#count-like-${id}`);
+    let currentCount = parseInt(countSpan.text()) || 0;
+
+    if (isActive) {
+        btn.addClass('active').css('color', 'var(--mh-red)');
+        btn.find('i').removeClass('far').addClass('fas'); // Solid heart
+        countSpan.text(currentCount + 1);
+    } else {
+        btn.removeClass('active').css('color', 'inherit');
+        btn.find('i').removeClass('fas').addClass('far'); // Outline heart
+        countSpan.text(currentCount - 1);
+    }
+}
