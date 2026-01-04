@@ -179,72 +179,57 @@ permalink: /Admin_Room.html
         }
 		
 		/* ==========================================================================
-		   MOBILE & TABLET RESPONSIVENESS (TARGET: 721px - 1600px)
+		   ADMIN MOBILE FIX (HEADER CLEARANCE)
 		   ========================================================================== */
-
-		/* 1. TABLET & MOBILE BREAKPOINT (980px) */
 		@media screen and (max-width: 980px) {
 
-			/* --- LAYOUT ADJUSTMENTS --- */
+			/* 1. SIDEBAR */
 			#admin-sidebar {
-				transform: translateX(-100%); /* Hide sidebar off-screen */
+				transform: translateX(-100%);
+				width: 260px;
+				position: fixed;
+				top: 60px;
+				z-index: 9999;
 				transition: transform 0.3s ease;
-				box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-				width: 280px;
 			}
-
+			
 			#admin-sidebar.mobile-active {
-				transform: translateX(0); /* Slide in when active */
+				transform: translateX(0);
 			}
 
+			/* 2. CONTENT CLEARANCE (The Fix) */
 			#admin-content {
-				margin-left: 0; /* Content takes full width */
-				padding: 20px 15px; /* Reduce padding */
+				margin-left: 0 !important;
+				width: 100% !important;
+				padding-top: 120px !important; /* Increased to clear the header */
+				padding-left: 20px !important;
+				padding-right: 20px !important;
 			}
 
-			/* --- TOP BAR --- */
-			#top-bar { padding: 0 15px; }
-			.hq-brand { font-size: 1rem; }
-
-			/* --- PANELS & HEADERS --- */
-			.panel-header {
-				flex-direction: column;
-				align-items: flex-start;
-				gap: 10px;
-			}
-			.panel-header h1 { font-size: 1.5rem; }
-
-			/* --- STAT CARDS --- */
-			.stats-grid {
-				grid-template-columns: 1fr; /* Stack cards vertically */
+			/* 3. TOP BAR LAYOUT */
+			#top-bar {
+				position: fixed;
+				top: 0; left: 0;
+				width: 100%;
+				height: 60px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				background: rgba(5, 7, 10, 0.95);
+				z-index: 10000;
+				padding: 0 20px;
 			}
 
-			/* --- TACTICAL TABLES (SCROLLABLE) --- */
-			.content-panel { overflow-x: hidden; } /* Prevent page scroll */
+			/* 4. DATA TABLES (Scrollable) */
 			.tactical-table {
 				display: block;
-				width: 100%;
-				overflow-x: auto; /* Allow table to scroll horizontally */
+				overflow-x: auto;
 				white-space: nowrap;
 			}
-
-			/* --- COMMS PANEL (STACKED) --- */
-			#panel-comms > div {
-				grid-template-columns: 1fr !important; /* Stack user list and chat */
-				height: auto !important;
-			}
-			#panel-comms .comms-user-list {
-				height: 150px;
-				margin-bottom: 20px;
-			}
-			#chat-feed {
-				height: 300px;
-			}
-
-			/* --- MENU OVERLAY --- */
-			#menu-overlay {
-				width: 85%; /* Take up most of screen on mobile */
-				right: -100%;
+			
+			/* 5. STATS GRID */
+			.stats-grid {
+				grid-template-columns: 1fr !important;
 			}
 		}
 

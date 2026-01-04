@@ -228,62 +228,75 @@ permalink: /Freelancers_Room.html
 			::-webkit-scrollbar-thumb:hover { background: #fff; }
 
 			/* ==========================================================================
-			   MOBILE & TABLET RESPONSIVENESS (TARGET: MOBILE DEVICES)
+			   MOBILE & TABLET HOTFIX V3.0 (FINAL)
 			   ========================================================================== */
 			@media screen and (max-width: 980px) {
 
-				/* 1. SIDEBAR BEHAVIOR (Hide off-screen) */
+				/* 1. SIDEBAR: Force Fixed & Hidden */
 				#sidebar {
-					position: fixed;
+					position: fixed !important;
+					top: 60px;
 					left: 0;
-					top: 60px; /* Below Top Bar */
-					bottom: 40px; /* Above Footer */
-					height: auto;
-					z-index: 2000;
-					transform: translateX(-100%); /* Hides it */
-					transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-					box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+					width: 260px;
+					height: calc(100% - 60px);
+					transform: translateX(-100%);
+					transition: transform 0.3s ease;
+					z-index: 9999;
 				}
-
-				/* The Class JS will add to show it */
+				
 				#sidebar.mobile-active {
 					transform: translateX(0);
 				}
 
-				/* 2. MAIN CONTENT (Full Width) */
-				.content-panel, #dashboard, #main-content {
-					margin-left: 0 !important; /* Remove sidebar gap */
+				/* 2. CONTENT: Force Full Width & Remove Margins */
+				/* We target ALL potential containers to ensure the gap is closed */
+				#page-wrapper, #dashboard, .content-panel, #main-content, body {
+					margin-left: 0 !important;
+					padding-left: 0 !important;
 					width: 100% !important;
-					padding: 20px 15px !important;
+					max-width: 100vw !important;
+					overflow-x: hidden; /* Prevents horizontal scroll */
 				}
 
-				/* 3. TASK GRIDS (Stack Vertically) */
+				/* 3. CONTENT PADDING: Push down so Top Bar doesn't cover it */
+				.content-panel, #dashboard {
+					padding-top: 80px !important;
+					padding-left: 20px !important;
+					padding-right: 20px !important;
+				}
+
+				/* 4. TOP BAR: Force Logo Left, Menu Right */
+				#top-bar, #header {
+					position: fixed !important;
+					top: 0; left: 0;
+					width: 100% !important;
+					height: 60px !important;
+					display: flex !important;
+					justify-content: space-between !important; /* Critical for button placement */
+					align-items: center !important;
+					background: rgba(5, 7, 10, 0.98) !important;
+					z-index: 10000;
+					padding: 0 20px !important;
+					box-sizing: border-box; /* Ensures padding doesn't break width */
+				}
+
+				/* 5. LOGO & MENU TEXT VISIBILITY */
+				.logo, .logo-text, .hq-brand {
+					display: block !important;
+					font-size: 1rem;
+				}
+				
+				#menu-btn, .menu-trigger {
+					display: block !important;
+					cursor: pointer;
+				}
+				
+				/* 6. TASK GRID: Stack Cards */
 				.task-grid {
-					grid-template-columns: 1fr !important; /* 1 Column */
+					display: grid !important;
+					grid-template-columns: 1fr !important;
 					gap: 20px;
 				}
-				
-				.task-card {
-					margin-bottom: 10px;
-				}
-
-				/* 4. HEADERS & TYPOGRAPHY */
-				.panel-header {
-					flex-direction: column;
-					align-items: flex-start;
-					gap: 10px;
-				}
-				.panel-header h1 { font-size: 1.5rem; }
-
-				/* 5. TOP BAR ADJUSTMENTS */
-				#top-bar { padding: 0 15px; }
-				.logo-text { font-size: 1rem; }
-
-				/* 6. HIDE/SHOW ELEMENTS */
-				#clock-display { display: none; }
-				
-				/* 7. MENUS */
-				#menu-overlay { width: 85%; right: -100%; }
 			}
 		</style>
 	</head>
