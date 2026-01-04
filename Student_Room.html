@@ -406,14 +406,63 @@ permalink: /Student_Room.html
 			.content-panel.active { display: block; }
 			@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-			/* MOBILE */
-			.mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 100; color: var(--mh-cyan); font-size: 1.5em; background: rgba(0,0,0,0.8); padding: 10px; border: 1px solid var(--mh-cyan); }
-			@media (max-width: 900px) {
-				.sidebar { display: none; }
-				.mobile-menu-btn { display: block; }
-				.hud-grid { grid-template-columns: 1fr; }
-				.form-grid { grid-template-columns: 1fr; }
-				.top-bar { justify-content: center; }
+			/* ==========================================================================
+			   MOBILE & TABLET RESPONSIVENESS (TARGET: MOBILE DEVICES)
+			   ========================================================================== */
+			@media screen and (max-width: 980px) {
+
+				/* 1. SIDEBAR BEHAVIOR (Hide off-screen) */
+				#sidebar {
+					position: fixed;
+					left: 0;
+					top: 60px; /* Below Top Bar */
+					bottom: 40px; /* Above Footer */
+					height: auto;
+					z-index: 2000;
+					transform: translateX(-100%); /* Hides it */
+					transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+					box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+				}
+
+				/* The Class JS will add to show it */
+				#sidebar.mobile-active {
+					transform: translateX(0);
+				}
+
+				/* 2. MAIN CONTENT (Full Width) */
+				.content-panel, #dashboard, #main-content {
+					margin-left: 0 !important; /* Remove sidebar gap */
+					width: 100% !important;
+					padding: 20px 15px !important;
+				}
+
+				/* 3. TASK GRIDS (Stack Vertically) */
+				.task-grid {
+					grid-template-columns: 1fr !important; /* 1 Column */
+					gap: 20px;
+				}
+				
+				.task-card {
+					margin-bottom: 10px;
+				}
+
+				/* 4. HEADERS & TYPOGRAPHY */
+				.panel-header {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 10px;
+				}
+				.panel-header h1 { font-size: 1.5rem; }
+
+				/* 5. TOP BAR ADJUSTMENTS */
+				#top-bar { padding: 0 15px; }
+				.logo-text { font-size: 1rem; }
+
+				/* 6. HIDE/SHOW ELEMENTS */
+				#clock-display { display: none; }
+				
+				/* 7. MENUS */
+				#menu-overlay { width: 85%; right: -100%; }
 			}
 		</style>
 	</head>
@@ -952,6 +1001,26 @@ permalink: /Student_Room.html
 						commitBtn.disabled = false;
 					}
 				}
+				
+				/* --- RESPONSIVE MENU LOGIC --- */
+				$(document).ready(function() {
+					$('#menu-btn, .menu-trigger').off('click').on('click', function(e) {
+						e.preventDefault();
+						// CHECK SCREEN SIZE
+						if (window.innerWidth <= 980) {
+							$('#sidebar').toggleClass('mobile-active');
+							$('#menu-overlay').fadeOut();
+						} else {
+							$('#menu-overlay').fadeIn().css('display','flex');
+						}
+					});
+
+					$('.nav-btn').click(function() {
+						if (window.innerWidth <= 980) {
+							$('#sidebar').removeClass('mobile-active');
+						}
+					});
+				});
 		</script>
 	</body>
 </html>
