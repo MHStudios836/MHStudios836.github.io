@@ -651,5 +651,21 @@ permalink: /DoD_Login_Style.html
 				}
 			});
 		</script>
+		<script type="module">
+			// Adding type="module" is the secret sauce here!
+			import { attachHoverSounds, playSound } from './assets/js/sound-engine.js';
+
+			document.addEventListener('DOMContentLoaded', () => {
+				// 1. Initialize the audio markers
+				attachHoverSounds('.sector-btn, .btn-abort, .btn-sign, .nav-link, button, a');
+				
+				// 2. Play the 'Access Granted' startup sound
+				// Note: Some browsers require a user click first, 
+				// but since they clicked "Login" to get here, it should fire!
+				playSound('granted');
+				
+				console.log("HUD Audio Systems: ONLINE");
+			});
+		</script>
 	</body>
 </html>

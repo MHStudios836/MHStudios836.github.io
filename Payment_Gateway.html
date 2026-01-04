@@ -142,7 +142,20 @@
 			}
 			.pay-btn:hover { background: #fff; box-shadow: 0 0 30px var(--mh-green); }
 
-			@media (max-width: 900px) {
+                        /* --- 11. FOOTER --- */
+                        #tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; }
+                        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+                        .footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+                        .footer-col ul { list-style: none; padding: 0; }
+                        .footer-col li { margin-bottom: 12px; }
+                        .footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+                        .footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+                        .social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+                        .social-grid a { color: #555; transition: 0.3s; }
+                        .social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+                        /* RESPONSIVE PATCHES */
+@media (max-width: 900px) {
 				.checkout-container { grid-template-columns: 1fr; }
 			}
 		</style>
@@ -249,6 +262,42 @@
 			</div>
 			
 		</div>
+   <footer id="tactical-footer">
+                        <div class="footer-grid">
+                                <div class="footer-col">
+                                        <h4>MH STUDIOS™</h4>
+                                        <p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+                                        <p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
+                                </div>
+                                <div class="footer-col">
+                                        <h4>SECTORS</h4>
+                                        <ul>
+                                                <li><a href="Products_Services_Room.html">The Armory</a></li>
+                                                <li><a href="Packages.html">Service Packages</a></li>
+                                                <li><a href="#guild-sector">The Guild</a></li>
+                                                <li><a href="DoD_Login_Style.html">Operative Login</a></li>
+                                        </ul>
+                                </div>
+                                <div class="footer-col">
+                                        <h4>LEGAL PROTOCOLS</h4>
+                                        <ul>
+                                                <li><a href="#">Privacy Policy</a></li>
+                                                <li><a href="#">Terms of Engagement</a></li>
+                                                <li><a href="#">Refund Policy</a></li>
+                                                <li><a href="#">PCI-DSS Compliance</a></li>
+                                        </ul>
+                                </div>
+                                <div class="footer-col">
+                                        <h4>SECURE CHANNELS</h4>
+                                        <div class="social-grid">
+                                                <a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
+                                                <a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
+                                                <a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
+                                                <a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
+                                        </div>
+                                </div>
+                        </div>
+                </footer>
 
 		<script src="assets/js/jquery.min.js"></script>
 		<script type="module" src="assets/js/payment-handler.js">

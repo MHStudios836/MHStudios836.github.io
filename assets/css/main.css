@@ -5058,4 +5058,45 @@ a, a:visited, a:hover, a:active, a:focus {
     text-decoration: none !important;
 }
 
+/* --- TACTICAL NOTIFICATIONS --- */
+#notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 350px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.mh-notification {
+    background: rgba(10, 15, 20, 0.95);
+    border-left: 5px solid var(--mh-blue);
+    color: #fff;
+    padding: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.mh-notification.show { transform: translateX(0); }
+
+.mh-notification.info { border-left-color: var(--mh-blue); }
+.mh-notification.warn { border-left-color: var(--mh-orange); }
+.mh-notification.error { border-left-color: var(--mh-red); }
+.mh-notification.success { border-left-color: var(--mh-green); }
+
+.mh-notification i { font-size: 1.2rem; }
+.mh-notification-content h5 { 
+    margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #888; 
+}
+.mh-notification-content p { margin: 2px 0 0; font-size: 0.9rem; font-weight: bold; }
 /* --- END CUSTOM STYLES --- */

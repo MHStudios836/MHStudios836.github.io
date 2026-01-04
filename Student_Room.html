@@ -469,7 +469,19 @@
 
 				</div> </div> </div> <script src="assets/js/jquery.min.js"></script>
 		<script type="module" src="assets/js/student-core.js"></script>
-		
+		<script type="module">
+			import { startSessionMonitor } from './assets/js/session-monitor.js';
+			import { attachHoverSounds, playSound } from './assets/js/sound-engine.js';
+
+			document.addEventListener('DOMContentLoaded', () => {
+				// Start the AFK Watchdog
+				startSessionMonitor();
+				
+				// Your other HUD inits
+				attachHoverSounds('.sector-btn, .btn-abort, .btn-sign, button, a');
+				playSound('granted');
+			});
+		</script>
 		<script>
 			$(document).ready(function() {
 				// 1. Navigation Logic

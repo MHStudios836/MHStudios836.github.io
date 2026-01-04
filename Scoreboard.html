@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH Studios™ | Operative Scoreboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        :root {
+            --mh-blue: #0080FF;
+            --mh-cyan: #00e5ff;
+            --mh-red: #ff3333;
+            --mh-gold: #ffcc00;
+            --mh-glass: rgba(10, 15, 20, 0.9);
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Uni Sans', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        #page-wrapper { padding: 50px 20px; z-index: 2; position: relative; }
+
+        /* THE TABLE CONTAINER */
+        .scoreboard-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--mh-glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            box-shadow: 0 0 50px rgba(0, 128, 255, 0.1);
+        }
+
+        .board-header {
+            border-bottom: 2px solid var(--mh-blue);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .board-header h1 { 
+            margin: 0; font-size: 2.2rem; letter-spacing: 3px; 
+            text-shadow: 0 0 10px var(--mh-blue);
+        }
+
+        /* DATA TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        
+        thead th {
+            text-align: left;
+            padding: 15px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #666;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #333;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.2s;
+        }
+
+        tbody tr:hover { background: rgba(0, 128, 255, 0.05); }
+
+        td { padding: 15px; font-family: 'Courier New', monospace; font-size: 0.9rem; }
+
+        /* REDACTION STYLE */
+        .redacted {
+            background: #fff;
+            color: #fff;
+            padding: 0 5px;
+            user-select: none;
+        }
+
+        .rank-tag {
+            color: var(--mh-gold);
+            font-weight: bold;
+        }
+
+        .faction-tag {
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            background: #222;
+            border: 1px solid #444;
+        }
+
+        /* FOOTER */
+        #footer {
+            height: 40px; background: #000; border-top: 1px solid #222;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; font-family: monospace; font-size: 0.7rem; color: #444;
+        }
+		
+		/* Rank Icon Styling */
+		.rank-column {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.rank-icon {
+			width: 24px;
+			height: 24px;
+			object-fit: contain;
+			filter: drop-shadow(0 0 5px var(--mh-gold)); /* Gives that BF3 glow */
+		}
+
+		.rank-tag {
+			color: var(--mh-gold);
+			font-weight: bold;
+			letter-spacing: 1px;
+		}
+    </style>
+</head>
+<body>
+
+    <div id="page-wrapper">
+        <div class="scoreboard-wrap">
+            <header class="board-header">
+                <h1>GLOBAL_RANKINGS</h1>
+                <div style="text-align: right; color: var(--mh-cyan); font-family: monospace; font-size: 0.7rem;">
+                    LIVE_FEED // ENCRYPTED_DOD_UPLINK
+                </div>
+            </header>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operative</th>
+                        <th>Rank</th>
+                        <th>Type</th>
+                        <th>Faction</th>
+                        <th>Group</th>
+                        <th>Combat_XP</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer id="footer">
+		<span>GRID: <em>INTEL_OS</em></span>
+		<span>MH STUDIOS™ &copy; 2026</span>
+		<span id="uptime-display">UPLINK: 00:00:00</span>
+	</footer>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script type="module" src="assets/js/scoreboard-logic.js"></script>
+</body>
+
+
+<!--
+
+4. Pro-Tip: The "Missing Icon" Fallback
+In the JS above, I added onerror="this.style.display='none'". This is a "Fail-Safe." If you haven't uploaded an icon for a specific rank yet, the scoreboard won't show a broken "X" image—it will just hide the icon and show the text, keeping your UI professional.
+
+5. Tactical Refinement: The Rank Tier List
+To keep your "Warlord" logic consistent, I suggest this XP-to-Rank mapping in your head (or a future JS constant):
+
+0 - 500 XP: pvt.png
+
+501 - 1500 XP: cpl.png
+
+1501 - 5000 XP: sgt.png
+
+5001+ XP: col.png
+
+Mission Update: Your Scoreboard is now visually elite
+
+-->
+
+</html>

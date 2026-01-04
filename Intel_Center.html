@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH Studios™ | Intelligence Center</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* TACTICAL GRID STYLING */
+        :root {
+            --mh-blue: #0080FF;
+            --mh-orange: #ff9d00;
+            --mh-cyan: #00e5ff;
+            --mh-dark: #0a0c0f;
+            --mh-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Uni Sans', sans-serif;
+            margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+        }
+
+        /* DYNAMIC THEME CLASSES */
+        body.theme-student { --accent: var(--mh-blue); }
+        body.theme-freelancer { --accent: var(--mh-orange); }
+
+        #page-wrapper { flex: 1; padding: 60px 20px; position: relative; z-index: 2; }
+
+        .intel-container {
+            max-width: 1200px; margin: 0 auto;
+            background: rgba(10, 15, 20, 0.8);
+            border: 1px solid var(--mh-border);
+            backdrop-filter: blur(10px);
+            border-top: 4px solid var(--accent);
+        }
+
+        /* HEADER */
+        .intel-header {
+            padding: 30px; border-bottom: 1px solid var(--mh-border);
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        .intel-header h1 { 
+            margin: 0; font-size: 2rem; letter-spacing: 2px; text-transform: uppercase; 
+            color: var(--accent); text-shadow: 0 0 15px rgba(var(--accent), 0.3);
+        }
+
+        /* THE GRID */
+        .mission-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px; padding: 30px;
+        }
+
+        .intel-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--mh-border);
+            padding: 20px; transition: 0.3s;
+            position: relative; overflow: hidden;
+            cursor: pointer;
+        }
+
+        .intel-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .intel-card .tag {
+            font-size: 0.6rem; font-weight: bold; padding: 3px 8px;
+            background: var(--accent); color: #000;
+            display: inline-block; margin-bottom: 10px;
+        }
+
+        .intel-card h3 { margin: 10px 0; font-size: 1.1rem; text-transform: uppercase; }
+        .intel-card p { font-size: 0.85rem; color: #aaa; line-height: 1.4; margin-bottom: 20px; }
+
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--mh-border); padding-top: 15px;
+            font-family: monospace; font-size: 0.75rem; color: var(--accent);
+        }
+
+        /* FOOTER */
+        #footer {
+            height: 40px; background: #000; border-top: 1px solid var(--mh-border);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; font-family: monospace; font-size: 0.7rem; color: #555;
+        }
+        #footer em { color: var(--accent); font-style: normal; }
+
+        /* LOADING OVERLAY */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--mh-cyan); font-family: monospace;
+        }
+		
+		/* Tactical Progress Bar */
+		.progress-container {
+			width: 100%;
+			height: 4px;
+			background: rgba(255,255,255,0.1);
+			margin-top: 10px;
+			position: relative;
+		}
+
+		.progress-bar {
+			height: 100%;
+			background: var(--accent);
+			box-shadow: 0 0 10px var(--accent);
+			transition: width 1s ease-in-out;
+		}
+    </style>
+</head>
+<body class="theme-student"> <div id="loader">INITIALIZING SATELLITE UPLINK...</div>
+
+    <div id="page-wrapper">
+        <div class="intel-container">
+            <header class="intel-header">
+                <div>
+                    <h1 id="board-title">INTELLIGENCE_BOARD</h1>
+                    <p id="board-subtitle" style="color: #666; font-family: monospace; margin: 5px 0 0;"></p>
+                </div>
+                <div id="op-stat" style="text-align: right; font-family: monospace; font-size: 0.8rem;">
+                    STATUS: <span style="color: var(--mh-green)">CONNECTED</span>
+                </div>
+            </header>
+
+            <div class="mission-grid" id="main-grid">
+                </div>
+        </div>
+    </div>
+
+    <footer id="footer">
+		<span>GRID: <em>INTEL_OS</em></span>
+		<span>MH STUDIOS™ &copy; 2026</span>
+		<span id="uptime-display">UPLINK: 00:00:00</span>
+	</footer>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script type="module" src="assets/js/intel-center-logic.js"></script>
+</body>
+</html>
