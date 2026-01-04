@@ -145,9 +145,29 @@ permalink: /Payment_Gateway.html
 			}
 			.pay-btn:hover { background: #fff; box-shadow: 0 0 30px var(--mh-green); }
 
-			@media (max-width: 900px) {
-				.checkout-container { grid-template-columns: 1fr; }
-			}
+                        /* --- 11. FOOTER --- */
+                        #tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; }
+                        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+                        .footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+                        .footer-col ul { list-style: none; padding: 0; }
+                        .footer-col li { margin-bottom: 12px; }
+                        .footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+                        .footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+                        .social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+                        .social-grid a { color: #555; transition: 0.3s; }
+                        .social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+                        /* RESPONSIVE PATCHES */
+                        @media (max-width: 900px) {
+                                .hero-title { font-size: 3em; letter-spacing: 2px; }
+                                .service-matrix, .log-grid { grid-template-columns: 1fr; }
+                                #stats-stream { flex-direction: column; gap: 50px; }
+                                .cta-group { flex-direction: column; }
+                                .btn-main { width: 100%; text-align: center; }
+                                .timeline-wrap { flex-direction: column; gap: 40px; }
+                                .timeline-wrap::before { width: 2px; height: 100%; left: 50%; top: 0; }
+                                #menu-overlay { width: 100%; }
+                        }
 		</style>
 	</head>
 	<body>
