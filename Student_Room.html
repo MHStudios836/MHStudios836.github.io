@@ -407,74 +407,62 @@ permalink: /Student_Room.html
 			@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 			/* ==========================================================================
-			   MOBILE & TABLET HOTFIX V3.0 (FINAL)
+			   MOBILE FIX: OVERLAY MODE (BASED ON YOUR HTML)
 			   ========================================================================== */
 			@media screen and (max-width: 980px) {
 
-				/* 1. SIDEBAR: Force Fixed & Hidden */
-				#sidebar {
-					position: fixed !important;
-					top: 60px;
-					left: 0;
-					width: 260px;
-					height: calc(100% - 60px);
-					transform: translateX(-100%);
-					transition: transform 0.3s ease;
-					z-index: 9999;
-				}
-				
-				#sidebar.mobile-active {
-					transform: translateX(0);
-				}
-
-				/* 2. CONTENT: Force Full Width & Remove Margins */
-				/* We target ALL potential containers to ensure the gap is closed */
-				#page-wrapper, #dashboard, .content-panel, #main-content, body {
-					margin-left: 0 !important;
-					padding-left: 0 !important;
+				/* 1. LAYOUT RESET: Make the container fill the screen */
+				#app-container {
+					display: block !important; /* Stop Flexbox side-by-side */
 					width: 100% !important;
-					max-width: 100vw !important;
-					overflow-x: hidden; /* Prevents horizontal scroll */
+					height: auto !important;
+					overflow-x: hidden !important;
 				}
 
-				/* 3. CONTENT PADDING: Push down so Top Bar doesn't cover it */
-				.content-panel, #dashboard {
-					padding-top: 80px !important;
-					padding-left: 20px !important;
-					padding-right: 20px !important;
+				/* 2. HIDE DESKTOP SIDEBAR (This fixes the "Half Page" empty space) */
+				.sidebar {
+					display: none !important; 
 				}
 
-				/* 4. TOP BAR: Force Logo Left, Menu Right */
-				#top-bar, #header {
-					position: fixed !important;
-					top: 0; left: 0;
-					width: 100% !important;
-					height: 60px !important;
-					display: flex !important;
-					justify-content: space-between !important; /* Critical for button placement */
-					align-items: center !important;
-					background: rgba(5, 7, 10, 0.98) !important;
-					z-index: 10000;
-					padding: 0 20px !important;
-					box-sizing: border-box; /* Ensures padding doesn't break width */
-				}
-
-				/* 5. LOGO & MENU TEXT VISIBILITY */
-				.logo, .logo-text, .hq-brand {
+				/* 3. POSITION THE MENU BUTTON (Top Right Corner) */
+				#menu-btn {
 					display: block !important;
-					font-size: 1rem;
-				}
-				
-				#menu-btn, .menu-trigger {
-					display: block !important;
+					position: fixed;
+					top: 20px;
+					right: 20px;
+					z-index: 10000; /* Above everything */
+					color: var(--mh-cyan);
+					background: rgba(0,0,0,0.8); /* Dark background to be visible */
+					padding: 10px 15px;
+					border-radius: 4px;
+					border: 1px solid var(--mh-cyan);
+					font-size: 1.5rem;
 					cursor: pointer;
 				}
-				
-				/* 6. TASK GRID: Stack Cards */
-				.task-grid {
-					display: grid !important;
-					grid-template-columns: 1fr !important;
-					gap: 20px;
+
+				/* 4. EXPAND MAIN CONTENT */
+				/* Target whatever div is next to the sidebar inside app-container */
+				#app-container > div:not(.sidebar) {
+					width: 100% !important;
+					margin: 0 !important;
+					padding: 80px 20px 20px 20px !important; /* Top padding clears the button */
+					max-width: 100vw !important;
+				}
+
+				/* 5. FORCE LOGO VISIBILITY (If you want it on mobile) */
+				/* We create a pseudo-header since the sidebar is hidden */
+				#app-container::before {
+					content: "MH STUDIOS"; /* Or your text */
+					display: block;
+					position: fixed;
+					top: 20px;
+					left: 20px;
+					font-weight: bold;
+					color: var(--mh-gold);
+					z-index: 9999;
+					font-size: 1.2rem;
+					letter-spacing: 2px;
+					font-family: 'Uni Sans', sans-serif;
 				}
 			}
 		</style>
