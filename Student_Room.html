@@ -407,63 +407,63 @@ permalink: /Student_Room.html
 			@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 			/* ==========================================================================
-			   MOBILE FIX: OVERLAY MODE (BASED ON YOUR HTML)
+			   MOBILE PATCH (SCAVENGED FROM INDEX.HTML LOGIC)
 			   ========================================================================== */
-			@media screen and (max-width: 980px) {
+			@media (max-width: 900px) {
 
-				/* 1. LAYOUT RESET: Make the container fill the screen */
-				#app-container {
-					display: block !important; /* Stop Flexbox side-by-side */
+				/* 1. FORCE FULL WIDTH (Like Index 'width: 100%') */
+				#app-container, body, html {
+					display: block !important;
 					width: 100% !important;
-					height: auto !important;
-					overflow-x: hidden !important;
+					margin: 0 !important;
+					padding: 0 !important;
+					overflow-x: hidden;
 				}
 
-				/* 2. HIDE DESKTOP SIDEBAR (This fixes the "Half Page" empty space) */
-				.sidebar {
-					display: none !important; 
+				/* 2. KILL THE SIDEBAR (Index doesn't have one, so we hide it) */
+				.sidebar, #sidebar, #admin-sidebar {
+					display: none !important;
 				}
 
-				/* 3. POSITION THE MENU BUTTON (Top Right Corner) */
-				#menu-btn {
+				/* 3. STACK THE GRIDS (Like Index '.service-matrix') */
+				.task-grid, .stats-grid, .tactical-table, .action-row {
+					display: grid !important;
+					grid-template-columns: 1fr !important; /* Force 1 Column */
+					gap: 20px;
+					width: 100% !important;
+				}
+
+				/* 4. CONTENT PADDING (To clear the Fixed Header) */
+				/* We target the div NEXT to the sidebar */
+				#app-container > div:not(.sidebar) {
+					margin-left: 0 !important;
+					width: 100% !important;
+					padding: 90px 20px 40px 20px !important; /* Top padding is key */
+					box-sizing: border-box !important;
+				}
+
+				/* 5. MENU BUTTON (Ensure it's visible like Index controls) */
+				#menu-btn, .menu-trigger {
 					display: block !important;
 					position: fixed;
 					top: 20px;
 					right: 20px;
-					z-index: 10000; /* Above everything */
-					color: var(--mh-cyan);
-					background: rgba(0,0,0,0.8); /* Dark background to be visible */
+					z-index: 10000;
+					background: rgba(0,0,0,0.8);
 					padding: 10px 15px;
-					border-radius: 4px;
 					border: 1px solid var(--mh-cyan);
-					font-size: 1.5rem;
-					cursor: pointer;
+					color: var(--mh-cyan);
+					border-radius: 4px;
 				}
 
-				/* 4. EXPAND MAIN CONTENT */
-				/* Target whatever div is next to the sidebar inside app-container */
-				#app-container > div:not(.sidebar) {
-					width: 100% !important;
-					margin: 0 !important;
-					padding: 80px 20px 20px 20px !important; /* Top padding clears the button */
-					max-width: 100vw !important;
+				/* 6. HEADER FIX (Admin Room Specific) */
+				.panel-header {
+					flex-direction: column !important;
+					align-items: flex-start !important;
 				}
 
-				/* 5. FORCE LOGO VISIBILITY (If you want it on mobile) */
-				/* We create a pseudo-header since the sidebar is hidden */
-				#app-container::before {
-					content: "MH STUDIOS"; /* Or your text */
-					display: block;
-					position: fixed;
-					top: 20px;
-					left: 20px;
-					font-weight: bold;
-					color: var(--mh-gold);
-					z-index: 9999;
-					font-size: 1.2rem;
-					letter-spacing: 2px;
-					font-family: 'Uni Sans', sans-serif;
-				}
+				/* 7. OVERLAY (From Index Code) */
+				#menu-overlay { width: 100% !important; }
 			}
 		</style>
 	</head>
