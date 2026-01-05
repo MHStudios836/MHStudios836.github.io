@@ -4,7 +4,7 @@ permalink: /Service_Request_Form.html
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<title>MH Studios™ | Mission Uplink</title>
+		<title>MH Studios™ | Codemaster Uplink</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		
@@ -14,42 +14,66 @@ permalink: /Service_Request_Form.html
 		
 		<style>
 			/* ==========================================================================
-			   THEME: MISSION UPLINK (TITAN SLATE)
+			   THEME: CODEMASTER TERMINAL (V2.0)
 			   ========================================================================== */
 			:root {
-				--mh-blue: #0080FF;
-				--mh-cyan: #00e5ff;
-				--mh-dark: #05070a;
-				--mh-panel: rgba(13, 17, 23, 0.98);
-				--mh-text: #e0e0e0;
-				--mh-border: rgba(0, 128, 255, 0.2);
+				--code-blue: #00f3ff; /* Cyan Neon */
+				--code-dim: rgba(0, 243, 255, 0.1);
+				--bg-dark: #050505;
+				--panel-bg: rgba(10, 10, 12, 0.95);
+				--terminal-green: #0aff0a; /* Optional Hacker Green accents */
 			}
 
 			body {
-				background-color: #000;
+				background-color: var(--bg-dark);
+				/* Grid Background */
 				background-image: 
-					radial-gradient(circle at 50% 50%, #0a1018 0%, #000 100%),
-					linear-gradient(rgba(0, 128, 255, 0.05) 1px, transparent 1px),
-					linear-gradient(90deg, rgba(0, 128, 255, 0.05) 1px, transparent 1px);
-				background-size: 100% 100%, 40px 40px, 40px 40px;
-				color: var(--mh-text);
-				font-family: 'Uni Sans', sans-serif;
+					linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+				background-size: 30px 30px;
+				color: #ccc;
+				font-family: 'Consolas', 'Monaco', 'Courier New', monospace; /* True Coder Font */
 				margin: 0;
+				overflow-x: hidden;
 			}
 
-			/* --- 1. FORM CONTAINER --- */
+			/* CRT SCANLINE EFFECT OVERLAY */
+			body::after {
+				content: " ";
+				display: block;
+				position: fixed;
+				top: 0; left: 0; bottom: 0; right: 0;
+				background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+				z-index: 999;
+				background-size: 100% 2px, 3px 100%;
+				pointer-events: none;
+			}
+
+			/* --- 1. THE TERMINAL CONTAINER --- */
 			#uplink-wrapper {
 				max-width: 900px;
-				margin: 100px auto;
+				margin: 80px auto;
 				padding: 40px;
-				background: var(--mh-panel);
-				border: 1px solid var(--mh-border);
-				box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+				background: var(--panel-bg);
+				border: 1px solid var(--code-blue);
+				box-shadow: 0 0 20px var(--code-dim), inset 0 0 40px rgba(0,0,0,0.8);
 				position: relative;
+				/* Cyber Corners using clip-path */
+				clip-path: polygon(
+					0 0, 20px 0, 0 20px, 0 100%, 
+					calc(100% - 20px) 100%, 100% calc(100% - 20px), 100% 0
+				);
+			}
+
+			/* Glowing Border Effect Hack */
+			#uplink-wrapper::before {
+				content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+				box-shadow: inset 0 0 0 1px var(--code-dim);
+				z-index: -1; pointer-events: none;
 			}
 
 			.form-header {
-				border-bottom: 2px solid var(--mh-blue);
+				border-bottom: 1px dashed var(--code-blue);
 				padding-bottom: 20px;
 				margin-bottom: 40px;
 				display: flex;
@@ -57,47 +81,141 @@ permalink: /Service_Request_Form.html
 				align-items: flex-end;
 			}
 
-			.header-main h1 { font-size: 2.5em; color: #fff; margin: 0; letter-spacing: 2px; }
-			.header-main span { color: var(--mh-cyan); font-family: 'Courier New'; font-size: 0.9em; }
+			/* GLITCH TEXT EFFECT */
+			.glitch-text {
+				font-size: 2.5em;
+				color: #fff;
+				text-transform: uppercase;
+				position: relative;
+				text-shadow: 2px 2px var(--code-blue);
+				letter-spacing: 4px;
+			}
+			
+			@keyframes glitch-anim {
+				0% { clip-path: inset(10% 0 80% 0); transform: translate(-2px, 1px); }
+				20% { clip-path: inset(80% 0 10% 0); transform: translate(2px, -1px); }
+				40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
+				60% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -2px); }
+				100% { clip-path: inset(50% 0 30% 0); transform: translate(0); }
+			}
+			
+			.glitch-text:hover {
+				animation: glitch-anim 0.3s infinite linear alternate-reverse;
+			}
+			
+			/* --- LOGO INTERACTION --- */
+			.logo-uplink {
+				display: inline-block;
+				transition: all 0.3s ease;
+			}
 
-			/* --- 2. THE TACTICAL INPUTS --- */
+			.tactical-logo {
+				height: 50px; /* Keep your original size */
+				filter: drop-shadow(0 0 5px var(--code-blue));
+				/* The Animation Physics */
+				transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+			}
+
+			/* THE HOVER EFFECT */
+			.logo-uplink:hover .tactical-logo {
+				transform: scale(1.35) rotate(5deg); /* Zoom + slight tilt */
+				filter: drop-shadow(0 0 20px var(--code-blue)) brightness(1.2); /* Intensify Glow */
+				cursor: pointer;
+			}
+						
+			.header-main span { color: var(--code-blue); font-size: 0.8em; display: block; margin-top: 5px; }
+
+			/* --- 2. CODEMASTER INPUTS --- */
 			.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
 			
-			.input-block { margin-bottom: 25px; }
-			.input-block label { display: block; color: #666; font-size: 0.8em; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+			.input-block { margin-bottom: 25px; position: relative; }
+			
+			.input-block label { 
+				display: block; color: var(--code-blue); font-size: 0.75em; margin-bottom: 8px; 
+				text-transform: uppercase; letter-spacing: 1px; font-weight: bold;
+			}
 			
 			.tac-input {
-				width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 15px;
-				font-family: 'Courier New', monospace; outline: none; transition: 0.3s;
+				width: 100%; 
+				background: rgba(0, 0, 0, 0.6); 
+				border: 1px solid #333; 
+				border-left: 3px solid #333;
+				color: #fff; 
+				padding: 15px;
+				font-family: 'Consolas', monospace; 
+				font-size: 1em;
+				outline: none; 
+				transition: 0.3s;
 			}
-			.tac-input:focus { border-color: var(--mh-blue); box-shadow: 0 0 10px rgba(0, 128, 255, 0.2); }
-			
-			select.tac-input { cursor: pointer; color: var(--mh-cyan); }
 
-			/* --- 3. UPLOAD AREA --- */
+			/* Focus State: Becomes "Active" Code Line */
+			.tac-input:focus { 
+				border-color: var(--code-blue); 
+				border-left: 3px solid var(--code-blue);
+				background: rgba(0, 243, 255, 0.05);
+				box-shadow: 5px 0 15px -5px var(--code-blue);
+			}
+
+			select.tac-input { cursor: pointer; color: #aaa; }
+			select.tac-input:focus { color: #fff; }
+
+			/* --- 3. DROP ZONE (Holographic Style) --- */
 			.upload-zone {
-				border: 2px dashed #333; padding: 40px; text-align: center; color: #555;
+				border: 1px dashed #444; 
+				background: repeating-linear-gradient(45deg, rgba(0,0,0,0), rgba(0,0,0,0) 10px, rgba(0,243,255,0.02) 10px, rgba(0,243,255,0.02) 20px);
+				padding: 40px; text-align: center; color: #666;
 				transition: 0.3s; cursor: pointer; margin-bottom: 30px;
 			}
-			.upload-zone:hover { border-color: var(--mh-cyan); color: #fff; background: rgba(0, 229, 255, 0.02); }
-			.upload-zone i { font-size: 2em; margin-bottom: 10px; display: block; }
+			.upload-zone:hover { border-color: var(--code-blue); color: #fff; box-shadow: 0 0 15px var(--code-dim); }
+			.upload-zone i { font-size: 2.5em; margin-bottom: 10px; display: block; color: var(--code-blue); }
 
-			/* --- 4. SUBMIT BUTTON --- */
+			/* --- 4. EXECUTE BUTTON --- */
 			.submit-btn {
-				width: 100%; padding: 20px; background: var(--mh-blue); color: #000; border: none;
-				font-size: 1.2em; font-weight: 900; letter-spacing: 3px; cursor: pointer;
+				width: 100%; padding: 20px; 
+				background: transparent; 
+				color: var(--code-blue); 
+				border: 2px solid var(--code-blue);
+				font-size: 1.2em; font-family: 'Consolas', monospace; font-weight: bold;
+				letter-spacing: 3px; cursor: pointer;
 				text-transform: uppercase; transition: 0.3s;
-				clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+				position: relative; overflow: hidden;
 			}
-			.submit-btn:hover { background: #fff; box-shadow: 0 0 30px var(--mh-blue); transform: scale(1.02); }
+			
+			/* Button Hover Fill Effect */
+			.submit-btn::before {
+				content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+				background: var(--code-blue); transition: 0.4s; z-index: -1;
+			}
+			.submit-btn:hover::before { left: 0; }
+			.submit-btn:hover { color: #000; box-shadow: 0 0 30px var(--code-blue); }
 
-			/* FOOTER HUD */
+			/* HUD FOOTER */
 			.footer-hud {
 				margin-top: 40px; padding-top: 20px; border-top: 1px solid #222;
-				font-size: 0.7em; color: #444; font-family: 'Courier New'; display: flex; justify-content: space-between;
+				font-size: 0.7em; color: #555; display: flex; justify-content: space-between;
 			}
+			.status-light {
+				width: 8px; height: 8px; background: var(--code-blue); border-radius: 50%;
+				display: inline-block; margin-right: 5px; box-shadow: 0 0 5px var(--code-blue);
+				animation: blink 2s infinite;
+			}
+			@keyframes blink { 0% {opacity:1;} 50% {opacity:0.3;} 100% {opacity:1;} }
 
-			@media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+			/* --- FOOTER (Standard) --- */
+			#tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; z-index: 1000; position:relative; }
+			.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--code-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+			.footer-col ul { list-style: none; padding: 0; }
+			.footer-col li { margin-bottom: 12px; }
+			.footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+			.footer-col a:hover { color: var(--code-blue); padding-left: 5px; }
+			.social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+			.social-grid a { color: #555; transition: 0.3s; }
+			.social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+			@media (max-width: 900px) {
+				.form-grid { grid-template-columns: 1fr; }
+			}
 		</style>
 	</head>
 	<body>
@@ -105,114 +223,165 @@ permalink: /Service_Request_Form.html
 		<div id="uplink-wrapper">
 			<header class="form-header">
 				<div class="header-main">
-					<h1>MISSION UPLINK</h1>
-					<span>SYSTEM: SERVICE_REQUEST_PROTOCOL_V8</span>
+					<h1 class="glitch-text">/> MISSION UPLINK_</h1>
+					<span>[SECURE CHANNEL: ENCRYPTED]</span>
 				</div>
 				<div style="text-align:right;">
-					<img src="images/Logo_1.png" alt="MH" style="height:40px;">
+					<a href="https://mhtstudios836.github.io" class="logo-uplink" title="RETURN TO BASE">
+						<img src="images/Logo_2.png" alt="MH" class="tactical-logo">
+					</a>
 				</div>
 			</header>
 
 			<form id="master-request-form">
 				<div class="form-grid">
 					<div class="input-block">
-						<label>OPERATIVE NAME (ALIAS)</label>
-						<input type="text" id="client-name" class="tac-input" placeholder="Enter Full Name" required>
+						<label>> OPERATIVE_ID (NAME)</label>
+						<input type="text" id="client-name" class="tac-input" placeholder="Type name..." required>
 					</div>
 					<div class="input-block">
-						<label>COMM_CHANNEL (EMAIL)</label>
-						<input type="email" id="client-email" class="tac-input" placeholder="email@example.com" required>
+						<label>> COMMS_LINK (EMAIL)</label>
+						<input type="email" id="client-email" class="tac-input" placeholder="user@domain.com" required>
 					</div>
 				</div>
 
 				<div class="form-grid">
 					<div class="input-block">
-						<label>MISSION SECTOR (BRANCH)</label>
+						<label>> TARGET_SECTOR</label>
 						<select id="mission-sector" class="tac-input">
-							<option value="web">MH E-Services™ (Web/Software)</option>
-							<option value="graphics">Creative Arts® (Graphic Design)</option>
-							<option value="video">Video Operations (Videography)</option>
-							<option value="audio">MH Sounds™ (Voice/Audio)</option>
-							<option value="translation">Translation Ops</option>
-							<option value="gaming">Project: IRONCLAD (Game Dev)</option>
+							<option value="web">[01] MH E-Services™ (Web/Dev)</option>
+							<option value="graphics">[02] Creative Arts® (Design)</option>
+							<option value="video">[03] Video Operations</option>
+							<option value="audio">[04] MH Sounds™ (Audio/TTS)</option>
+							<option value="translation">[05] Translation Ops</option>
+							<option value="gaming">[06] Project: IRONCLAD (Game Dev)</option>
 						</select>
 					</div>
 					<div class="input-block">
-						<label>URGENCY CLEARANCE</label>
+						<label>> PRIORITY_LEVEL</label>
 						<select id="mission-urgency" class="tac-input">
-							<option value="standard">STANDARD (3-7 DAYS)</option>
-							<option value="priority">PRIORITY (48 HOURS)</option>
-							<option value="immediate">IMMEDIATE (ASAP)</option>
+							<option value="standard">DEFCON 4 (Standard)</option>
+							<option value="priority">DEFCON 3 (High Priority)</option>
+							<option value="immediate">DEFCON 1 (IMMEDIATE)</option>
 						</select>
 					</div>
 				</div>
 
 				<div class="input-block">
-					<label>MISSION BRIEFING (PROJECT DESCRIPTION)</label>
-					<textarea id="mission-desc" class="tac-input" rows="6" placeholder="Provide complete specifications, objectives, and constraints..." required></textarea>
+					<label>> EXECUTION_PLAN (BRIEFING)</label>
+					<textarea id="mission-desc" class="tac-input" rows="6" placeholder="// Enter detailed mission parameters here..." required></textarea>
 				</div>
 
 				<div class="input-block">
-					<label>INTEL ATTACHMENTS (FILES/ASSETS)</label>
-					<div class="upload-zone" id="drop-zone">
-						<i class="fas fa-cloud-upload-alt"></i>
-						<span>DRAG & DROP INTEL PACKETS OR CLICK TO BROWSE</span>
+					<label>> INTEL_PACKETS (FILES)</label>
+					<div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click();">
+						<i class="fas fa-microchip"></i>
+						<span>[CLICK TO MOUNT DATA DRIVE]</span>
 						<input type="file" id="file-input" hidden multiple>
 					</div>
+					<div id="file-name-display" style="color: var(--code-blue); font-family:'Consolas'; font-size: 0.8em; margin-top: 10px; text-align: center;"></div>
 				</div>
 
 				<div style="margin-bottom:30px;">
 					<label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:0.8em; color:#888;">
-						<input type="checkbox" required> I CONFIRM THAT ALL PROVIDED INTEL IS ACCURATE AND COMPLIES WITH MH STUDIOS™ PROTOCOLS.
+						<input type="checkbox" required> [CONFIRM] PROTOCOLS READ AND ACCEPTED.
 					</label>
 				</div>
 
-				<button type="submit" class="submit-btn" id="submit-btn">TRANSMIT REQUEST</button>
+				<button type="submit" class="submit-btn" id="submit-btn">
+					> EXECUTE TRANSMISSION
+				</button>
 			</form>
 
 			<div class="footer-hud">
-				<span>ID: SECURE_FORM_836</span>
-				<span>ENCRYPTION: AES-256 ACTIVE</span>
-				<span>LATENCY: 14MS</span>
+				<span><span class="status-light"></span>SYSTEM ONLINE</span>
+				<span>LATENCY: 12ms</span>
+				<span>BUILD: v2.0.4_MH_CODEMASTERS</span>
 			</div>
 		</div>
 
 		<script src="assets/js/jquery.min.js"></script>
 		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+		
+		<footer id="tactical-footer">
+			<div class="footer-grid">
+				<div class="footer-col">
+					<h4>MH STUDIOS™</h4>
+					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+					<p style="color:#444;">&copy; 2026 ALL RIGHTS RESERVED.</p>
+				</div>
+				<div class="footer-col">
+					<h4>SECTORS</h4>
+					<ul>
+						<li><a href="Products_Services_Room.html">The Armory</a></li>
+						<li><a href="Packages.html">Service Packages</a></li>
+						<li><a href="#guild-sector">The Guild</a></li>
+						<li><a href="DoD_Login_Style.html">Operative Login</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>LEGAL PROTOCOLS</h4>
+					<ul>
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Terms of Engagement</a></li>
+						<li><a href="#">Refund Policy</a></li>
+						<li><a href="#">PCI-DSS Compliance</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>SECURE CHANNELS</h4>
+					<div class="social-grid">
+						<a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
+						<a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
+						<a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
+						<a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
+					</div>
+				</div>
+			</div>
+		</footer>
 
 		<script type="module">
-			// Import from your existing init file
+			// 1. IMPORT FIREBASE MODULES
 			import { db, storage, appId } from './assets/js/firebase-init.js';
 			import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
 			import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js';
 
-			// Initialize EmailJS
-			emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+			// 2. INITIALIZE EMAILJS
+			emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // <--- PUT YOUR KEY HERE
 
+			// 3. UI TWEAK: SHOW FILENAME ON SELECTION
+			document.getElementById('file-input').addEventListener('change', function(e) {
+				const fileName = e.target.files[0] ? e.target.files[0].name : "";
+				document.getElementById('file-name-display').innerText = fileName ? ">> MOUNTED: " + fileName : "";
+			});
+
+			// 4. MAIN SUBMISSION LOGIC
 			$('#master-request-form').on('submit', async (e) => {
 				e.preventDefault();
 				
+				// Lock UI
 				const btn = $('#submit-btn');
 				const fileInput = document.getElementById('file-input');
+				const originalBtnText = btn.text();
 				
-				btn.text("ESTABLISHING UPLINK...").prop('disabled', true);
+				btn.text(">> UPLOADING PACKETS...").prop('disabled', true).css('opacity', '0.7');
 
 				try {
 					let intelLink = "No files attached.";
 
-					// 1. UPLOAD FILE IF PRESENT
+					// A. UPLOAD FILE (IF EXISTS)
 					if (fileInput.files.length > 0) {
 						const file = fileInput.files[0];
-						btn.text(`UPLOADING: ${file.name}...`);
+						btn.text(`>> ENCRYPTING: ${file.name}...`);
 						
-						// Create unique reference in your Storage Bucket
+						// Create path: mission_intel / timestamp_filename
 						const fileRef = ref(storage, `mission_intel/${Date.now()}_${file.name}`);
 						
 						const snapshot = await uploadBytes(fileRef, file);
 						intelLink = await getDownloadURL(snapshot.ref);
 					}
 
-					// 2. CONSTRUCT EMAIL DATA
+					// B. GATHER INTELLIGENCE (FORM DATA)
 					const missionData = {
 						from_name: $('#client-name').val(),
 						from_email: $('#client-email').val(),
@@ -220,26 +389,30 @@ permalink: /Service_Request_Form.html
 						urgency: $('#mission-urgency').val(),
 						message: $('#mission-desc').val(),
 						intel_link: intelLink,
-						to_email: 'mhstudios.836@gmail.com'
+						to_email: 'mhstudios.836@gmail.com', // Internal routing
+						status: 'PENDING',
+						platform: 'WEB_UPLINK'
 					};
 
-					// 3. SAVE TO FIRESTORE ARCHIVE
+					// C. ARCHIVE TO FIRESTORE
+					btn.text(">> SYNCING TO DATABASE...");
 					await addDoc(collection(db, 'artifacts', appId, 'service_requests'), {
 						...missionData,
 						timestamp: serverTimestamp()
 					});
 
-					// 4. SEND VIA EMAILJS
-					btn.text("TRANSMITTING TO HQ...");
+					// D. SIGNAL HQ (EMAIL)
+					btn.text(">> CONTACTING HQ...");
 					await emailjs.send('service_MHStudios836', 'YOUR_TEMPLATE_ID', missionData);
 
-					alert("MISSION BRIEFING TRANSMITTED SUCCESSFULLY.");
+					// E. SUCCESS PROTOCOL
+					alert(">> TRANSMISSION COMPLETE. STAND BY FOR ENCRYPTED RESPONSE.");
 					window.location.href = 'index.html';
 
 				} catch (error) {
 					console.error("Uplink Error:", error);
-					alert("TRANSMISSION FAILED. ERROR: " + error.message);
-					btn.text("RETRY TRANSMISSION").prop('disabled', false);
+					alert(">> CONNECTION SEVERED. ERROR: " + error.message);
+					btn.text("> RETRY CONNECTION").prop('disabled', false).css('opacity', '1');
 				}
 			});
 		</script>

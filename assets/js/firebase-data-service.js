@@ -44,3 +44,49 @@ export async function fetchAvailableProducts() {
         return [];
     }
 }
+
+// MH Studios Data Uplink
+// Handles submissions to Firestore
+
+// 1. Initialize the Database Reference
+const db = firebase.firestore();
+
+// 2. The Main Function: Submit Service Request
+async function submitServiceRequest(event) {
+    // Prevent the page from refreshing (which kills the data)
+    event.preventDefault();
+
+    console.log("[UPLINK] Initiating transmission...");
+
+    // 3. Grab the Data from the Form Inputs using their IDs
+    // (We will make sure these IDs match your HTML in Phase 2)
+    const requestData = {
+        clientName: document.getElementById('client-name').value,
+        clientEmail: document.getElementById('client-email').value,
+        serviceType: document.getElementById('service-type').value, // e.g., "Web Design", "Hardware Fix"
+        urgency: document.getElementById('urgency-level').value,
+        details: document.getElementById('request-details').value,
+        
+        // Metadata (Crucial for tracking)
+        status: "PENDING", // Default status
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        ip_tracker: "LOGGED" // Placeholder for security logging
+    };
+
+    try {
+        // 4. Send to Firestore Collection "service_requests"
+        const docRef = await db.collection('service_requests').add(requestData);
+        
+        console.log("[SUCCESS] Request logged with ID: ", docRef.id);
+        
+        // 5. Visual Feedback (The "BOOM" effect)
+        alert("Transmission Received. MH Studios will contact you shortly.");
+        
+        // Optional: Clear the form
+        document.getElementById('service-request-form').reset();
+
+    } catch (error) {
+        console.error("[FAILURE] Transmission blocked: ", error);
+        alert("Error sending request. Check console.");
+    }
+}
