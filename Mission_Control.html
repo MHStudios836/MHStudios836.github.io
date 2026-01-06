@@ -290,6 +290,7 @@
 
     <script src="assets/js/jquery.min.js"></script>
     <script type="module" src="assets/js/mission-control.js"></script>
+	<script type="module" src="assets/js/auth-router.js"></script>
 	<script type="module">
     import { startSessionMonitor } from './assets/js/session-monitor.js';
     import { attachHoverSounds, playSound } from './assets/js/sound-engine.js';
@@ -303,6 +304,22 @@
         playSound('granted');
     });
 </script>
+<script>
+import { initComms, transmitMessage } from './assets/js/squad-comms.js';
 
+// Logic inside your onAuthStateChanged after getting user data:
+const userRole = userData.role; // 'student' or 'freelancer'
+const chatBox = document.getElementById('terminal-output'); // Or a dedicated chat div
+
+// Start listening to the specific encrypted channel
+initComms(userRole, chatBox);
+
+// Update Transmit button to include the channel
+$('#btn-send').click(() => {
+    const msg = $('#chat-input').val();
+    transmitMessage(userData.name, userRole, msg, userRole);
+    $('#chat-input').val('');
+});
+</script>
 </body>
 </html>
