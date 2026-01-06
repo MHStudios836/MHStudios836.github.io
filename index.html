@@ -200,6 +200,66 @@
 			.btn-blue:hover { background: #fff; box-shadow: 0 0 30px var(--mh-blue); transform: translateY(-5px); }
 			.btn-hollow { background: transparent; border: 1px solid var(--mh-blue); color: var(--mh-blue); }
 			.btn-hollow:hover { background: rgba(0,128,255,0.1); color: #fff; border-color: #fff; }
+			
+			/* --- TITAN BUTTON PROTOCOLS --- */
+			/* Shared Base DNA */
+			.titan-btn {
+				position: relative;
+				display: inline-flex;
+				justify-content: center;
+				align-items: center;
+				font-family: 'Uni Sans', sans-serif; /* Or your main font */
+				font-weight: 900;
+				font-size: 1.1em;
+				letter-spacing: 2px;
+				text-decoration: none;
+				padding: 20px 40px;
+				min-width: 260px; /* Massive Click Target */
+				text-transform: uppercase;
+				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* The Bouncy Zoom */
+				
+				/* The "Cyber Cut" Corners */
+				clip-path: polygon(
+					15px 0, 100% 0, 
+					100% calc(100% - 15px), 
+					calc(100% - 15px) 100%, 
+					0 100%, 0 15px
+				);
+			}
+
+			/* 1. OPERATIVE LOGIN (The "Power" Button) */
+			.titan-login {
+				background: #0080FF;
+				color: #05070a; /* Dark text on blue for high contrast */
+				border: 0;
+				box-shadow: 0 0 15px rgba(0, 128, 255, 0.4);
+			}
+
+			.titan-login:hover {
+				transform: scale(1.1); /* TACTICAL ZOOM */
+				background: #fff;
+				color: #0080FF;
+				box-shadow: 0 0 40px rgba(0, 128, 255, 0.8), inset 0 0 20px rgba(0, 128, 255, 0.2);
+			}
+
+			/* 2. REQUEST ACCESS (The "Scanner" Button) */
+			.titan-access {
+				background: transparent;
+				color: #0080FF;
+				border: 2px solid rgba(0, 128, 255, 0.5);
+				/* Subtle grid pattern inside */
+				background-image: linear-gradient(rgba(0, 128, 255, 0.05) 1px, transparent 1px);
+				background-size: 10px 10px;
+			}
+
+			.titan-access:hover {
+				transform: scale(1.1); /* TACTICAL ZOOM */
+				border-color: #00e5ff; /* Shifts to Cyan */
+				color: #00e5ff;
+				background-color: rgba(0, 229, 255, 0.1);
+				box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+				text-shadow: 0 0 8px rgba(0, 229, 255, 0.8);
+			}
 
 			/* --- 4. INTEL TICKER --- */
 			.intel-bar {
@@ -343,9 +403,22 @@
 			
 			<div class="menu-bottom" style="padding:20px; text-align:center;">
 				
-				<div id="dynamic-auth-buttons" style="margin-bottom: 20px;">
-				<a href="DoD_Login_Style.html" class="btn-main btn-gold" style="text-align:center;">OPERATIVE LOGIN</a>
-				<a href="DoD_Login_Style.html" class="btn-main btn-hollow" style="text-align:center;">REQUEST ACCESS</a>
+				<div id="dynamic-auth-buttons" style="
+					display: flex; 
+					gap: 40px; 
+					justify-content: center; 
+					align-items: center;
+					width: 100%; 
+					margin: 50px 0; 
+					flex-wrap: wrap; 
+				">
+					<a href="DoD_Login_Style.html" class="titan-btn titan-login">
+						<i class="fas fa-fingerprint" style="margin-right:15px;"></i> OPERATIVE LOGIN
+					</a>
+
+					<a href="DoD_Login_Style.html" class="titan-btn titan-access">
+						<i class="fas fa-user-plus" style="margin-right:15px;"></i> REQUEST ACCESS
+					</a>
 				</div>
 
 				<div class="lang-grid">

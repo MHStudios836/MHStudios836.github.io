@@ -127,6 +127,66 @@ permalink: /Video_Design.html
 			.btn-red:hover { background: #fff; color: #000; box-shadow: 0 0 30px var(--mh-red); transform: translateY(-5px); }
 			.btn-hollow { background: transparent; border: 1px solid var(--mh-red); color: var(--mh-red); }
 			.btn-hollow:hover { background: rgba(255, 0, 76, 0.1); color: #fff; border-color: #fff; }
+			
+			/* --- TITAN BUTTON PROTOCOLS --- */
+			/* Shared Base DNA */
+			.titan-btn {
+				position: relative;
+				display: inline-flex;
+				justify-content: center;
+				align-items: center;
+				font-family: 'Uni Sans', sans-serif; /* Or your main font */
+				font-weight: 900;
+				font-size: 1.1em;
+				letter-spacing: 2px;
+				text-decoration: none;
+				padding: 20px 40px;
+				min-width: 260px; /* Massive Click Target */
+				text-transform: uppercase;
+				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* The Bouncy Zoom */
+				
+				/* The "Cyber Cut" Corners */
+				clip-path: polygon(
+					15px 0, 100% 0, 
+					100% calc(100% - 15px), 
+					calc(100% - 15px) 100%, 
+					0 100%, 0 15px
+				);
+			}
+
+			/* 1. OPERATIVE LOGIN (The "Power" Button) */
+			.titan-login {
+				background: var(--mh-red);
+				color: #05070a; /* Dark text on blue for high contrast */
+				border: 0;
+				box-shadow: 0 0 15px rgba(0, 128, 255, 0.4);
+			}
+
+			.titan-login:hover {
+				transform: scale(1.1); /* TACTICAL ZOOM */
+				background: #fff;
+				color: var(--mh-red);
+				box-shadow: 0 0 40px rgba(0, 128, 255, 0.8), inset 0 0 20px rgba(0, 128, 255, 0.2);
+			}
+
+			/* 2. REQUEST ACCESS (The "Scanner" Button) */
+			.titan-access {
+				background: transparent;
+				color: var(--mh-red);
+				border: 2px solid rgba(255, 0, 76, 0.5);
+				/* Subtle grid pattern inside */
+				background-image: linear-gradient(rgba(0, 128, 255, 0.05) 1px, transparent 1px);
+				background-size: 10px 10px;
+			}
+
+			.titan-access:hover {
+				transform: scale(1.1); /* TACTICAL ZOOM */
+				border-color: var(--mh-red); /* Shifts to Cyan */
+				color: var(--mh-red);
+				background-color: rgba(0, 229, 255, 0.1);
+				box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+				text-shadow: 0 0 8px rgba(0, 229, 255, 0.8);
+			}
 
 			/* --- 4. SERVICES GRID --- */
 			#services-sector { padding: 100px 20px; background: #080a0e; }
@@ -219,9 +279,22 @@ permalink: /Video_Design.html
 				<a href="index.html#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
 			</div>
 			
-				<div id="dynamic-auth-buttons" style="margin-bottom: 20px;">
-				<a href="DoD_Login_Style.html" class="btn-main btn-red" style="text-align:center;">OPERATIVE LOGIN</a>
-				<a href="DoD_Login_Style.html" class="btn-main btn-hollow" style="text-align:center;">REQUEST ACCESS</a>
+				<div id="dynamic-auth-buttons" style="
+					display: flex; 
+					gap: 40px; 
+					justify-content: center; 
+					align-items: center;
+					width: 100%; 
+					margin: 50px 0; 
+					flex-wrap: wrap; 
+				">
+					<a href="DoD_Login_Style.html" class="titan-btn titan-login">
+						<i class="fas fa-fingerprint" style="margin-right:15px;"></i> OPERATIVE LOGIN
+					</a>
+
+					<a href="DoD_Login_Style.html" class="titan-btn titan-access">
+						<i class="fas fa-user-plus" style="margin-right:15px;"></i> REQUEST ACCESS
+					</a>
 				</div>
 				
 				<div class="lang-grid">
@@ -289,7 +362,7 @@ permalink: /Video_Design.html
 			<div class="cta-box">
 				<div class="cta-title">READY TO FILM?</div>
 				<p class="cta-txt">Launch your custom video project today. Fill out our briefing form to get a quote and timeline from our production team.</p>
-				<a href="Service_Description_Form.html" class="btn-main btn-red">CREATE YOUR OWN VIDEO</a>
+				<a href="Service_Request_Form.html" class="btn-main btn-red">CREATE YOUR OWN VIDEO</a>
 			</div>
 		</section>
 
@@ -322,6 +395,7 @@ permalink: /Video_Design.html
 		</footer>
 
 		<script src="assets/js/jquery.min.js"></script>
+		<script type="module" src="assets/js/auth-router.js"></script>
 		<script>
 			// MENU LOGIC
 			$('#menu-btn').click(() => $('#menu-overlay').addClass('active'));

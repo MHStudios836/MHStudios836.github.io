@@ -276,11 +276,51 @@ permalink: /About_Us.html
 				<a href="#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
 			</div>
 			
-			<div id="dynamic-auth-buttons" style="margin-bottom: 20px;">
-				<a href="DoD_Login_Style.html" class="btn-main btn-blue" style="text-align:center;">OPERATIVE LOGIN</a>
-				<a href="DoD_Login_Style.html" class="btn-main btn-hollow" style="text-align:center;">REQUEST ACCESS</a>
-			</div>
-				
+				<div id="dynamic-auth-buttons" style="
+				<div id="dynamic-auth-buttons" style="
+					display: flex; 
+					gap: 30px; 
+					justify-content: center; 
+					width: 100%; /* Force full width */
+					margin: 40px 0; /* More breathing room */
+					flex-wrap: wrap; 
+				">
+					<a href="DoD_Login_Style.html" class="btn-main" style="
+						background: #0080FF; 
+						color: #000; 
+						border: 1px solid #0080FF;
+						min-width: 250px; /* BEEFIER SIZE */
+						text-align: center;
+						text-decoration: none;
+						display: inline-block;
+						padding: 18px 30px; /* TALLER */
+						font-weight: 900;
+						letter-spacing: 2px;
+						transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* BOUNCY ZOOM */
+					" 
+					onmouseover="this.style.background='#fff'; this.style.boxShadow='0 0 30px #0080FF'; this.style.transform='scale(1.1)'" 
+					onmouseout="this.style.background='#0080FF'; this.style.boxShadow='none'; this.style.transform='scale(1)'">
+						OPERATIVE LOGIN
+					</a>
+
+					<a href="DoD_Login_Style.html" class="btn-main" style="
+						background: transparent; 
+						color: #0080FF; 
+						border: 1px solid #0080FF;
+						min-width: 250px; /* BEEFIER SIZE */
+						text-align: center;
+						text-decoration: none;
+						display: inline-block;
+						padding: 18px 30px; /* TALLER */
+						font-weight: 900;
+						letter-spacing: 2px;
+						transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* BOUNCY ZOOM */
+					" 
+					onmouseover="this.style.background='rgba(0, 128, 255, 0.1)'; this.style.color='#fff'; this.style.boxShadow='0 0 20px rgba(0, 128, 255, 0.4)'; this.style.transform='scale(1.1)'" 
+					onmouseout="this.style.background='transparent'; this.style.color='#0080FF'; this.style.boxShadow='none'; this.style.transform='scale(1)'">
+						REQUEST ACCESS
+					</a>
+				</div>				
 				<div class="lang-grid">
 					<a href="#" class="lang-btn active" title="English"><img src="images/GB.png" alt="GB"></a>
 					<a href="#" class="lang-btn" title="Arabic"><img src="images/Ar.png" alt="AR"></a>
@@ -414,6 +454,7 @@ permalink: /About_Us.html
 		</footer>
 
 		<script src="assets/js/jquery.min.js"></script>
+		<script type="module" src="assets/js/auth-router.js"></script>
 		<script>
 			// MENU LOGIC
 			$('#menu-btn').click(() => $('#menu-overlay').addClass('active'));
