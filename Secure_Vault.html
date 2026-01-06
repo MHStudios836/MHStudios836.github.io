@@ -1,0 +1,288 @@
+---
+permalink: /Secure_Vault.html
+---
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH Studios™ | Secure Vault</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+    <style>
+        :root {
+            --mh-blue: #0080FF;
+            --mh-cyan: #00e5ff;
+            --mh-green: #00ff41;
+            --mh-red: #ff004c;
+            --mh-glass: rgba(5, 7, 10, 0.95);
+        }
+
+        body {
+            margin: 0; background: #000; color: #fff;
+            font-family: 'Uni Sans', sans-serif;
+            height: 100vh; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        #bg-video {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -1; opacity: 0.3;
+        }
+
+        /* --- VAULT INTERFACE --- */
+        .vault-frame {
+            width: 1100px; height: 750px;
+            background: var(--mh-glass);
+            border: 1px solid var(--mh-blue);
+            box-shadow: 0 0 50px rgba(0, 128, 255, 0.2);
+            display: grid; grid-template-rows: 80px 1fr 120px;
+            position: relative;
+        }
+
+        .vault-header {
+            padding: 0 30px; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid rgba(0, 128, 255, 0.3);
+            background: rgba(0,0,0,0.5);
+        }
+
+        .vault-title { font-size: 1.5rem; letter-spacing: 3px; font-weight: 900; color: var(--mh-cyan); }
+
+        /* MAIN DEPLOYMENT ZONE */
+        .deployment-zone {
+            display: grid; grid-template-columns: 350px 1fr; gap: 1px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .mission-intel-panel {
+            padding: 30px; border-right: 1px solid rgba(0, 128, 255, 0.2);
+            background: rgba(0,0,0,0.4);
+        }
+
+        .upload-hub { padding: 40px; display: flex; flex-direction: column; }
+
+        /* THE DROP BOX */
+        .drop-box {
+            flex: 1; border: 2px dashed #333;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: 0.3s; cursor: pointer; position: relative;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .drop-box:hover, .drop-box.active {
+            border-color: var(--mh-cyan); background: rgba(0, 229, 255, 0.05);
+            box-shadow: inset 0 0 30px rgba(0, 229, 255, 0.1);
+        }
+
+        .drop-box i { font-size: 4rem; color: #333; margin-bottom: 20px; transition: 0.3s; }
+        .drop-box:hover i { color: var(--mh-cyan); transform: translateY(-10px); }
+
+        /* PROGRESS HUD */
+        .progress-hud {
+            margin-top: 30px; height: 60px; background: #111;
+            border: 1px solid #222; position: relative; overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%; width: 0%; background: var(--mh-blue);
+            box-shadow: 0 0 20px var(--mh-blue); transition: 0.1s;
+        }
+
+        .progress-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: 'Courier New'; font-size: 0.8rem; font-weight: bold;
+        }
+
+        /* TERMINAL LOG */
+        .vault-footer {
+            background: #000; padding: 15px 30px;
+            font-family: 'Courier New', monospace; font-size: 0.75rem;
+            color: var(--mh-green); border-top: 1px solid #222;
+            overflow-y: auto;
+        }
+
+        .hidden { display: none; }
+
+        .btn-tac {
+            background: var(--mh-blue); color: #fff; border: none;
+            padding: 10px 20px; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .btn-tac:hover { background: var(--mh-cyan); color: #000; }
+
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop id="bg-video">
+        <source src="videos/DoD_BGV.mp4" type="video/mp4">
+    </video>
+
+    <div class="vault-frame">
+        <header class="vault-header">
+            <div class="vault-title"><i class="fas fa-vault"></i> SECURE_VAULT v1.0</div>
+            <div id="connection-status" style="font-size: 0.7rem; color: var(--mh-green);">// UPLINK_STABLE</div>
+        </header>
+
+        <main class="deployment-zone">
+            <aside class="mission-intel-panel">
+                <h4 style="border-bottom: 1px solid #333; padding-bottom: 10px;">MISSION_DATA</h4>
+                <div style="font-family: 'Courier New'; font-size: 0.8rem; line-height: 2;">
+                    ID: <span id="display-mission-id" style="color:var(--mh-cyan)">---</span><br>
+                    TARGET: <span id="display-mission-title">---</span><br>
+                    ROLE: <span id="display-user-role">---</span><br>
+                    LIMIT: 500MB PER UPLINK
+                </div>
+                
+                <div style="margin-top: 40px; border: 1px solid #222; padding: 15px; font-size: 0.7rem; color: #555;">
+                    <i class="fas fa-info-circle"></i> Use this sector to transmit project assets, documentation, or deliverables. All files are automatically encrypted.
+                </div>
+            </aside>
+
+            <section class="upload-hub">
+                <div id="drop-zone" class="drop-box">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div style="font-weight: bold; letter-spacing: 2px;">DRAG & DROP INTEL</div>
+                    <div style="font-size: 0.7rem; color: #555; margin-top: 10px;">OR CLICK TO SELECT PAYLOAD</div>
+                    <input type="file" id="file-input" class="hidden">
+                </div>
+
+                <div id="progress-container" class="progress-hud">
+                    <div id="progress-bar" class="progress-fill"></div>
+                    <div id="progress-percent" class="progress-text">ENCRYPTING: 0%</div>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                    <button id="btn-cancel" class="btn-tac" style="background:transparent; border:1px solid #333; margin-right:10px; display:none;">ABORT</button>
+                    <button id="btn-upload" class="btn-tac" style="display:none;">INITIATE UPLINK</button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="vault-footer" id="vault-log">
+            > SYSTEM READY...<br>
+            > WAITING FOR PAYLOAD SELECTION...
+        </footer>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        // UNIFIED FREQUENCY CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyATOnkG8yomjUFdKnNiPPJO24z0tF6e5wo",
+            authDomain: "mhstudios-836.firebaseapp.com",
+            projectId: "mhstudios-836",
+            storageBucket: "mhstudios-836.firebasestorage.app",
+            messagingSenderId: "172610798643",
+            appId: "1:172610798643:web:eaa7b218e8efa3aee64f46"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const appId = 'mhstudios-836';
+
+        let currentUser = null;
+        let selectedFile = null;
+        let uploadTask = null;
+
+        // GET URL PARAMS (Mission ID)
+        const urlParams = new URLSearchParams(window.location.search);
+        const missionId = urlParams.get('m_id');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                if(missionId) {
+                    loadMissionContext();
+                } else {
+                    logTerminal("CRITICAL_ERROR: NO MISSION_ID DETECTED.", "var(--mh-red)");
+                }
+            } else {
+                window.location.href = 'DoD_Login_Style.html';
+            }
+        });
+
+        async function loadMissionContext() {
+            logTerminal("> ACCESSING MISSION INTEL...");
+            const snap = await getDoc(doc(db, 'artifacts', appId, 'missions', missionId));
+            if(snap.exists()) {
+                const data = snap.data();
+                const userSnap = await getDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid));
+                const userData = userSnap.data();
+
+                $('#display-mission-id').text(missionId.substring(0,8));
+                $('#display-mission-title').text(data.title.toUpperCase());
+                $('#display-user-role').text(userData.role.toUpperCase());
+                logTerminal("> HANDSHAKE COMPLETE. SECURE ACCESS GRANTED.");
+            }
+        }
+
+        // --- FILE HANDLING ---
+        $('#drop-zone').click(() => $('#file-input').click());
+
+        $('#file-input').change(function(e) {
+            handleFileSelect(e.target.files[0]);
+        });
+
+        function handleFileSelect(file) {
+            if(!file) return;
+            selectedFile = file;
+            logTerminal(`> PAYLOAD SELECTED: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+            $('#btn-upload').show();
+            $('#btn-cancel').show();
+        }
+
+        $('#btn-upload').click(() => {
+            if(!selectedFile || !missionId) return;
+            startUplink();
+        });
+
+        function startUplink() {
+            $('#progress-container').show();
+            $('#drop-zone').hide();
+            $('#btn-upload').hide();
+
+            const storagePath = `artifacts/${appId}/missions/${missionId}/${Date.now()}_${selectedFile.name}`;
+            const storageRef = ref(storage, storagePath);
+            uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+            logTerminal(`> INITIATING SECURE UPLINK TO SECTOR: ${missionId.substring(0,5)}`);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    $('#progress-bar').css('width', progress + '%');
+                    $('#progress-percent').text(`UPLOADING: ${Math.round(progress)}%`);
+                }, 
+                (error) => {
+                    logTerminal(`> ERROR: UPLINK INTERRUPTED. ${error.message}`, "var(--mh-red)");
+                }, 
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        logTerminal("> UPLINK SUCCESSFUL. PAYLOAD STORED.", "var(--mh-green)");
+                        $('#progress-percent').text("DONE");
+                        $('#progress-bar').css('background', "var(--mh-green)");
+                        
+                        // Optional: Write the file link to the mission document here
+                        setTimeout(() => window.location.reload(), 2000);
+                    });
+                }
+            );
+        }
+
+        function logTerminal(text, color = "var(--mh-green)") {
+            const log = $('#vault-log');
+            log.append(`<div style="color:${color}">${text}</div>`);
+            log.scrollTop(log[0].scrollHeight);
+        }
+    </script>
+</body>
+</html>
