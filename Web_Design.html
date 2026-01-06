@@ -44,7 +44,7 @@ permalink: /Web_Design.html
 			/* --- 1. NAVIGATION (STICKY HUD) --- */
 			#tactical-nav {
 				position: fixed; top: 0; left: 0; width: 100%;
-				padding: 15px 30px;
+				padding: 15px 35px;
 				z-index: 999;
 				display: flex; justify-content: space-between; align-items: center;
 				background: rgba(2, 12, 27, 0.9);
@@ -54,7 +54,7 @@ permalink: /Web_Design.html
 			}
 			.brand-link {
 				display: flex; align-items: center; gap: 15px;
-				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em; text-decoration: none;
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em;
 			}
 			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-cyan)); }
 
@@ -68,7 +68,7 @@ permalink: /Web_Design.html
 
 			/* --- 2. MENU OVERLAY (TITAN V5.2 SYNC) --- */
 			#menu-overlay {
-				position: fixed; top: 0; right: -100%; width: 450px; height: 100%;
+				position: fixed; top: 0; right: -100%; width: 460px; height: 100%;
 				background: rgba(2, 12, 27, 0.98);
 				border-left: 2px solid var(--mh-cyan);
 				z-index: 1000;
@@ -313,10 +313,10 @@ permalink: /Web_Design.html
 			
 			<div class="hero-content">
 				<div class="hero-logo-container">
-					<img src="images/structure.png" alt="E-Services Logo" class="hero-logo">
+					<a href="index.html" class="brand-link"><img src="images/structure.png" alt="E-Services Logo" class="hero-logo"></a>
 				</div>
 				
-				<div class="hero-pre">/// MH E-SERVICES™ DIVISION ///</div>
+				<div class="hero-pre">|&emsp; MH E-SERVICES™ DIVISION &emsp;|</div>
 				<h1 class="hero-title">ARCHITECTS OF<br>THE DIGITAL REALM</h1>
 				<p class="hero-desc">
 					We build the impossible. From high-performance web applications to custom software ecosystems. 
@@ -324,7 +324,7 @@ permalink: /Web_Design.html
 				</p>
 				
 				<div style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
-					<a href="#deploy-sector" class="btn-main btn-cyan">INITIATE PROJECT</a>
+					<a href="Service_Request_Form.html" class="btn-main btn-cyan">INITIATE PROJECT</a>
 					<a href="#terminal-sector" class="btn-main btn-cyan" style="border-style:dashed;">VIEW CODEBASE</a>
 				</div>
 			</div>
@@ -355,6 +355,7 @@ permalink: /Web_Design.html
 			</div>
 
 			<div class="srv-grid">
+			<a href="Service_Request_Form.html" style="text-decoration: none; color: inherit; display: block;">
 				<div class="srv-card">
 					<div class="srv-num">01</div>
 					<div class="srv-title"><i class="fas fa-globe"></i> WEB DEVELOPMENT</div>
@@ -368,7 +369,9 @@ permalink: /Web_Design.html
 						<li>Custom CMS Integration</li>
 					</ul>
 				</div>
+				</a>
 
+				<a href="Service_Request_Form.html" style="text-decoration: none; color: inherit; display: block;">
 				<div class="srv-card">
 					<div class="srv-num">02</div>
 					<div class="srv-title"><i class="fas fa-mobile-alt"></i> MOBILE APPS</div>
@@ -382,7 +385,9 @@ permalink: /Web_Design.html
 						<li>App Store Deployment</li>
 					</ul>
 				</div>
+				</a>
 
+				<a href="Service_Request_Form.html" style="text-decoration: none; color: inherit; display: block;">
 				<div class="srv-card">
 					<div class="srv-num">03</div>
 					<div class="srv-title"><i class="fas fa-terminal"></i> CUSTOM SOFTWARE</div>
@@ -396,8 +401,10 @@ permalink: /Web_Design.html
 						<li>Cloud Infrastructure Setup</li>
 					</ul>
 				</div>
+				</a>
 				
-				<div class="srv-card">
+				<a href="Service_Request_Form.html" style="text-decoration: none; color: inherit; display: block;">
+				<div class="srv-card" style="image: ./images/Coding.png">
 					<div class="srv-num">04</div>
 					<div class="srv-title"><i class="fas fa-layer-group"></i> UI/UX DESIGN</div>
 					<div class="srv-desc">
@@ -410,6 +417,7 @@ permalink: /Web_Design.html
 						<li>Design Systems</li>
 					</ul>
 				</div>
+				</a>
 			</div>
 		</section>
 
@@ -420,14 +428,14 @@ permalink: /Web_Design.html
 			</div>
 
 			<div class="stack-grid">
-				<div class="tech-card"><i class="fab fa-react tech-icon"></i><span class="tech-name">REACT</span></div>
-				<div class="tech-card"><i class="fab fa-js tech-icon"></i><span class="tech-name">JAVASCRIPT</span></div>
-				<div class="tech-card"><i class="fab fa-html5 tech-icon"></i><span class="tech-name">HTML5</span></div>
-				<div class="tech-card"><i class="fab fa-css3-alt tech-icon"></i><span class="tech-name">CSS3</span></div>
-				<div class="tech-card"><i class="fab fa-node tech-icon"></i><span class="tech-name">NODE.JS</span></div>
-				<div class="tech-card"><i class="fab fa-python tech-icon"></i><span class="tech-name">PYTHON</span></div>
-				<div class="tech-card"><i class="fas fa-database tech-icon"></i><span class="tech-name">FIREBASE</span></div>
-				<div class="tech-card"><i class="fab fa-git-alt tech-icon"></i><span class="tech-name">GIT</span></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fab fa-react tech-icon"></i><span class="tech-name">REACT</span></a></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fab fa-js tech-icon"></i><span class="tech-name">JAVASCRIPT</span></a></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fab fa-html5 tech-icon"></i><span class="tech-name">HTML5</span></a></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fab fa-css3-alt tech-icon"></i><span class="tech-name">CSS3</span></a></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fab fa-node tech-icon"></i><span class="tech-name">NODE.JS</span></a></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fab fa-python tech-icon"></i><span class="tech-name">PYTHON</span></a></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fas fa-database tech-icon"></i><span class="tech-name">FIREBASE</span></a></div>
+				<div><a href="Service_Request_Form.html" class="tech-card"><i class="fab fa-git-alt tech-icon"></i><span class="tech-name">GIT</span></a></div>
 			</div>
 		</section>
 
