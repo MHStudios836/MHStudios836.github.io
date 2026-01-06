@@ -50,18 +50,234 @@ permalink: /Admin_Room.html
             padding-top: 60px; /* Space for Top Bar */
         }
 
-        /* --- TOP BAR (MENU TRIGGER) --- */
-        #top-bar {
-            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-            background: rgba(5, 7, 10, 0.9);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 30px;
-        }
-        .hq-brand { font-size: 1.2rem; letter-spacing: 2px; color: var(--mh-gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
-        .menu-trigger { cursor: pointer; color: var(--mh-cyan); font-size: 1.2rem; transition: 0.3s; }
-        .menu-trigger:hover { transform: scale(1.1); text-shadow: 0 0 10px var(--mh-cyan); }
+        /* --- SCROLLBAR --- */
+			::-webkit-scrollbar { width: 8px; }
+			::-webkit-scrollbar-track { background: #000; }
+			::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 4px; }
+			::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+
+			/* --- GLOBAL UTILITIES --- */
+			a { text-decoration: none; transition: 0.3s; }
+			
+			.section-header {
+				text-align: center;
+				margin-bottom: 80px;
+				position: relative;
+				display: block;
+			}
+			.section-header h2 {
+				font-size: 3em;
+				font-weight: 900;
+				letter-spacing: 5px;
+				text-transform: uppercase;
+				color: #fff;
+				margin: 0;
+				text-shadow: 0 0 20px rgba(0, 128, 255, 0.4);
+			}
+			.section-header span {
+				font-family: 'Courier New', monospace;
+				color: var(--mh-cyan);
+				font-size: 0.9em;
+				letter-spacing: 3px;
+				display: block;
+				margin-top: 10px;
+			}
+			.section-header::after {
+				content: '';
+				display: block;
+				width: 80px;
+				height: 4px;
+				background: var(--mh-blue);
+				margin: 20px auto 0;
+				box-shadow: 0 0 10px var(--mh-blue);
+			}
+
+			/* --- 1. NAVIGATION (STICKY HUD) --- */
+			#tactical-nav {
+				position: fixed; top: 0; left: 0; width: 100%;
+				padding: 15px 30px;
+				z-index: 999;
+				display: flex; justify-content: space-between; align-items: center;
+				background: rgba(5, 7, 10, 0.85);
+				backdrop-filter: blur(15px);
+				border-bottom: 1px solid rgba(255,255,255,0.1);
+				transition: 0.3s;
+			}
+			#tactical-nav.scrolled {
+				padding: 10px 30px;
+				background: rgba(0,0,0,0.95);
+				border-bottom-color: var(--mh-blue);
+			}
+
+			.brand-link {
+				display: flex; align-items: center; gap: 15px;
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em;
+			}
+			.brand-link:hover { color: var(--mh-cyan); text-shadow: 0 0 10px var(--mh-cyan); }
+			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-blue)); }
+
+			.menu-trigger {
+				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; cursor: pointer;
+				padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2);
+				display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
+			}
+			.menu-trigger:hover {
+				background: var(--mh-blue); border-color: var(--mh-blue); color: #000; box-shadow: 0 0 15px var(--mh-blue);
+			}
+
+			/* --- 2. MENU OVERLAY (THE VAULT) --- */
+			#menu-overlay {
+				position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
+				background: rgba(5, 7, 10, 0.98);
+				border-left: 2px solid var(--mh-blue);
+				z-index: 1000;
+				padding: 40px;
+				display: flex; flex-direction: column;
+				transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+				box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+				overflow-y: auto;
+			}
+			#menu-overlay.active { right: 0; }
+			
+			.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
+			.menu-close:hover { color: var(--mh-red); }
+
+			/* MAIN LINKS */
+			.menu-links a, .menu-dropdown-btn {
+				display: flex; align-items: center; justify-content: space-between;
+				font-size: 1.2em; color: #fff; padding: 15px 0;
+				border-bottom: 1px solid rgba(255,255,255,0.1);
+				text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+			}
+			.menu-links a:hover, .menu-dropdown-btn:hover {
+				color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan);
+			}
+
+			/* DROPDOWN SUB-MENU */
+			.dropdown-container {
+				display: none; /* Hidden by default */
+				background: rgba(255,255,255,0.03);
+				padding-left: 20px;
+				border-left: 1px solid var(--mh-blue);
+				margin-bottom: 10px;
+			}
+			.dropdown-container a {
+				font-size: 0.9em; color: #aaa; border-bottom: none; padding: 10px 0;
+			}
+			.dropdown-container a:hover { color: var(--mh-gold); padding-left: 10px; }
+			
+			/* Rotation for arrow */
+			.fa-chevron-down { transition: 0.3s; font-size: 0.8em; }
+			.menu-dropdown-btn.active .fa-chevron-down { transform: rotate(180deg); color: var(--mh-cyan); }
+
+			.menu-auth { margin-top: auto; display: grid; gap: 10px; }
+			
+			/* LANGUAGE GRID */
+			.lang-grid { display: flex; justify-content: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+			.lang-btn { width: 40px; height: 30px; opacity: 0.4; transition: 0.3s; border: 1px solid transparent; border-radius: 4px; padding: 2px; }
+			.lang-btn img { width: 100%; height: auto; display: block; }
+			.lang-btn:hover, .lang-btn.active { opacity: 1; border-color: var(--mh-cyan); transform: scale(1.1); }
+
+			/* --- 3. HERO SECTION --- */
+			#hero {
+				height: 100vh; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; border-bottom: 2px solid var(--mh-blue);
+			}
+			#hero-video {
+				position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+				background: url('images/banner.jpg') center/cover;
+				opacity: 0.4; z-index: 1; animation: zoomSlow 20s infinite alternate;
+			}
+			@keyframes zoomSlow { from { transform: scale(1); } to { transform: scale(1.1); } }
+			
+			.hero-overlay {
+				position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+				background: radial-gradient(circle, transparent 20%, #000 90%);
+				background-image: linear-gradient(var(--mh-grid) 1px, transparent 1px),
+				linear-gradient(90deg, var(--mh-grid) 1px, transparent 1px);
+				background-size: 50px 50px; z-index: 2;
+			}
+			.hero-content {
+				z-index: 3; text-align: center; max-width: 900px; padding: 40px;
+				backdrop-filter: blur(5px); border: 1px solid rgba(0,128,255,0.2);
+				background: rgba(0,0,0,0.6); box-shadow: 0 0 50px rgba(0,0,0,0.5);
+			}
+			.hero-title {
+				font-size: 5em; font-weight: 900; letter-spacing: 8px; text-transform: uppercase;
+				background: linear-gradient(to right, #fff, var(--mh-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+				margin-bottom: 10px; line-height: 1;
+			}
+			.hero-subtitle { font-family: 'Courier New', monospace; color: var(--mh-blue); font-size: 1.2em; margin-bottom: 40px; }
+			.cta-group { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
+
+			/* BUTTONS */
+			.btn-main {
+				padding: 18px 50px; font-weight: 900; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;
+				transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%); font-size: 0.9em;
+			}
+			.btn-blue { background: var(--mh-blue); color: #000; border: none; }
+			.btn-blue:hover { background: #fff; box-shadow: 0 0 30px var(--mh-blue); transform: translateY(-5px); }
+			.btn-hollow { background: transparent; border: 1px solid var(--mh-blue); color: var(--mh-blue); }
+			.btn-hollow:hover { background: rgba(0,128,255,0.1); color: #fff; border-color: #fff; }
+			
+			/* --- TITAN BUTTON PROTOCOLS --- */
+			/* Shared Base DNA */
+			.titan-btn {
+				position: relative;
+				display: inline-flex;
+				justify-content: center;
+				align-items: center;
+				font-family: 'Uni Sans', sans-serif; /* Or your main font */
+				font-weight: 900;
+				font-size: 1.1em;
+				letter-spacing: 2px;
+				text-decoration: none;
+				padding: 20px 40px;
+				min-width: 260px; /* Massive Click Target */
+				text-transform: uppercase;
+				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* The Bouncy Zoom */
+				
+				/* The "Cyber Cut" Corners */
+				clip-path: polygon(
+					15px 0, 100% 0, 
+					100% calc(100% - 15px), 
+					calc(100% - 15px) 100%, 
+					0 100%, 0 15px
+				);
+			}
+
+			/* 1. OPERATIVE LOGIN (The "Power" Button) */
+			.titan-login {
+				background: #0080FF;
+				color: #05070a; /* Dark text on blue for high contrast */
+				border: 0;
+				box-shadow: 0 0 15px rgba(0, 128, 255, 0.4);
+			}
+
+			.titan-login:hover {
+				transform: scale(1.1); /* TACTICAL ZOOM */
+				background: #fff;
+				color: #0080FF;
+				box-shadow: 0 0 40px rgba(0, 128, 255, 0.8), inset 0 0 20px rgba(0, 128, 255, 0.2);
+			}
+
+			/* 2. REQUEST ACCESS (The "Scanner" Button) */
+			.titan-access {
+				background: transparent;
+				color: #0080FF;
+				border: 2px solid rgba(0, 128, 255, 0.5);
+				/* Subtle grid pattern inside */
+				background-image: linear-gradient(rgba(0, 128, 255, 0.05) 1px, transparent 1px);
+				background-size: 10px 10px;
+			}
+
+			.titan-access:hover {
+				transform: scale(1.1); /* TACTICAL ZOOM */
+				border-color: #00e5ff; /* Shifts to Cyan */
+				color: #00e5ff;
+				background-color: rgba(0, 229, 255, 0.1);
+				box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+				text-shadow: 0 0 8px rgba(0, 229, 255, 0.8);
+			}
 
         /* --- SIDEBAR NAVIGATION --- */
         #admin-sidebar {
@@ -170,13 +386,6 @@ permalink: /Admin_Room.html
         .menu-input { width: 100%; background: #111; border: 1px solid #333; padding: 10px; color: #fff; margin-bottom: 10px; }
         .menu-link { padding: 15px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
         .menu-link:hover { border-color: var(--mh-cyan); color: var(--mh-cyan); }
-
-        /* --- FOOTER (STUDENT ROOM CLONE) --- */
-        #footer {
-            height: 40px; background: rgba(0,0,0,0.95); border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
-            font-family: monospace; font-size: 0.7rem; color: #555; position: fixed; bottom: 0; width: 100%; z-index: 1000;
-        }
 		
 		/* ==========================================================================
 		   ADMIN MOBILE FIX (HEADER CLEARANCE)
@@ -232,17 +441,105 @@ permalink: /Admin_Room.html
 				grid-template-columns: 1fr !important;
 			}
 		}
+		
+		/* --- 11. FOOTER --- */
+			.stealth-footer {
+			height: 40px; background: rgba(0,0,0,0.95); border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
+            font-family: monospace; font-size: 0.7rem; color: #555; position: fixed; bottom: 0; width: 100%; z-index: 1000;}
+			
+			#tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; }
+			.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+			.footer-col ul { list-style: none; padding: 0; }
+			.footer-col li { margin-bottom: 12px; }
+			.footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+			.footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+			.social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+			.social-grid a { color: #555; transition: 0.3s; }
+			.social-grid a:hover { color: #fff; transform: translateY(-3px); }
+			
+			/* RESPONSIVE PATCHES */
+			@media (max-width: 900px) {
+				.hero-title { font-size: 3em; letter-spacing: 2px; }
+				.service-matrix, .log-grid { grid-template-columns: 1fr; }
+				#stats-stream { flex-direction: column; gap: 50px; }
+				.cta-group { flex-direction: column; }
+				.btn-main { width: 100%; text-align: center; }
+				.timeline-wrap { flex-direction: column; gap: 40px; }
+				.timeline-wrap::before { width: 2px; height: 100%; left: 50%; top: 0; }
+				#menu-overlay { width: 100%; }
+			}
 
     </style>
 </head>
 <body>
 
-    <div id="top-bar">
-        <div class="hq-brand"><i class="fas fa-chess-king"></i> WARLORD_COMMAND</div>
-        <div class="menu-trigger" onclick="toggleMenu()">
-            MENU <i class="fas fa-bars"></i>
-        </div>
-    </div>
+    <nav id="tactical-nav">
+			<a href="index.html" class="brand-link">
+				<img src="images/Logo_2.png" alt="MH LOGO">
+				MH FIELD COMMAND™
+			</a>
+			
+			<div class="menu-trigger" id="menu-btn">
+				<span>MENU</span>
+				<i class="fas fa-bars"></i>
+			</div>
+		</nav>
+
+		<div id="menu-overlay">
+			<div class="menu-close"><i class="fas fa-times"></i></div>
+
+			<div class="menu-links">
+				<a href="index.html"><i class="fas fa-home" style="width:30px;"></i> Command Center</a>
+				<a href="Products_Services_Room.html"><i class="fas fa-cube" style="width:30px;"></i> The Armory</a>
+				<a href="Packages.html"><i class="fas fa-tags" style="width:30px;"></i> Clearance Levels</a>
+				
+				<div class="menu-dropdown-btn">
+					<span><i class="fas fa-layer-group" style="width:30px;"></i> PAGES</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="dropdown-container">
+					<a href="About_Us.html">About MH Studios</a>
+					<a href="Video_Design.html">Video Design</a>
+					<a href="Graphic_Design.html">Creative Arts® (Graphic)</a>
+					<a href="Web_Design.html">MH E-Services™ (Web)</a>
+					<a href="Translation_Design.html">Translation Ops</a>
+					<a href="Audio_Design.html">MH Sounds™ (Audio)</a>
+					<a href="Game_Design.html">MH Games™ (Project Ironclade)</a>
+				</div>
+
+				<a href="#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
+			</div>
+			
+			<div class="menu-bottom" style="padding:20px; text-align:center;">
+				
+				<div id="dynamic-auth-buttons" style="
+					display: flex; 
+					gap: 40px; 
+					justify-content: center; 
+					align-items: center;
+					width: 100%; 
+					margin: 50px 0; 
+					flex-wrap: wrap; 
+				">
+					<a href="DoD_Login_Style.html" class="titan-btn titan-login">
+						<i class="fas fa-fingerprint" style="margin-right:15px;"></i> OPERATIVE LOGIN
+					</a>
+
+					<a href="DoD_Login_Style.html" class="titan-btn titan-access">
+						<i class="fas fa-user-plus" style="margin-right:15px;"></i> REQUEST ACCESS
+					</a>
+				</div>
+
+				<div class="lang-grid">
+					<a href="#" class="lang-btn active" title="English"><img src="images/GB.png" alt="GB"></a>
+					<a href="#" class="lang-btn" title="Arabic"><img src="images/Ar.png" alt="AR"></a>
+					<a href="#" class="lang-btn" title="Dutch"><img src="images/Du.png" alt="NL"></a>
+					<a href="#" class="lang-btn" title="Russian"><img src="images/Ru.png" alt="RU"></a>
+				</div>
+			</div>
+		</div>
 
     <div id="admin-sidebar">
         <div class="nav-btn active" onclick="switchPanel('live')">
@@ -487,11 +784,48 @@ permalink: /Admin_Room.html
 		
     </div>
 
-    <footer id="footer">
-        <span>DOMAIN: <em>ADMIN_CONSOLE</em></span>
+		<footer id="tactical-footer">
+		<div class="stealth-footer">
+		<span>DOMAIN: <em>ADMIN_CONSOLE</em></span>
         <span>MH STUDIOS™ &copy; 2026 | WARLORD CLEARANCE</span>
         <span>SERVER: <em>ONLINE</em></span>
-    </footer>
+		</div>
+			<div class="footer-grid">
+				<div class="footer-col">
+					<h4>MH STUDIOS™</h4>
+					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+					<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
+				</div>
+				<div class="footer-col">
+					<h4>SECTORS</h4>
+					<ul>
+						<li><a href="Products_Services_Room.html">The Armory</a></li>
+						<li><a href="Packages.html">Service Packages</a></li>
+						<li><a href="#guild-sector">The Guild</a></li>
+						<li><a href="DoD_Login_Style.html">Operative Login</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>LEGAL PROTOCOLS</h4>
+					<ul>
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Terms of Engagement</a></li>
+						<li><a href="#">Refund Policy</a></li>
+						<li><a href="#">PCI-DSS Compliance</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>SECURE CHANNELS</h4>
+					<div class="social-grid">
+						<a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
+						<a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
+						<a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
+						<a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
 
     <div id="menu-overlay">
         <div class="menu-header">
@@ -511,10 +845,13 @@ permalink: /Admin_Room.html
             <i class="fas fa-power-off"></i> TERMINATE SESSION
         </div>
     </div>
+	
+	
 
     <script src="assets/js/jquery.min.js"></script>
     <script type="module" src="assets/js/admin-core.js"></script>
     <script type="module" src="assets/js/transaction-siphon.js"></script>
+	<script type="module" src="assets/js/auth-router.js"></script>
     
     <script>
         // UI INTERACTION LOGIC
@@ -600,5 +937,55 @@ permalink: /Admin_Room.html
 			}
 		}
 	</script>
+	<script>
+			// --- MENU LOGIC ---
+			$('#menu-btn').on('click', function() {
+				$('#menu-overlay').addClass('active');
+			});
+			$('.menu-close, .menu-links a').on('click', function() {
+				// Don't close if clicking the dropdown button itself
+				if(!$(this).hasClass('menu-dropdown-btn')) {
+					$('#menu-overlay').removeClass('active');
+				}
+			});
+
+			// --- DROPDOWN LOGIC ---
+			$('.menu-dropdown-btn').on('click', function() {
+				$(this).toggleClass('active');
+				$(this).next('.dropdown-container').slideToggle(300);
+			});
+
+			// --- LANGUAGE LOGIC ---
+			$('.lang-btn').on('click', function(e) {
+				e.preventDefault();
+				$('.lang-btn').removeClass('active');
+				$(this).addClass('active');
+				console.log("Language switched to: " + $(this).attr('title'));
+			});
+
+			// --- SCROLL NAVBAR LOGIC ---
+			$(window).on('scroll', function() {
+				if ($(window).scrollTop() > 50) {
+					$('#tactical-nav').addClass('scrolled');
+				} else {
+					$('#tactical-nav').removeClass('scrolled');
+				}
+			});
+
+			// --- SCROLL REVEAL ---
+			$(window).on('scroll', function() {
+				$('.holo-card, .service-node, .log-entry').each(function() {
+					var top_of_element = $(this).offset().top;
+					var bottom_of_window = $(window).scrollTop() + $(window).height();
+					
+					if(bottom_of_window > top_of_element + 50) {
+						$(this).css({'opacity':'1', 'transform':'translateY(0)'});
+					}
+				});
+			});
+
+			// Initial State
+			$('.holo-card, .service-node, .log-entry').css({'opacity':'0', 'transform':'translateY(30px)', 'transition':'0.6s all ease'});
+		</script>
 </body>
 </html>
