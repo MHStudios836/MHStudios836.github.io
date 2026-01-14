@@ -1,85 +1,141 @@
-/* assets/js/social-interactions.js - ENGAGEMENT ENGINE */
-import { getFirestore, doc, updateDoc, arrayUnion, arrayRemove, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { app } from "./firebase-init.js";
-import { playSound } from "./sound-engine.js";
+/* assets/js/social-interactions.js */
+/* STATUS: UPGRADED [LIKES | COMMENTS | SHARES] */
+
+import { db, dbID } from './firebase-init.js';
+import { 
+    doc, updateDoc, arrayUnion, arrayRemove, getDoc, increment, 
+    collection, addDoc, serverTimestamp, query, orderBy, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 import { notify } from "./notification-hub.js";
 
-const db = getFirestore(app);
-const appId = 'mhstudios-836';
-
-/**
- * TOGGLE LIKE ON A MISSION/PROJECT
- * @param {string} collectionName - 'missions' or 'projects'
- * @param {string} docId - The ID of the item
- * @param {string} userId - The current user's ID
- */
+// =================================================================
+// 1. LIKE SYSTEM (HEART BEAT)
+// =================================================================
 export async function toggleLike(collectionName, docId, userId) {
-    const ref = doc(db, 'artifacts', appId, collectionName, docId);
+    if(!userId) return notify("ACCESS DENIED", "Please login to vote.", "warn");
+    
+    // Path: artifacts > MH_STUDIOS_V1 > [missions/products] > docId
+    const ref = doc(db, 'artifacts', dbID, collectionName, docId);
     
     try {
-        const snapshot = await getDoc(ref);
-        if (!snapshot.exists()) return;
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return;
 
-        const data = snapshot.data();
+        const data = snap.data();
         const likes = data.likes || [];
         const isLiked = likes.includes(userId);
 
+        // OPTIMISTIC UI UPDATE (Instant visual feedback)
+        updateLikeUI(docId, !isLiked, likes.length + (isLiked ? -1 : 1));
+
         if (isLiked) {
-            // UNLIKE logic
+            // UNLIKE
             await updateDoc(ref, {
                 likes: arrayRemove(userId),
                 likeCount: increment(-1)
             });
-            updateLikeButton(docId, false);
         } else {
-            // LIKE logic
+            // LIKE
             await updateDoc(ref, {
                 likes: arrayUnion(userId),
                 likeCount: increment(1)
             });
-            playSound('notify'); // Satisfying 'blip' sound
-            updateLikeButton(docId, true);
+            notify("ACKNOWLEDGED", "Vote registered.", "success");
         }
     } catch (err) {
-        console.error("INTERACTION ERROR:", err);
-        notify("Error", "Like system jamming. Retrying...", "error");
+        console.error(err);
+        notify("ERROR", "Like system jamming.", "error");
+        // Revert UI if failed
+        updateLikeUI(docId, false, 0); 
+    }
+}
+
+function updateLikeUI(id, active, count) {
+    const btn = $(`#btn-like-${id}`);
+    const lbl = $(`#count-like-${id}`);
+    
+    if(active) {
+        btn.addClass('active').css('color', '#ff004c'); // Red
+        btn.find('i').removeClass('far').addClass('fas');
+    } else {
+        btn.removeClass('active').css('color', '');
+        btn.find('i').removeClass('fas').addClass('far');
+    }
+    lbl.text(count);
+}
+
+
+// =================================================================
+// 2. COMMENT SYSTEM (TACTICAL COMMS)
+// =================================================================
+/**
+ * Post a comment to a sub-collection
+ */
+export async function postComment(collectionName, docId, user, text) {
+    if(!text.trim()) return;
+
+    try {
+        // Path: artifacts > MH_STUDIOS_V1 > [collection] > [doc] > comments > [newID]
+        await addDoc(collection(db, 'artifacts', dbID, collectionName, docId, 'comments'), {
+            userId: user.uid,
+            userName: user.displayName || "Operative",
+            text: text,
+            timestamp: serverTimestamp()
+        });
+        
+        notify("SENT", "Comment encrypted and uploaded.", "success");
+    } catch (e) {
+        console.error(e);
+        notify("FAILURE", "Comment failed to send.", "error");
     }
 }
 
 /**
- * MARK INTEREST (For Freelancers claiming a task)
+ * Load comments live
  */
-export async function toggleInterest(docId, userId) {
-    const ref = doc(db, 'artifacts', appId, 'missions', docId);
-    // Logic similar to likes, but adds to an 'interestedUsers' array
-    // This allows the Admin to see who wants the job
-    try {
-        await updateDoc(ref, {
-            interestedOperatives: arrayUnion(userId)
+export function loadComments(collectionName, docId, containerId) {
+    const q = query(
+        collection(db, 'artifacts', dbID, collectionName, docId, 'comments'),
+        orderBy('timestamp', 'desc')
+    );
+
+    return onSnapshot(q, (snapshot) => {
+        const container = $(`#${containerId}`);
+        container.empty();
+
+        snapshot.forEach(doc => {
+            const c = doc.data();
+            const time = c.timestamp ? new Date(c.timestamp.seconds * 1000).toLocaleString() : 'Just now';
+            
+            container.append(`
+                <div class="comment-node" style="border-bottom:1px solid #333; padding:10px; margin-bottom:5px;">
+                    <div style="font-size:0.8em; color:#00e5ff; font-weight:bold;">
+                        ${c.userName} <span style="color:#666; font-weight:normal;">- ${time}</span>
+                    </div>
+                    <div style="color:#ddd; font-size:0.9em; margin-top:5px;">${c.text}</div>
+                </div>
+            `);
         });
-        playSound('granted');
-        notify("Interest Registered", "The Admin has been notified.", "success");
-        
-        // Update UI to show "PENDING"
-        $(`#btn-interest-${docId}`).text("INTEREST SENT").addClass('disabled');
-    } catch (err) {
-        notify("System Error", "Could not register interest.", "error");
-    }
+    });
 }
 
-// UI HELPER
-function updateLikeButton(id, isActive) {
-    const btn = $(`#btn-like-${id}`);
-    const countSpan = $(`#count-like-${id}`);
-    let currentCount = parseInt(countSpan.text()) || 0;
 
-    if (isActive) {
-        btn.addClass('active').css('color', 'var(--mh-red)');
-        btn.find('i').removeClass('far').addClass('fas'); // Solid heart
-        countSpan.text(currentCount + 1);
+// =================================================================
+// 3. SHARE SYSTEM (GLOBAL BROADCAST)
+// =================================================================
+export function shareContent(title, text) {
+    const shareData = {
+        title: "MH Studios Intel",
+        text: `${title}: ${text}`,
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        // Mobile Native Share
+        navigator.share(shareData).catch(console.error);
     } else {
-        btn.removeClass('active').css('color', 'inherit');
-        btn.find('i').removeClass('fas').addClass('far'); // Outline heart
-        countSpan.text(currentCount - 1);
+        // Desktop Clipboard Fallback
+        navigator.clipboard.writeText(`${title} - ${window.location.href}`);
+        notify("COPIED", "Link secured to clipboard.", "info");
     }
 }

@@ -1,43 +1,109 @@
 // assets/js/admin-products.js
-// STATUS: SYNCED [VERSION 10.7.1]
+// STATUS: UPGRADED [FILE UPLOAD ENABLED]
 
-import { db, dbID } from './firebase-init.js';
-import { collection, getDocs, limit, query } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { db, dbID, storage } from './firebase-init.js';
+import { 
+    collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { 
+    ref, uploadBytesResumable, getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
-const $terminal = $('#live-terminal');
+const $inventoryBody = $('#product-mini-list'); 
 
-function logToTerminal(msg) {
-    const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
-    if ($terminal.length) {
-        $terminal.prepend(`<div class="log-entry"><span class="log-time">[${time}]</span> ${msg}</div>`);
-    } else {
-        console.log(msg);
-    }
-}
+// --- 1. FILE UPLOAD LOGIC ---
+window.triggerProductUpload = function(input) {
+    const file = input.files[0];
+    if (!file) return;
 
-export async function initProducts() {
-    logToTerminal("SCANNING ARMORY DATABASE...");
+    // UI Feedback
+    const progressBar = document.getElementById('upload-progress');
+    const urlInput = document.getElementById('prod-img');
+    progressBar.style.display = 'block';
+    progressBar.style.width = '10%';
 
-    try {
-        // Correct Path: artifacts > MH_STUDIOS_V1 > products
-        const productsRef = collection(db, 'artifacts', dbID, 'products');
-        const q = query(productsRef, limit(50));
-        
-        const snapshot = await getDocs(q);
-        
-        if (snapshot.empty) {
-            logToTerminal("[WARN] ARMORY EMPTY. NO ASSETS FOUND.");
-            return;
+    // Create Storage Reference (artifacts/MH.../product_images/timestamp_name)
+    const storageRef = ref(storage, `artifacts/${dbID}/product_images/${Date.now()}_${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on('state_changed', 
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            progressBar.style.width = progress + '%';
+            console.log('Upload is ' + progress + '% done');
+        }, 
+        (error) => {
+            console.error("UPLOAD FAILED:", error);
+            alert("UPLOAD ERROR: " + error.message);
+            progressBar.style.background = 'red';
+        }, 
+        () => {
+            // Upload completed successfully, get download URL
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                console.log('File available at', downloadURL);
+                urlInput.value = downloadURL; // Auto-fill the text box
+                window.updatePreview(); // Trigger the visual preview
+                progressBar.style.background = '#00ff41'; // Green success
+                setTimeout(() => progressBar.style.display = 'none', 2000);
+            });
         }
+    );
+};
 
-        const count = snapshot.size;
-        logToTerminal(`[SUCCESS] ARMORY SYNCED. ${count} ASSETS LOADED.`);
+// --- 2. FORGE NEW ASSET ---
+export async function forgeNewProduct(productData) {
+    try {
+        const productsRef = collection(db, 'artifacts', dbID, 'products');
         
-        // If you have a table for products, you can render it here
-        // renderProductTable(snapshot);
-
+        // Ensure we send 'imageUrl' and 'branch' to match the Armory's expectations
+        await addDoc(productsRef, {
+            name: productData.name,
+            price: productData.price,
+            branch: productData.branch,      // Maps to 'category' dropdown
+            imageUrl: productData.imageUrl,  // Maps to 'image' input
+            description: productData.description,
+            
+            createdAt: serverTimestamp(),
+            salesCount: 0,
+            status: 'ACTIVE'
+        });
+        
+        console.log(">> ASSET DEPLOYED TO ARMORY.");
+        refreshInventory(); 
+        return true;
     } catch (error) {
-        console.error("Product Sync Failed:", error);
-        logToTerminal(`[ERR] SYNC FAILED: ${error.message}`);
+        console.error("FORGE FAILURE:", error);
+        return false;
     }
 }
+
+// --- 3. REFRESH INVENTORY ---
+export async function refreshInventory() {
+    if (!$inventoryBody.length) return;
+    
+    $inventoryBody.html('<tr><td colspan="3">SCANNING...</td></tr>');
+    const q = query(collection(db, 'artifacts', dbID, 'products'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    
+    $inventoryBody.empty();
+    snapshot.forEach(docSnap => {
+        const item = docSnap.data();
+        $inventoryBody.append(`
+            <tr>
+                <td>${item.name}</td>
+                <td class="text-gold">$${item.price}</td>
+                <td>
+                    <i class="fas fa-trash text-red" style="cursor:pointer;" 
+                       onclick="window.scrapProduct('${docSnap.id}')"></i>
+                </td>
+            </tr>
+        `);
+    });
+}
+
+// --- 4. SCRAP PRODUCT ---
+window.scrapProduct = async (id) => {
+    if(!confirm("ARE YOU SURE YOU WANT TO SCRAP THIS ASSET?")) return;
+    await deleteDoc(doc(db, 'artifacts', dbID, 'products', id));
+    refreshInventory();
+};

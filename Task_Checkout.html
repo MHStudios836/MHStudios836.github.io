@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH Studios™ | Mission Checkout</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+	<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    <style>
+        body { background: #050505; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Uni Sans', sans-serif; }
+        .invoice-card { width: 450px; background: #0b0e11; border: 1px solid #333; padding: 40px; border-radius: 4px; position: relative; }
+        .invoice-header { border-bottom: 2px solid #0080FF; padding-bottom: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 15px; color: #aaa; font-size: 0.9em; }
+        .total-row { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; font-size: 1.5em; font-weight: bold; color: #FFD700; }
+        .btn-pay { width: 100%; background: #0080FF; color: #fff; padding: 15px; border: none; font-weight: bold; margin-top: 30px; cursor: pointer; transition: 0.3s; }
+        .btn-pay:hover { background: #00e5ff; color: #000; box-shadow: 0 0 20px #00e5ff; }
+        .secure-badge { text-align: center; margin-top: 15px; font-size: 0.7em; color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="invoice-card">
+        <div class="invoice-header">
+            <h3>MISSION INVOICE</h3>
+            <i class="fas fa-file-invoice-dollar" style="font-size: 1.5em; color: #0080FF;"></i>
+        </div>
+
+        <div class="row">
+            <span>MISSION ID</span>
+            <span id="inv-id" style="font-family: monospace;">LOADING...</span>
+        </div>
+        <div class="row">
+            <span>SERVICE TYPE</span>
+            <span id="inv-title">...</span>
+        </div>
+        <div class="row">
+            <span>OPERATIVE (FREELANCER)</span>
+            <span id="inv-merc">OPERATIVE-XXXX</span>
+        </div>
+        
+        <div class="total-row">
+            <span>TOTAL DUE</span>
+            <span id="inv-total">$0.00</span>
+        </div>
+
+        <button id="btn-confirm-pay" class="btn-pay">
+            <i class="fas fa-lock"></i> AUTHORIZE PAYMENT
+        </button>
+
+        <div class="secure-badge">
+            <i class="fas fa-shield-alt"></i> ENCRYPTED TRANSACTION // MH FINANCIAL
+        </div>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script type="module">
+        import { auth } from './assets/js/firebase-init.js';
+        import { processMissionPayout } from './assets/js/transaction-siphon.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        // GET URL PARAMS
+        const params = new URLSearchParams(window.location.search);
+        const missionId = params.get('id');
+        const title = params.get('title');
+        const price = params.get('price');
+        const mercId = params.get('merc'); // The Freelancer ID
+
+        // INIT UI
+        $('#inv-id').text("#" + (missionId ? missionId.substring(0,6).toUpperCase() : "ERR"));
+        $('#inv-title').text(title || "Unknown Mission");
+        $('#inv-merc').text("OP-" + (mercId ? mercId.substring(0,4).toUpperCase() : "UNKNOWN"));
+        $('#inv-total').text("$" + price);
+
+        // PAY LOGIC
+        $('#btn-confirm-pay').click(async function() {
+            const btn = $(this);
+            btn.prop('disabled', true).text("PROCESSING TRANSFER...");
+
+            if(!auth.currentUser) return alert("SESSION EXPIRED");
+
+            try {
+                // CALL THE SIPHON (Split 80/20)
+                await processMissionPayout(missionId, mercId, price);
+                
+                alert("PAYMENT CONFIRMED. MISSION CLOSED.");
+                window.location.href = 'Student_Room.html'; // Return to base
+            } catch(e) {
+                alert("PAYMENT ERROR: " + e.message);
+                btn.prop('disabled', false).text("RE-TRY");
+            }
+        });
+    </script>
+</body>
+</html>

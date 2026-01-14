@@ -3,1093 +3,555 @@ permalink: /Student_Room.html
 ---
 <!DOCTYPE HTML>
 <html lang="en">
-	<head>
-		<title>MH Studios™ | Field Command</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
-		
-		<style>
-			/* ==========================================================================
-			   THEME: TITAN V5.2 (CLONED FROM INDEX.HTML)
-			   ========================================================================== */
-			:root {
-				--mh-blue: #0080FF;
-				--mh-cyan: #00e5ff;
-				--mh-dark: #05070a;
-				--mh-panel: rgba(13, 17, 23, 0.95);
-				--mh-grid: rgba(0, 128, 255, 0.1);
-				--mh-text: #e0e0e0;
-				--mh-gold: #FFD700;
-				--mh-red: #ff004c;
-				--mh-green: #00ff41;
-			}
+<head>
+    <title>MH Studios™ | Field Command (Mobile Elite)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#05070a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* --- 1. CORE VARIABLES --- */
+        :root {
+            --mh-blue: #0080FF;
+            --mh-blue-dim: rgba(0, 128, 255, 0.15);
+            --mh-cyan: #00e5ff;
+            --mh-dark: #05070a;
+            --mh-panel: #0d1117;
+            --mh-panel-light: #161b22;
+            --mh-border: rgba(255, 255, 255, 0.08);
+            --mh-text-main: #f0f6fc;
+            --mh-text-mute: #8b949e;
+            --mh-success: #238636;
+            --mh-danger: #da3633;
+            --mh-gold: #e3b341;
+            
+            --header-height: 70px;
+            --nav-height: 60px; /* New for mobile tabs */
+        }
 
-			body {
-				background-color: #000;
-				color: var(--mh-text);
-				font-family: 'Uni Sans', sans-serif;
-				margin: 0;
-				overflow: hidden; /* App-like structure */
-			}
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        body {
+            background-color: var(--mh-dark);
+            color: var(--mh-text-main);
+            font-family: "Uni Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0;
+            padding-top: var(--header-height);
+            overflow-x: hidden;
+            padding-bottom: 20px; /* Space for bottom scroll */
+        }
 
-			/* --- 1. BACKGROUND EFFECTS (Exact Clone) --- */
-			.bg-grid-layer {
-				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-				background-image: 
-					linear-gradient(var(--mh-grid) 1px, transparent 1px),
-					linear-gradient(90deg, var(--mh-grid) 1px, transparent 1px);
-				background-size: 50px 50px;
-				z-index: -2;
-				opacity: 0.5;
-			}
-			.bg-vignette {
-				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-				background: radial-gradient(circle, transparent 20%, #000 90%);
-				z-index: -1;
-				pointer-events: none;
-			}
+        /* --- 2. HEADER ARCHITECTURE --- */
+        #tactical-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height);
+            background: rgba(5, 7, 10, 0.95);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--mh-border);
+            z-index: 5000;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
 
-			/* --- 2. LAYOUT STRUCTURE --- */
-			#app-container { display: flex; height: 100vh; }
+        .brand-module { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-module img { height: 40px; width: auto; }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-text .main { font-size: 1.1em; font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .brand-text .sub { font-size: 0.6em; color: var(--mh-cyan); letter-spacing: 2px; }
 
-			/* SIDEBAR (Styled like Index 'The Vault' Menu) */
-			.sidebar {
-				width: 280px;
-				background: rgba(5, 7, 10, 0.95);
-				border-right: 2px solid var(--mh-blue);
-				display: flex; flex-direction: column;
-				padding: 30px;
-				z-index: 10;
-				box-shadow: 10px 0 50px rgba(0,0,0,0.5);
-			}
+        .header-controls { display: flex; gap: 15px; }
+        .menu-btn {
+            width: 44px; height: 44px;
+            border: 1px solid var(--mh-border); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2em; color: var(--mh-blue);
+            background: rgba(255,255,255,0.03); cursor: pointer;
+        }
 
-			.brand-link {
-				display: flex; align-items: center; gap: 15px;
-				color: #fff; font-size: 1.3em; text-decoration: none; margin-bottom: 50px;
-			}
-			.brand-link img { height: 40px; filter: drop-shadow(0 0 5px var(--mh-blue)); }
-			
-			/* NAVIGATION BUTTONS (Clone of Index Links) */
-			.nav-btn {
-				display: flex; align-items: center; justify-content: space-between;
-				font-size: 1em; color: #aaa; padding: 15px 0;
-				border-bottom: 1px solid rgba(255,255,255,0.1);
-				text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
-			}
-			.nav-btn:hover, .nav-btn.active {
-				color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan);
-			}
-			.nav-btn i { width: 25px; text-align: center; }
+        /* --- 3. LAYOUT GRID --- */
+        .layout-container {
+            max-width: 1400px; margin: 0 auto; padding: 30px;
+            display: grid; grid-template-columns: 320px 1fr; gap: 30px;
+        }
 
-			/* --- 3. MAIN CONTENT AREA --- */
-			.main-view { 
-				flex: 1; 
-				display: flex; flex-direction: column; 
-				position: relative; 
-			}
+        /* --- 4. LEFT SIDEBAR (PROFILE & NAV) --- */
+        .profile-card {
+            background: var(--mh-panel); border: 1px solid var(--mh-border);
+            border-radius: 8px; overflow: hidden; position: relative; margin-bottom: 20px;
+        }
+        .profile-cover { height: 80px; background: linear-gradient(90deg, #0d1117, #1f2937); }
+        .profile-avatar {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: #000; border: 3px solid var(--mh-blue);
+            position: absolute; top: 45px; left: 20px;
+            background-image: url('images/user_placeholder.png'); background-size: cover;
+        }
+        .profile-body { padding: 45px 20px 20px 20px; }
+        .p-name { font-size: 1.3em; font-weight: bold; color: #fff; display: block;}
+        .p-rank { font-size: 0.75em; color: var(--mh-cyan); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .nav-tabs { display: flex; flex-direction: column; gap: 5px; }
+        .tab-btn {
+            padding: 15px 20px; background: var(--mh-panel);
+            border: 1px solid var(--mh-border); border-radius: 6px;
+            color: var(--mh-text-mute); font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 15px; transition: 0.2s;
+        }
+        .tab-btn:hover { color: #fff; background: var(--mh-panel-light); }
+        .tab-btn.active {
+            background: linear-gradient(90deg, var(--mh-blue-dim), transparent);
+            border-left: 4px solid var(--mh-blue); color: #fff;
+        }
 
-			/* TOP BAR (Header) */
-			.top-bar {
-				padding: 20px 40px;
-				display: flex; justify-content: flex-end; align-items: center; gap: 20px;
-				border-bottom: 1px solid rgba(255,255,255,0.1);
-				background: rgba(5, 7, 10, 0.8);
-				backdrop-filter: blur(10px);
-			}
+        /* --- 5. CONTENT PANELS --- */
+        .panel-section { display: none; animation: fadeIn 0.4s ease; }
+        .panel-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-			/* TIMER MODULE (Green Style) */
-			.timer-module {
-				display: flex; align-items: center; gap: 10px;
-				padding: 8px 15px;
-				border: 1px solid var(--mh-green);
-				background: rgba(0, 255, 65, 0.05);
-				border-radius: 4px;
-				box-shadow: 0 0 10px rgba(0, 255, 65, 0.1);
-			}
-			.timer-digits { font-family: 'Courier New'; color: var(--mh-green); font-weight: bold; letter-spacing: 2px; }
+        .section-header {
+            margin-bottom: 25px; border-bottom: 1px solid var(--mh-border);
+            padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .section-title h2 { margin: 0; font-size: 1.5em; color: #fff; }
 
-			/* SCROLL AREA */
-			.content-scroll {
-				flex: 1; overflow-y: auto; padding: 0; scroll-behavior: smooth;
-			}
-			.content-wrapper { padding: 40px; min-height: 80vh; }
+        /* --- 6. TASK CARDS --- */
+        .task-card {
+            background: var(--mh-panel); border: 1px solid var(--mh-border);
+            border-radius: 6px; padding: 20px; margin-bottom: 20px; position: relative;
+        }
+        .tc-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .tc-status { font-size: 0.7em; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .status-open { color: var(--mh-success); background: rgba(35,134,54,0.15); border: 1px solid var(--mh-success); }
+        .status-prog { color: var(--mh-gold); background: rgba(227,179,65,0.15); border: 1px solid var(--mh-gold); }
 
-			/* --- 4. PANELS (Cloned from Index 'Service Node') --- */
-			.panel {
-				background: rgba(13, 17, 23, 0.6);
-				border: 1px solid rgba(0, 128, 255, 0.3);
-				padding: 30px;
-				margin-bottom: 30px;
-				transition: 0.3s;
-				position: relative;
-			}
-			.panel:hover {
-				border-color: var(--mh-cyan);
-				background: rgba(13, 17, 23, 0.9);
-				box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
-				transform: translateY(-5px);
-			}
+        .tc-meta {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 4px; margin-bottom: 15px;
+        }
+        .meta-box label { display: block; font-size: 0.6em; color: #888; }
+        .meta-box span { font-size: 0.9em; font-weight: bold; color: #fff; }
 
-			/* HEADERS */
-			.page-header { margin-bottom: 40px; border-bottom: 4px solid var(--mh-blue); display: inline-block; padding-bottom: 10px; }
-			.page-header h2 { margin: 0; font-size: 2.5em; text-transform: uppercase; letter-spacing: 5px; color: #fff; text-shadow: 0 0 20px rgba(0, 128, 255, 0.4); }
-			.page-header span { font-family: 'Courier New'; color: var(--mh-cyan); letter-spacing: 2px; }
+        /* --- 7. INPUTS & FORMS --- */
+        .mh-input, .mh-select, .mh-textarea {
+            width: 100%; background: #05070a; border: 1px solid var(--mh-border);
+            color: #fff; padding: 14px; border-radius: 6px; font-size: 16px; /* 16px prevents iOS zoom */
+            margin-bottom: 15px; font-family: inherit;
+        }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 25px; border-radius: 6px; font-weight: 700; text-transform: uppercase;
+            font-size: 0.9em; cursor: pointer; border: none; transition: 0.2s;
+        }
+        .btn-primary { background: var(--mh-blue); color: #fff; box-shadow: 0 4px 15px rgba(0,128,255,0.3); }
+        .btn-full { width: 100%; }
 
-			/* --- 5. FORMS & INPUTS (High Tech) --- */
-			.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-			.full-width { grid-column: span 2; }
-			
-			label { display: block; color: var(--mh-cyan); font-family: 'Courier New'; font-size: 0.8em; margin-bottom: 8px; letter-spacing: 1px; }
-			
-			input, select, textarea {
-				width: 100%; background: rgba(0,0,0,0.5); border: 1px solid #333; padding: 15px; color: #fff;
-				font-family: 'Courier New', monospace; transition: 0.3s; box-sizing: border-box;
-			}
-			input:focus, select:focus, textarea:focus { 
-				border-color: var(--mh-blue); outline: none; box-shadow: 0 0 15px rgba(0, 128, 255, 0.2);
-			}
+        /* --- 8. RESPONSIVE CHAT SYSTEM --- */
+        .chat-layout {
+            display: flex; height: 600px; border: 1px solid var(--mh-border);
+            border-radius: 8px; overflow: hidden; background: var(--mh-panel);
+        }
+        .chat-sidebar { width: 300px; border-right: 1px solid var(--mh-border); background: #0b0e14; display: flex; flex-direction: column; }
+        .chat-main { flex: 1; display: flex; flex-direction: column; background: url('images/grid_bg.png'); }
+        
+        .contact-item { padding: 15px; border-bottom: 1px solid var(--mh-border); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .contact-item:hover, .contact-item.active { background: rgba(255,255,255,0.05); }
+        .chat-mobile-back { display: none; padding: 10px; background: #222; color: #fff; border: none; cursor: pointer; text-align: left; }
 
-			/* --- 6. BUTTONS (Cloned from Index 'btn-main') --- */
-			.btn-row { display: flex; gap: 20px; margin-top: 30px; }
+        .msg-bubble { padding: 10px 15px; border-radius: 8px; max-width: 80%; font-size: 0.95em; line-height: 1.4; }
+        .msg.sent .msg-bubble { background: var(--mh-blue); color: #fff; }
+        .msg.received .msg-bubble { background: #21262d; color: #e0e0e0; border: 1px solid #30363d; }
 
-			.btn-main {
-				padding: 15px 40px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
-				transition: 0.3s; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), 90% 100%, 0 100%, 0 10px);
-				font-size: 0.9em; cursor: pointer; border: none; text-align: center; display: inline-block;
-			}
-			.btn-blue { background: var(--mh-blue); color: #000; }
-			.btn-blue:hover { background: #fff; box-shadow: 0 0 30px var(--mh-blue); transform: translateY(-3px); }
-			
-			.btn-hollow { background: transparent; border: 1px solid var(--mh-red); color: var(--mh-red); }
-			.btn-hollow:hover { background: var(--mh-red); color: #000; }
-			
-			
-			/* --- TACTICAL FEED STYLES --- */
-			.tactical-feed-section {
-				margin-top: 40px;
-				border-top: 1px solid rgba(255, 255, 255, 0.1);
-				padding-top: 20px;
-			}
+        /* --- 9. MOBILE SPECIFIC OVERRIDES (THE HEAVY ARTILLERY) --- */
+        @media screen and (max-width: 980px) {
+            
+            /* A. GRID COLLAPSE */
+            .layout-container {
+                display: block; /* Stack sidebar and main */
+                padding: 15px;
+            }
 
-			.section-header {
-				font-size: 1.2rem;
-				color: var(--mh-cyan);
-				letter-spacing: 2px;
-				margin-bottom: 25px;
-				border-left: 4px solid var(--mh-blue);
-				padding-left: 15px;
-				text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
-			}
+            /* B. COMPACT PROFILE FOR MOBILE */
+            .profile-card {
+                display: flex; align-items: center; padding: 15px;
+                height: auto; margin-bottom: 15px;
+            }
+            .profile-cover { display: none; }
+            .profile-avatar { position: static; width: 50px; height: 50px; margin-right: 15px; border-width: 2px; }
+            .profile-body { padding: 0; }
+            .p-name { font-size: 1.1em; }
+            .p-stats-row { display: none; } /* Hide stats to save space */
 
-			.task-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-				gap: 25px;
-			}
+            /* C. STICKY NAVIGATION TABS (THE APP FEEL) */
+            .nav-tabs {
+                flex-direction: row;
+                overflow-x: auto;
+                white-space: nowrap;
+                position: sticky; /* STICKS TO TOP */
+                top: 70px; /* Below Header */
+                z-index: 4000;
+                background: var(--mh-dark);
+                padding: 10px 0;
+                margin: 0 -15px 20px -15px; /* Bleed to edges */
+                padding-left: 15px;
+                -webkit-overflow-scrolling: touch;
+                border-bottom: 1px solid var(--mh-border);
+            }
+            .tab-btn {
+                min-width: auto;
+                padding: 10px 15px;
+                font-size: 0.85em;
+                border-radius: 20px; /* Pill shape */
+                background: rgba(255,255,255,0.05);
+            }
+            .tab-btn i { font-size: 1.1em; }
+            .tab-btn.active { box-shadow: 0 0 10px var(--mh-blue-dim); }
 
-			/* THE CARD DESIGN */
-			.task-card {
-				background: rgba(20, 25, 30, 0.6);
-				border: 1px solid rgba(0, 128, 255, 0.2);
-				border-radius: 4px; /* Slight rounding to match modern BF UI */
-				padding: 20px;
-				position: relative;
-				transition: all 0.3s ease;
-				backdrop-filter: blur(5px);
-			}
+            /* D. RESPONSIVE CHAT (WHATSAPP STYLE) */
+            .chat-layout { height: calc(100vh - 200px); border: none; }
+            .chat-sidebar { width: 100%; }
+            .chat-main { display: none; width: 100%; height: 100%; }
+            
+            /* When chat is open on mobile */
+            .chat-layout.mobile-view-active .chat-sidebar { display: none; }
+            .chat-layout.mobile-view-active .chat-main { display: flex; }
+            .chat-mobile-back { display: block; } /* Show back button */
 
-			.task-card:hover {
-				border-color: var(--mh-cyan);
-				transform: translateY(-5px);
-				box-shadow: 0 5px 20px rgba(0, 128, 255, 0.15);
-				background: rgba(20, 25, 30, 0.8);
-			}
+            /* E. TABLE SCROLLING */
+            .data-table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin-bottom: 20px;
+                border: 1px solid var(--mh-border);
+                border-radius: 6px;
+            }
+            .data-table { min-width: 600px; } /* Force scroll if needed */
 
-			.task-status {
-				position: absolute;
-				top: 15px;
-				right: 15px;
-				font-size: 0.6rem;
-				padding: 4px 8px;
-				font-weight: bold;
-				letter-spacing: 1px;
-				border-radius: 2px;
-			}
+            /* F. TASK CARDS */
+            .tc-meta { grid-template-columns: 1fr 1fr; } /* 2 Columns on mobile */
+            .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .section-header button { width: 100%; }
+            
+            /* G. FOOTER GRID */
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .social-icons { justify-content: center; }
+        }
 
-			.badge-active { background: rgba(0, 255, 65, 0.1); color: var(--mh-green); border: 1px solid var(--mh-green); }
-			.badge-pending { background: rgba(255, 174, 0, 0.1); color: var(--mh-orange); border: 1px solid var(--mh-orange); }
-
-			.task-header h3 {
-				margin: 0;
-				font-size: 1rem;
-				color: #fff;
-				max-width: 75%;
-			}
-
-			.task-id {
-				font-size: 0.7rem;
-				color: #666;
-				font-family: monospace;
-				display: block;
-				margin-top: 5px;
-			}
-
-			.task-brief {
-				font-size: 0.85rem;
-				color: #aaa;
-				line-height: 1.5;
-				margin: 15px 0;
-				border-bottom: 1px solid rgba(255,255,255,0.05);
-				padding-bottom: 15px;
-			}
-
-			.task-intel-bar {
-				display: flex;
-				justify-content: space-between;
-				font-family: monospace;
-				font-size: 0.75rem;
-				color: var(--mh-blue);
-				margin-bottom: 20px;
-			}
-
-			/* SOCIAL INTERACTION GRID */
-			.task-social-grid {
-				display: flex;
-				gap: 10px;
-			}
-
-			.social-btn {
-				flex: 1;
-				background: rgba(255, 255, 255, 0.03);
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				color: #888;
-				padding: 8px 0;
-				cursor: pointer;
-				font-size: 0.9rem;
-				transition: 0.2s;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 8px;
-			}
-
-			.social-btn:hover {
-				background: rgba(255, 255, 255, 0.1);
-				color: #fff;
-			}
-
-			.social-btn.like-trigger:hover { border-color: var(--mh-red); color: var(--mh-red); }
-			.social-btn.comment-trigger:hover { border-color: var(--mh-cyan); color: var(--mh-cyan); }
-			.social-btn.share-trigger:hover { border-color: var(--mh-blue); color: var(--mh-blue); }
-
-			.social-btn .count { font-size: 0.75rem; font-family: monospace; }
-			
-			
-			/* --- EDIT MODE STYLES --- */
-			.edit-mode-active {
-				border-color: var(--mh-orange) !important;
-				background: rgba(20, 25, 30, 0.95) !important;
-				box-shadow: 0 0 20px rgba(255, 174, 0, 0.1);
-			}
-
-			.tactical-input {
-				width: 100%;
-				background: rgba(0,0,0,0.3);
-				border: 1px solid rgba(255,255,255,0.1);
-				color: var(--mh-cyan);
-				padding: 8px;
-				font-family: 'Uni Sans', sans-serif; /* Preserving your font */
-				margin-bottom: 10px;
-				font-size: 0.9rem;
-			}
-
-			.tactical-input:focus {
-				outline: none;
-				border-color: var(--mh-cyan);
-				box-shadow: 0 0 5px rgba(0, 229, 255, 0.3);
-			}
-
-			textarea.tactical-input {
-				resize: vertical;
-				min-height: 80px;
-			}
-
-			.action-row {
-				display: flex;
-				gap: 10px;
-				margin-top: 10px;
-			}
-
-			.btn-commit { background: var(--mh-green); color: #000; border: none; font-weight: bold; flex: 1; cursor: pointer; padding: 10px; }
-			.btn-cancel { background: var(--mh-red); color: #fff; border: none; font-weight: bold; flex: 1; cursor: pointer; padding: 10px; }
-			.btn-edit-float {
-				position: absolute; top: 15px; right: 80px; /* Left of the status badge */
-				background: transparent; border: 1px solid rgba(255,255,255,0.2);
-				color: #aaa; width: 25px; height: 25px; border-radius: 4px;
-				cursor: pointer; z-index: 10;
-			}
-			.btn-edit-float:hover { border-color: var(--mh-orange); color: var(--mh-orange); }
-			
-			
-			
-			.btn-pay-now {
-				width: 100%;
-				background: linear-gradient(45deg, var(--mh-green), #004d1a);
-				color: #fff;
-				border: 1px solid var(--mh-green);
-				padding: 12px;
-				font-weight: bold;
-				letter-spacing: 2px;
-				cursor: pointer;
-				margin-top: 15px;
-				text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-				transition: 0.3s;
-			}
-
-			.btn-pay-now:hover {
-				box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-				transform: scale(1.02);
-			}
-
-			.badge-paid {
-				width: 100%;
-				text-align: center;
-				padding: 10px;
-				border: 1px solid var(--mh-blue);
-				color: var(--mh-blue);
-				margin-top: 15px;
-				font-family: monospace;
-				letter-spacing: 2px;
-				background: rgba(0, 128, 255, 0.1);
-			}
-			
-			
-			
-			/* --- 7. FOOTER (Cloned from Index) --- */
-			#tactical-footer {
-				padding: 80px 40px;
-				background: #020202;
-				border-top: 1px solid #111;
-				font-size: 0.9em;
-				color: #666;
-				margin-top: auto; /* Pushes to bottom */
-			}
+       			/* --- 11. FOOTER --- */
+			#tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; }
 			.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
 			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
 			.footer-col ul { list-style: none; padding: 0; }
-			.footer-col ul li { margin-bottom: 12px; }
-			.footer-col ul li a { color: #888; transition: 0.3s; text-decoration: none; }
-			.footer-col ul li a:hover { color: var(--mh-cyan); padding-left: 5px; }
+			.footer-col li { margin-bottom: 12px; }
+			.footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+			.footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+			.social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+			.social-grid a { color: #555; transition: 0.3s; }
+			.social-grid a:hover { color: #fff; transform: translateY(-3px); }
 
-			/* --- 8. HUD STATS (Adapted for Index Style) --- */
-			.hud-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
-			.hud-card {
-				background: rgba(20, 24, 30, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 25px; text-align: center;
-				transition: 0.4s; position: relative; overflow: hidden;
-			}
-			.hud-card:hover { transform: translateY(-10px); border-color: var(--mh-cyan); box-shadow: 0 10px 30px rgba(0,229,255,0.1); }
-			.hud-val { font-size: 3em; font-weight: 900; color: #fff; margin-bottom: 5px; }
-			.hud-label { color: var(--mh-cyan); font-family: 'Courier New'; letter-spacing: 1px; font-size: 0.8em; }
+        /* --- 11. MENU OVERLAY --- */
+        #menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5,7,10,0.98); z-index: 6000;
+            display: none; flex-direction: column;
+        }
+    </style>
+</head>
+<body>
 
-			/* SCROLLBAR */
-			::-webkit-scrollbar { width: 8px; }
-			::-webkit-scrollbar-track { background: #000; }
-			::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 4px; }
-			::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+    <header id="tactical-header">
+        <a href="index.html" class="brand-module">
+            <img src="images/Logo_1.png" alt="MH">
+            <div class="brand-text">
+                <span class="main">MH STUDIOS</span>
+                <span class="sub">FIELD COMMAND</span>
+            </div>
+        </a>
+        <div class="header-controls">
+            <div class="menu-btn" id="notif-btn"><i class="far fa-bell"></i></div>
+            <div class="menu-btn" id="menu-toggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </header>
 
-			/* UTILS */
-			.content-panel { display: none; animation: fadeUp 0.5s ease; }
-			.content-panel.active { display: block; }
-			@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    <nav id="menu-overlay">
+        <div style="padding: 20px; display:flex; justify-content:flex-end;">
+            <i class="fas fa-times" id="menu-close" style="font-size:1.5em; color:#888; cursor:pointer; padding:10px;"></i>
+        </div>
+        <div style="padding: 30px; text-align:center;">
+            <img src="images/user_placeholder.png" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--mh-blue);">
+            <h2 style="color:#fff; margin-top:15px;">OPERATIVE</h2>
+            <div style="display:flex; flex-direction:column; gap:20px; margin-top:40px;">
+                <a href="#" class="btn btn-full btn-primary nav-trigger" data-tab="tab-dashboard">DASHBOARD</a>
+                <a href="Broadcast_Station.html" class="btn btn-full" style="background:#111; color:#fff;">GLOBAL STATION</a>
+                <a href="Product_Room.html" class="btn btn-full" style="background:#111; color:#fff;">ARMORY</a>
+                <a href="#" id="menu-logout" style="color:var(--mh-danger); margin-top:20px;">LOGOUT SYSTEM</a>
+            </div>
+        </div>
+    </nav>
 
-			/* ==========================================================================
-   STUDENT ROOM: MOBILE RESTRUCTURE (BLUE TACTICAL)
-   ========================================================================== */
-@media screen and (max-width: 980px) {
-    
-    /* 1. FORCE SINGLE COLUMN LAYOUT */
-    .dashboard-grid, .split-screen-container {
-        display: flex;
-        flex-direction: column !important;
-    }
+    <div class="layout-container">
+        
+        <aside>
+            <div class="profile-card">
+                <div class="profile-cover"></div>
+                <div class="profile-avatar"></div>
+                <div class="profile-body">
+                    <span class="p-name" id="user-display-name">Loading Agent...</span>
+                    <span class="p-rank">STUDENT CLEARANCE</span>
+                    <div class="p-stats-row" style="margin-top:15px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between;">
+                        <span style="color:var(--mh-blue); font-weight:bold;">LVL 4</span>
+                        <span style="color:var(--mh-gold);">98% REP</span>
+                    </div>
+                </div>
+            </div>
 
-    /* 2. STACK PANELS */
-    .panel-left, .panel-right, .mission-card {
-        width: 100% !important;
-        margin-right: 0 !important;
-        margin-bottom: 2em;
-    }
+            <nav class="nav-tabs">
+                <div class="tab-btn active" onclick="switchTab('tab-dashboard')">
+                    <i class="fas fa-home"></i> HOME
+                </div>
+                <div class="tab-btn" onclick="switchTab('tab-create')">
+                    <i class="fas fa-plus-circle"></i> NEW
+                </div>
+                <div class="tab-btn" onclick="switchTab('tab-active')">
+                    <i class="fas fa-tasks"></i> TASKS
+                </div>
+                <div class="tab-btn" onclick="switchTab('tab-chat')">
+                    <i class="fas fa-comments"></i> CHAT
+                </div>
+                <div class="tab-btn" onclick="switchTab('tab-finances')">
+                    <i class="fas fa-wallet"></i> WALLET
+                </div>
+            </nav>
+        </aside>
 
-    /* 3. FORM ELEMENTS SIZE UP */
-    input, select, textarea {
-        font-size: 16px !important; /* Prevents iOS zoom on focus */
-    }
+        <main class="content-area">
 
-    /* 4. TABLE SCROLL FIX (For Mission History) */
-    .table-wrapper {
-        overflow-x: auto;
-        white-space: nowrap;
-        border: 1px solid rgba(0, 229, 255, 0.2); /* Cyan Border */
-    }
-}
-		</style>
-	</head>
-	<body>
+            <section id="tab-dashboard" class="panel-section active">
+                <div class="section-header">
+                    <div class="section-title"><h2>DASHBOARD</h2></div>
+                    <button class="btn btn-primary" onclick="switchTab('tab-create')"><i class="fas fa-bolt"></i> QUICK ACTION</button>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:15px; margin-bottom:20px;">
+                    <div class="task-card" style="margin:0; text-align:center; padding:15px; border-color:gold;">
+                        <span style="color:gold; font-size:1.5em; font-weight:900;">$1,250</span><br>
+                        <span style="font-size:0.7em; color:#888;">BALANCE</span>
+                    </div>
+                    <div class="task-card" style="margin:0; text-align:center; padding:15px;">
+                        <span style="color:#fff; font-size:1.5em; font-weight:900;">12</span><br>
+                        <span style="font-size:0.7em; color:#888;">COMPLETED</span>
+                    </div>
+                </div>
 
-		<div class="bg-grid-layer"></div>
-		<div class="bg-vignette"></div>
+                <h3 style="margin:30px 0 15px 0; font-size:1em; color:#aaa;">TOP OPERATIVES</h3>
+                <div class="data-table-wrapper">
+                    <table class="data-table" style="width:100%; border-collapse:collapse; color:#ccc; font-size:0.9em;">
+                        <tr style="border-bottom:1px solid #333; text-align:left;">
+                            <th style="padding:10px;">RANK</th>
+                            <th style="padding:10px;">OPERATIVE</th>
+                            <th style="padding:10px;">SCORE</th>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; color:gold;"><i class="fas fa-trophy"></i> 1</td>
+                            <td style="padding:10px;">Shadow_Coder</td>
+                            <td style="padding:10px; color:var(--mh-cyan);">5.0</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; color:silver;">2</td>
+                            <td style="padding:10px;">Design_Viper</td>
+                            <td style="padding:10px;">4.9</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
 
-		<div class="mobile-menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
+            <section id="tab-create" class="panel-section">
+                <div class="section-header"><h2>NEW MISSION</h2></div>
+                <div class="task-card">
+                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">MISSION TITLE</label>
+                    <input type="text" class="mh-input" placeholder="e.g. Java Project Help">
+                    
+                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">TYPE</label>
+                    <select class="mh-select">
+                        <option>Programming</option>
+                        <option>Design</option>
+                        <option>Translation</option>
+                    </select>
 
-		<div id="menu-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:200; display:none; flex-direction:column; justify-content:center; align-items:center;">
-			<div class="menu-close" style="position:absolute; top:30px; right:30px; font-size:2em; color:var(--mh-red); cursor:pointer;"><i class="fas fa-times"></i></div>
-			<div class="menu-search-container">
-			<form class="menu-search-form" onsubmit="event.preventDefault(); alert('SEARCHING DATABASE...');">
-				<input type="text" placeholder="SEARCH DATABASE..." />
-				<button type="submit"><i class="fas fa-search"></i></button>
-			</form>
-			</div>
-			<div class="menu-links" style="text-align:center; font-size:1.5em; line-height:2;">
-				<div data-target="dashboard-panel" style="color:#fff; cursor:pointer;">DASHBOARD</div>
-				<div data-target="new-mission-panel" style="color:var(--mh-gold); cursor:pointer;">+ NEW MISSION</div>
-				<div data-target="billing-panel" style="color:#fff; cursor:pointer;">FINANCIALS</div>
-				<div data-target="settings-panel" style="color:#fff; cursor:pointer;">SETTINGS</div>
-			</div>
+                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">BUDGET ($)</label>
+                    <input type="number" class="mh-input" placeholder="50.00">
+
+                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">DETAILS</label>
+                    <textarea class="mh-textarea" rows="5" placeholder="Mission briefing..."></textarea>
+
+                    <button class="btn btn-primary btn-full"><i class="fas fa-paper-plane"></i> DEPLOY</button>
+                </div>
+            </section>
+
+            <section id="tab-chat" class="panel-section">
+                <div class="section-header"><h2>SECURE COMMS</h2></div>
+					<div class="chat-layout" id="chat-system">
+						
+						<div class="chat-sidebar">
+							<div style="padding:15px; border-bottom:1px solid var(--mh-border);">
+								 <h4 style="color:#fff; margin:0;">ACTIVE COMMS</h4>
+							</div>
+							<div class="contact-list">
+								</div>
+						</div>
+
+						<div class="chat-main" style="display:none;"> <button class="chat-mobile-back" onclick="closeMobileChat()">
+								<i class="fas fa-arrow-left"></i> BACK
+							</button>
+
+							<div class="chat-messages" id="chat-feed">
+								<div style="text-align:center; margin-top:50px; color:#444;">
+									<i class="fas fa-comment-slash" style="font-size:3em;"></i><br>
+									SELECT A CHANNEL
+								</div>
+							</div>
+
+							<div class="chat-input-area">
+								<input type="file" id="chat-file-input" style="display:none;" onchange="handleFileSelect(event)">
+								
+								<button class="btn btn-outline" onclick="triggerUpload()">
+									<i class="fas fa-paperclip"></i>
+								</button>
+								<input type="text" class="mh-input" id="chat-message-input" placeholder="Type encrypted message..." style="margin:0;">
+								<button class="btn btn-primary" onclick="triggerSend()">
+									<i class="fas fa-paper-plane"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+            </section>
+
+            <section id="tab-active" class="panel-section">
+                <div class="section-header"><h2>ACTIVE OPS</h2></div>
+                <div class="task-card">
+                    <div class="tc-top">
+                        <span style="color:#888; font-family:monospace;">#MSN-8821</span>
+                        <span class="tc-status status-prog">IN PROGRESS</span>
+                    </div>
+                    <h3 style="color:#fff; margin:10px 0;">Algorithm Optimization</h3>
+                    <div class="tc-meta">
+                        <div class="meta-box"><label>BUDGET</label><span style="color:gold;">$150</span></div>
+                        <div class="meta-box"><label>MERC</label><span>Code_X</span></div>
+                        <div class="meta-box"><label>TIME</label><span>24h</span></div>
+                        <div class="meta-box"><label>PROGRESS</label><span style="color:var(--mh-blue);">75%</span></div>
+                    </div>
+                    <button class="btn btn-full" style="border:1px solid #333; color:#ccc;">DETAILS</button>
+                </div>
+            </section>
+
+            <section id="tab-finances" class="panel-section">
+                <div class="section-header"><h2>WALLET</h2></div>
+                <div class="data-table-wrapper">
+                    <table class="data-table" style="width:100%; color:#ccc; border-collapse:collapse;">
+                        <tr style="text-align:left; border-bottom:1px solid #333;">
+                            <th style="padding:15px;">DATE</th>
+                            <th style="padding:15px;">DESC</th>
+                            <th style="padding:15px;">AMOUNT</th>
+                        </tr>
+                        <tr>
+                            <td style="padding:15px;">Jan 12</td>
+                            <td style="padding:15px;">Deposit</td>
+                            <td style="padding:15px; color:var(--mh-success);">+$500.00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:15px;">Jan 10</td>
+                            <td style="padding:15px;">Escrow Hold</td>
+                            <td style="padding:15px; color:#888;">-$150.00</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+	<footer id="tactical-footer">
 		</div>
-
-		<div id="app-container">
-			
-			<div class="sidebar">
-				<a href="index.html" class="brand-link">
-					<img src="images/Logo_2.png" alt="MH LOGO">
-					MH STUDIOS
-				</a>
-				
-				<div style="margin-top:20px;">
-					<div style="font-family:'Courier New'; color:#555; font-size:0.7em; letter-spacing:1px; margin-bottom:15px;">COMMAND DECK</div>
-					
-					<div class="nav-btn active" data-target="dashboard-panel">
-						<span>MISSION STATUS</span> <i class="fas fa-chart-line"></i>
-					</div>
-					<div class="nav-btn" data-target="new-mission-panel">
-						<span>REQUEST SUPPORT</span> <i class="fas fa-plus-circle"></i>
-					</div>
-					<div class="nav-btn" data-target="billing-panel">
-						<span>FINANCIALS</span> <i class="fas fa-file-invoice-dollar"></i>
-					</div>
-					
+			<div class="footer-grid">
+				<div class="footer-col">
+					<h4>MH STUDIOS™</h4>
+					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+					<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
 				</div>
-
-				<div style="margin-top:40px;">
-					<div style="font-family:'Courier New'; color:#555; font-size:0.7em; letter-spacing:1px; margin-bottom:15px;">SYSTEM</div>
-					
-					<div class="nav-btn" data-target="settings-panel">
-						<span>SETTINGS</span> <i class="fas fa-cog"></i>
-					</div>
-					<div class="nav-btn" data-target="profile-panel">
-						<span>PROFILE</span> <i class="fas fa-user-shield"></i>
-					</div>
+				<div class="footer-col">
+					<h4>SECTORS</h4>
+					<ul>
+						<li><a href="Products_Services_Room.html">The Armory</a></li>
+						<li><a href="Packages.html">Service Packages</a></li>
+						<li><a href="#guild-sector">The Guild</a></li>
+						<li><a href="DoD_Login_Style.html">Operative Login</a></li>
+					</ul>
 				</div>
-				
-				<div style="margin-top:auto; text-align:center; padding-top:20px; border-top:1px solid #222;">
-					<div style="color:var(--mh-blue); font-size:0.8em; letter-spacing:1px;">SECURE CONNECTION</div>
-					<div style="color:#444; font-size:0.7em;">v5.2.0 STABLE</div>
+				<div class="footer-col">
+					<h4>LEGAL PROTOCOLS</h4>
+					<ul>
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Terms of Engagement</a></li>
+						<li><a href="#">Refund Policy</a></li>
+						<li><a href="#">PCI-DSS Compliance</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>SECURE CHANNELS</h4>
+					<div class="social-grid">
+						<a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
+						<a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
+						<a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
+						<a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
+					</div>
 				</div>
 			</div>
+		</footer>
 
-			<div class="main-view">
-				
-				<div class="top-bar">
-					<div class="timer-module">
-						<i class="fas fa-clock" style="color:var(--mh-green);"></i>
-						<div class="timer-digits" id="clock-display">00:00:00</div>
-					</div>
-					<div style="width:1px; height:20px; background:#333;"></div>
-					<div style="color:#fff; font-size:1.2em; cursor:pointer;" onclick="alert('Disconnecting...');"><i class="fas fa-power-off"></i></div>
-				</div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script type="module" src="assets/js/firebase-init.js"></script>
+    <script type="module" src="assets/js/student-core.js"></script>
+    
+	<script>
+        // --- MOBILE TABS LOGIC ---
+        window.switchTab = function(tabId) {
+            $('.tab-btn').removeClass('active');
+            $(`.tab-btn[onclick="switchTab('${tabId}')"]`).addClass('active');
+            $('.panel-section').removeClass('active').hide();
+            $('#' + tabId).show().addClass('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        };
 
-				<div class="content-scroll">
-					<div class="content-wrapper">
-						
-						<div id="dashboard-panel" class="content-panel active">
-							<div class="page-header">
-								<h2>Active Operations</h2>
-								<span>| MONITORING REAL-TIME REQUESTS |</span>
-							</div>
-							
-							<div class="hud-grid">
-								<div class="hud-card">
-									<div class="hud-val" id="hud-active">0</div>
-									<div class="hud-label">ACTIVE MISSIONS</div>
-								</div>
-								<div class="hud-card">
-									<div class="hud-val" id="hud-pending">0</div>
-									<div class="hud-label">PENDING REVIEW</div>
-								</div>
-								<div class="hud-card">
-									<div class="hud-val" id="hud-credits" style="color:var(--mh-gold);">0.00</div>
-									<div class="hud-label">AVAILABLE FUNDS</div>
-								</div>
-							</div>
+        // --- MENU LOGIC (KEEP THIS!) ---
+        $(document).ready(function() {
+            $('#menu-toggle').click(() => $('#menu-overlay').fadeIn(200).css('display','flex'));
+            $('#menu-close, .nav-trigger').click(() => $('#menu-overlay').fadeOut(200));
 
-							<div class="panel" style="text-align:center; padding:50px;">
-								<h3 style="color:#fff; font-size:2em; margin-bottom:20px;">READY TO DEPLOY?</h3>
-								<div class="btn-main btn-blue" onclick="$('.nav-btn[data-target=\'new-mission-panel\']').click();">
-									<i class="fas fa-rocket"></i> LAUNCH NEW OPERATION
-								</div>
-							</div>
-							
-							<div id="missions-feed" class="panel" style="min-height:200px; display:flex; justify-content:center; align-items:center;">
-								<div style="text-align:center; color:#666; font-family:'Courier New';">
-									<i class="fas fa-spinner fa-spin" style="font-size:2em; color:var(--mh-cyan); margin-bottom:15px;"></i><br>
-									> ESTABLISHING DATA LINK...
-								</div>
-							</div>
-							<div class="tactical-feed-section">
-						<h2 class="section-header"><i class="fas fa-satellite-dish"></i> LIVE_OPERATIONS // DEPLOYED TASKS</h2>
-						
-						<div class="task-grid" id="deployed-tasks-feed">
-							
-							<div class="task-card">
-								<div class="task-status badge-active">ACTIVE</div>
-								
-								<div class="task-header">
-									<h3>OPERATION: DESERT STORM REBRAND</h3>
-									<span class="task-id">ID: 882-A</span>
-								</div>
-								
-								<p class="task-brief">
-									Full UI/UX overhaul required for the main landing page. 
-									Focus on high-contrast tactical visuals...
-								</p>
+            // Internal Link Handler
+            $('.nav-trigger').click(function(e) {
+                e.preventDefault();
+                const tab = $(this).data('tab');
+                setTimeout(() => switchTab(tab), 200);
+            });
+        });
+    </script>
 
-								<div class="task-intel-bar">
-									<span class="intel-item"><i class="fas fa-clock"></i> T-MINUS 48H</span>
-									<span class="intel-item"><i class="fas fa-coins"></i> $450.00</span>
-								</div>
+    <script type="module">
+        import { initChatSystem } from './assets/js/chat-core.js';
+        
+        // Wait for DOM & Auth
+        document.addEventListener('DOMContentLoaded', () => {
+            // Slight delay ensures Firebase Auth is ready before we try to load chats
+            setTimeout(() => {
+                initChatSystem();
+            }, 1500);
+        });
+    </script>
 
-								<div class="task-social-grid">
-									<button class="social-btn like-trigger" onclick="triggerLike('missions', '882-A')">
-										<i class="far fa-heart"></i> <span class="count">12</span>
-									</button>
-									
-									<button class="social-btn comment-trigger" onclick="openComms('882-A')">
-										<i class="far fa-comment-alt"></i> <span class="count">4</span>
-									</button>
-									
-									<button class="social-btn share-trigger">
-										<i class="fas fa-share-nodes"></i> <span class="count">8</span>
-									</button>
-								</div>
-							</div>
-							</div>
-					</div>
-						</div>
-
-						<div id="new-mission-panel" class="content-panel">
-							<div class="page-header">
-								<h2>Initiate Request</h2>
-								<span>/// TRANSMIT REQUIREMENTS TO HQ ///</span>
-							</div>
-
-							<div class="panel">
-								<form id="student-mission-form">
-									<div class="form-grid">
-										<div class="full-width">
-											<label>OPERATION TITLE</label>
-											<input type="text" id="req-title" placeholder="e.g. Thesis Layout, Custom Script" required>
-										</div>
-										
-										<div>
-											<label>SECTOR</label>
-											<select id="req-type">
-												<option value="ACADEMIC">ACADEMIC WRITING</option>
-												<option value="CODING">SOFTWARE DEV</option>
-												<option value="DESIGN">GRAPHIC DESIGN</option>
-												<option value="VIDEO">MULTIMEDIA</option>
-											</select>
-										</div>
-
-										<div>
-											<label>PRIORITY</label>
-											<select id="req-priority">
-												<option value="low">STANDARD</option>
-												<option value="high">HIGH PRIORITY</option>
-												<option value="critical">CRITICAL (RUSH)</option>
-											</select>
-										</div>
-									</div>
-
-									<div class="form-grid" style="margin-top:25px;">
-										<div>
-											<label>DEADLINE</label>
-											<input type="datetime-local" id="req-deadline" required>
-										</div>
-										<div>
-											<label>BUDGET ESTIMATE ($)</label>
-											<input type="number" id="req-budget" placeholder="0.00" required>
-										</div>
-									</div>
-
-									<div style="margin-top:25px;">
-										<label>MISSION BRIEF</label>
-										<textarea id="req-desc" rows="6" placeholder="Provide full operational details..." required></textarea>
-									</div>
-
-									<div class="btn-row">
-										<button type="button" class="btn-main btn-hollow" onclick="document.getElementById('student-mission-form').reset();">ABORT</button>
-										<button type="submit" class="btn-main btn-blue">TRANSMIT REQUEST</button>
-									</div>
-								</form>
-							</div>
-						</div>
-
-						<div id="billing-panel" class="content-panel">
-							<div class="page-header">
-								<h2>Financial Records</h2>
-								<span>/// ENCRYPTED TRANSACTION LOG ///</span>
-							</div>
-							<div class="panel">
-								<table style="width:100%; border-collapse:collapse; color:#aaa; font-family:'Courier New';">
-									<tr style="border-bottom:1px solid var(--mh-blue); color:var(--mh-cyan); text-align:left;">
-										<th style="padding:15px;">DATE</th>
-										<th style="padding:15px;">OP ID</th>
-										<th style="padding:15px;">AMOUNT</th>
-										<th style="padding:15px;">STATUS</th>
-									</tr>
-									<tr style="border-bottom:1px solid #222;">
-										<td style="padding:15px;">2026-01-02</td>
-										<td style="padding:15px;">OP-ALPHA-9</td>
-										<td style="padding:15px; color:#fff;">$150.00</td>
-										<td style="padding:15px;"><span style="color:var(--mh-green); border:1px solid var(--mh-green); padding:2px 5px; font-size:0.8em;">CLEARED</span></td>
-									</tr>
-								</table>
-							</div>
-						</div>
-
-						<div id="settings-panel" class="content-panel">
-							<div class="page-header">
-								<h2>System Config</h2>
-								<span>/// INTERFACE PARAMETERS ///</span>
-							</div>
-							<div class="panel">
-								<p style="color:#666;">Settings module active. Additional parameters classified.</p>
-							</div>
-						</div>
-						
-						<div id="profile-panel" class="content-panel">
-							<div class="page-header">
-								<h2>Operative Profile</h2>
-								<span>/// PERSONNEL FILE: CLASSIFIED ///</span>
-							</div>
-							<div class="panel">
-								<div class="form-grid">
-									<div>
-										<label>CODENAME</label>
-										<input type="text" value="Viper_01" readonly style="opacity:0.6;">
-									</div>
-									<div>
-										<label>SECURE EMAIL</label>
-										<input type="email" value="operative@mhstudios.net">
-									</div>
-								</div>
-								<div class="btn-row">
-									<button class="btn-main btn-blue">SAVE UPDATES</button>
-								</div>
-							</div>
-						</div>
-
-					</div> 
-					
-					<div class="titan-panel">
-					<h2 class="glitch-text">>> INITIALIZE NEW MISSION</h2>
-					
-					<form id="create-mission-form">
-						<div class="form-grid">
-							<div class="input-block">
-								<label>OPERATION TITLE</label>
-								<input type="text" id="m-title" class="tac-input" placeholder="e.g. Build E-Commerce Site" required>
-							</div>
-							<div class="input-block">
-								<label>BUDGET LIMIT ($)</label>
-								<input type="number" id="m-budget" class="tac-input" placeholder="500" required>
-							</div>
-						</div>
-
-						<div class="form-grid">
-							<div class="input-block">
-								<label>SECTOR</label>
-								<select id="m-sector" class="tac-input">
-									<option value="WEB">Web Development</option>
-									<option value="GRAPHIC">Graphic Design</option>
-									<option value="VIDEO">Video Ops</option>
-									<option value="CODE">Programming (C++/Python)</option>
-								</select>
-							</div>
-							<div class="input-block">
-								<label>URGENCY</label>
-								<select id="m-urgency" class="tac-input">
-									<option value="STANDARD">Standard (7 Days)</option>
-									<option value="HIGH">High Priority (48h)</option>
-									<option value="CRITICAL">CRITICAL (ASAP)</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="input-block">
-							<label>MISSION PARAMETERS</label>
-							<textarea id="m-desc" class="tac-input" rows="4" placeholder="Describe objectives..." required></textarea>
-						</div>
-
-						<button type="submit" class="titan-btn titan-login" style="width:100%;">
-							<i class="fas fa-satellite-dish"></i> BROADCAST MISSION
-						</button>
-					</form>
-				</div>					
-					<footer id="tactical-footer">
-						<div class="footer-grid">
-							<div class="footer-col">
-								<h4>MH STUDIOS™</h4>
-								<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
-								<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
-							</div>
-							<div class="footer-col">
-								<h4>SECTORS</h4>
-								<ul>
-									<li><a href="Products_Services_Room.html">The Armory</a></li>
-									<li><a href="Packages.html">Service Packages</a></li>
-									<li><a href="index.html#guild-sector">The Guild</a></li>
-									<li><a href="DoD_Login_Style.html">Operative Login</a></li>
-								</ul>
-							</div>
-							<div class="footer-col">
-								<h4>LEGAL PROTOCOLS</h4>
-								<ul>
-									<li><a href="#">Privacy Policy</a></li>
-									<li><a href="#">Terms of Service</a></li>
-									<li><a href="#">Refund Protocols</a></li>
-								</ul>
-							</div>
-							<div class="footer-col">
-								<h4>SECURE COMMS</h4>
-								<p>social-ops@mhstudios.net</p>
-								<div style="margin-top:20px; font-size:1.5em; color:var(--mh-blue);">
-									<i class="fab fa-twitter" style="margin-right:20px; cursor:pointer;"></i>
-									<i class="fab fa-instagram" style="margin-right:20px; cursor:pointer;"></i>
-									<i class="fab fa-discord" style="cursor:pointer;"></i>
-								</div>
-							</div>
-						</div>
-					</footer>
-
-				</div> 
-				
-			</div> 
-			
-		</div> 
-				
-				
-		<script src="assets/js/jquery.min.js"></script>
-		<script type="module" src="assets/js/student-core.js"></script>
-		<script type="module" src="assets/js/auth-router.js"></script>
-		<script type="module">
-			import { startSessionMonitor } from './assets/js/session-monitor.js';
-			import { attachHoverSounds, playSound } from './assets/js/sound-engine.js';
-			import { initGlobalTicker } from './assets/js/global-alert-ticker.js';
-			import { processMissionPayment } from './assets/js/transaction-siphon.js';
-
-			window.triggerPayout = async (mId, fId, amt) => {
-				if(confirm(`Confirm release of $${amt} to operative? This action cannot be undone.`)) {
-					await processMissionPayment(mId, fId, amt);
-					// Reload feed to show "PAID" badge
-					loadStudentTasks(getAuth().currentUser.uid); 
-				}
-			};
-
-			document.addEventListener('DOMContentLoaded', () => {
-				initGlobalTicker();
-				// ... rest of your code
-			});
-			document.addEventListener('DOMContentLoaded', () => {
-				// Start the AFK Watchdog
-				startSessionMonitor();
-				
-				// Your other HUD inits
-				attachHoverSounds('.sector-btn, .btn-abort, .btn-sign, button, a');
-				playSound('granted');
-			});
-		</script>
-		<script>
-			$(document).ready(function() {
-				// 1. Navigation Logic
-				$('.nav-btn, .menu-links div').click(function() {
-					let target = $(this).data('target');
-					if(!target) return;
-					
-					$('.nav-btn').removeClass('active');
-					$(`.nav-btn[data-target="${target}"]`).addClass('active');
-					
-					$('.content-panel').removeClass('active');
-					$('#' + target).addClass('active');
-					
-					// Mobile close
-					$('#menu-overlay').fadeOut();
-				});
-
-				// 2. Mobile Menu
-				$('#menu-btn').click(() => $('#menu-overlay').fadeIn().css('display','flex'));
-				$('.menu-close').click(() => $('#menu-overlay').fadeOut());
-
-				// 3. Clock
-				setInterval(() => {
-					$('#clock-display').text(new Date().toLocaleTimeString('en-GB'));
-				}, 1000);
-			});
-		</script>
-		<script>
-			import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-				// ... existing imports
-
-				async function loadStudentTasks(studentId) {
-					const feed = document.getElementById('deployed-tasks-feed');
-					// Clear the example card
-					feed.innerHTML = '<div style="color:#666; font-family:monospace;">CONNECTING TO FIELD OPERATIONS...</div>';
-
-					try {
-						// Query missions created by this student
-						const q = query(collection(db, 'artifacts', appId, 'missions'), where('postedBy', '==', studentId));
-						const snapshot = await getDocs(q);
-						
-						feed.innerHTML = ''; // Clear loader
-
-						if (snapshot.empty) {
-							feed.innerHTML = '<div style="padding:20px; border:1px dashed #444; color:#666;">NO ACTIVE DEPLOYMENTS. INITIATE NEW MISSION.</div>';
-							return;
-						}
-
-						snapshot.forEach(doc => {
-							const data = doc.data();
-							// Inject the HTML using the design above
-							feed.innerHTML += createTaskCardHTML(doc.id, data);
-						});
-
-					} catch (err) {
-						console.error("Feed Error", err);
-					}
-				}
-
-				function createTaskCardHTML(id, data) {
-					// Logic to calculate likes/comments
-					const likeCount = data.likeCount || 0;
-					const commentCount = data.commentCount || 0;
-					
-					return `
-					<div class="task-card">
-						<div class="task-status badge-active">${data.status}</div>
-						<div class="task-header">
-							<h3>${data.title}</h3>
-							<span class="task-id">REF: ${id.substring(0,6).toUpperCase()}</span>
-						</div>
-						<p class="task-brief">${data.description.substring(0, 80)}...</p>
-						<div class="task-intel-bar">
-							<span class="intel-item"><i class="fas fa-clock"></i> ${new Date(data.timestamp?.toDate()).toLocaleDateString()}</span>
-							<span class="intel-item"><i class="fas fa-coins"></i> $${data.budget}</span>
-						</div>
-						<div class="task-social-grid">
-							<button class="social-btn like-trigger" onclick="triggerLike('missions', '${id}')">
-								<i class="far fa-heart"></i> <span class="count" id="count-like-${id}">${likeCount}</span>
-							</button>
-							<button class="social-btn comment-trigger">
-								<i class="far fa-comment-alt"></i> <span class="count">${commentCount}</span>
-							</button>
-							 <button class="social-btn share-trigger">
-								<i class="fas fa-share-nodes"></i> <span class="count">0</span>
-							</button>
-						</div>
-					</div>`;
-				}
-
-				// Don't forget to call this function after login!
-				// loadStudentTasks(user.uid);
-				// 1. THE CARD GENERATOR
-				window.createTaskCardHTML = function(id, data) {
-					const likeCount = data.likeCount || 0;
-					const commentCount = data.commentCount || 0;
-					
-					// We wrap the clickable area in a specific div so the buttons don't trigger navigation
-					return `
-					<div class="task-card" id="card-${id}">
-						<button class="btn-edit-float" onclick="event.stopPropagation(); enableEditMode('${id}')" title="EDIT INTEL">
-							<i class="fas fa-pen"></i>
-						</button>
-
-						<div class="task-status badge-active">${data.status}</div>
-						
-						<div class="card-clickable-zone" onclick="window.location.href='Mission_Details.html?id=${id}'" style="cursor:pointer">
-							<div class="task-header">
-								<h3 id="title-${id}">${data.title}</h3>
-								<span class="task-id">REF: ${id.substring(0,6).toUpperCase()}</span>
-							</div>
-							<p class="task-brief" id="desc-${id}">${data.description.substring(0, 80)}...</p>
-							<div class="task-intel-bar">
-								<span class="intel-item"><i class="fas fa-clock"></i> ${new Date(data.timestamp?.toDate()).toLocaleDateString()}</span>
-								<span class="intel-item"><i class="fas fa-coins"></i> $<span id="budget-${id}">${data.budget}</span></span>
-							</div>
-						</div>
-
-						<div class="task-social-grid">
-							<button class="social-btn like-trigger" onclick="event.stopPropagation(); triggerLike('missions', '${id}')">
-								<i class="far fa-heart"></i> <span class="count" id="count-like-${id}">${likeCount}</span>
-							</button>
-							<button class="social-btn comment-trigger" onclick="event.stopPropagation();">
-								<i class="far fa-comment-alt"></i> <span class="count">${commentCount}</span>
-							</button>
-							 <button class="social-btn share-trigger" onclick="event.stopPropagation();">
-								<i class="fas fa-share-nodes"></i> <span class="count">0</span>
-							</button>
-						</div>
-					</div>`;
-				}
-
-				// 2. ENABLE EDIT MODE (Transforms the Card)
-				window.enableEditMode = function(id) {
-					const card = document.getElementById(`card-${id}`);
-					const currentTitle = document.getElementById(`title-${id}`).innerText;
-					const currentDesc = document.getElementById(`desc-${id}`).innerText.replace('...', ''); // Remove ellipsis
-					const currentBudget = document.getElementById(`budget-${id}`).innerText;
-
-					// Save original HTML to restore if cancelled
-					card.dataset.originalHtml = card.innerHTML;
-					card.classList.add('edit-mode-active');
-
-					card.innerHTML = `
-						<div class="task-status badge-pending">EDITING...</div>
-						<div class="edit-form" onclick="event.stopPropagation();">
-							<label style="color:#666; font-size:0.7rem;">OPERATION TITLE</label>
-							<input type="text" id="input-title-${id}" class="tactical-input" value="${currentTitle}">
-							
-							<label style="color:#666; font-size:0.7rem;">MISSION BRIEF</label>
-							<textarea id="input-desc-${id}" class="tactical-input">${currentDesc}</textarea>
-							
-							<label style="color:#666; font-size:0.7rem;">BUDGET ALLOCATION ($)</label>
-							<input type="number" id="input-budget-${id}" class="tactical-input" value="${currentBudget}">
-
-							<div class="action-row">
-								<button class="btn-commit" onclick="saveMissionChanges('${id}')">COMMIT CHANGES</button>
-								<button class="btn-cancel" onclick="cancelEdit('${id}')">CANCEL</button>
-							</div>
-						</div>
-					`;
-				}
-
-				// 3. CANCEL EDIT (Restores View)
-				window.cancelEdit = function(id) {
-					const card = document.getElementById(`card-${id}`);
-					if (card.dataset.originalHtml) {
-						card.innerHTML = card.dataset.originalHtml;
-						card.classList.remove('edit-mode-active');
-					}
-				}
-
-				// 4. SAVE CHANGES (Updates Firestore)
-				window.saveMissionChanges = async function(id) {
-					const newTitle = document.getElementById(`input-title-${id}`).value;
-					const newDesc = document.getElementById(`input-desc-${id}`).value;
-					const newBudget = document.getElementById(`input-budget-${id}`).value;
-					const card = document.getElementById(`card-${id}`);
-
-					// UX: Show loading state
-					const commitBtn = card.querySelector('.btn-commit');
-					commitBtn.innerText = "UPLOADING...";
-					commitBtn.disabled = true;
-
-					try {
-						const docRef = doc(db, 'artifacts', appId, 'missions', id);
-						await updateDoc(docRef, {
-							title: newTitle,
-							description: newDesc,
-							budget: newBudget
-						});
-
-						// Re-render the card with new data (Simulated refresh)
-						// Ideally, you'd fetch the doc again, but we can hack it for speed:
-						card.classList.remove('edit-mode-active');
-						// Reloading the whole feed is safer to ensure consistency
-						// But for visual snapiness, we can manually update:
-						
-						// Quick reload of the user's tasks
-						loadStudentTasks(getAuth().currentUser.uid); 
-
-						// Play Success Sound
-						if(window.playSound) window.playSound('granted');
-
-					} catch (err) {
-						console.error("Update Failed", err);
-						alert("UPLOAD FAILED: CHECK CONNECTION");
-						commitBtn.innerText = "RETRY";
-						commitBtn.disabled = false;
-					}
-				}
-				
-				/* --- ROBUST MENU LOGIC --- */
-				$(document).ready(function() {
-					
-					// 1. OPEN MENU (Force Flex Display)
-					$('#menu-btn').off('click').on('click', function(e) {
-						e.preventDefault();
-						$('#menu-overlay').css({
-							'display': 'flex',
-							'opacity': '0'
-						}).animate({ opacity: 1 }, 200);
-					});
-
-					// 2. CLOSE MENU (X Button)
-					$('.menu-close').off('click').on('click', function() {
-						closeMenu();
-					});
-
-					// 3. NAVIGATION (Close Menu after clicking a link)
-					$('.menu-links div').off('click').on('click', function() {
-						const targetId = $(this).data('target');
-						
-						// Switch Panels
-						if(targetId) {
-							$('.content-panel').removeClass('active').hide();
-							$('#' + targetId).addClass('active').fadeIn(300);
-						}
-						
-						closeMenu();
-					});
-
-					// Helper Function
-					function closeMenu() {
-						$('#menu-overlay').animate({ opacity: 0 }, 200, function() {
-							$(this).css('display', 'none');
-						});
-					}
-
-				});
-		</script>
-		<script type="module">
-			import { createMission } from './assets/js/mission-control.js';
-
-			document.getElementById('create-mission-form').addEventListener('submit', (e) => {
-				e.preventDefault();
-				
-				const data = {
-					title: document.getElementById('m-title').value,
-					budget: document.getElementById('m-budget').value,
-					sector: document.getElementById('m-sector').value,
-					urgency: document.getElementById('m-urgency').value,
-					description: document.getElementById('m-desc').value
-				};
-
-				createMission(data);
-			});
-		</script>
-	</body>
+</body>
 </html>

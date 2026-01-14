@@ -5348,4 +5348,23 @@ body.has-ticker {
     cursor: pointer;
 }
 
-/* --- END CUSTOM STYLES --- */
+/* --- END CUSTOM STYLES 
+
+
+
+
+
+        .brand-module { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-module img { height: 40px; width: auto; }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-text .main { font-size: 1.1em; font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .brand-text .sub { font-size: 0.6em; color: var(--mh-cyan); letter-spacing: 2px; }
+
+
+
+
+
+
+
+
+--- */

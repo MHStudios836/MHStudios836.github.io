@@ -1,120 +1,124 @@
 // assets/js/student-core.js
-// STATUS: SYNCED & SECURED
+// STATUS: OPTIMIZED FOR TITAN V2 & PROTOCOL PHANTOM
 
-// 1. IMPORT MASTER KEYS (Borrowing from firebase-init.js)
 import { auth, db, dbID } from './firebase-init.js';
-
-// 2. IMPORT FIREBASE TOOLS
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import { 
-    collection, addDoc, query, where, onSnapshot, serverTimestamp 
+    collection, addDoc, query, where, onSnapshot, serverTimestamp, doc, updateDoc
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { startChatWith } from './chat-core.js'; 
+import { notify } from './notification-hub.js';
 
 let currentUser = null;
 
-// 3. SECURITY & DASHBOARD LOADER
+// 1. INITIALIZATION
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        console.log("STUDENT CONFIRMED: " + user.email);
+        console.log("STUDENT COMMAND: ONLINE");
+        $('#student-name').text("Client " + user.uid.substring(0,4).toUpperCase());
         
-        // Update Name on Screen
-        $('#student-name').text(user.displayName || "Operative");
-        
-        // Load THEIR Missions
-        loadStudentMissions(user);
+        loadMyMissions(user.uid);
     } else {
-        console.log("NO USER. REDIRECTING...");
         window.location.href = 'DoD_Login_Style.html';
     }
 });
 
-// 4. LOAD MISSIONS FUNCTION
-function loadStudentMissions(user) {
-    const q = query(
-        collection(db, 'artifacts', dbID, 'missions'), 
-        where("ownerId", "==", user.uid)
-    );
-
-    onSnapshot(q, (snap) => {
-        // Update the "Active Count" number
-        $('#active-count').text(snap.size); 
-        
-        const list = $('#active-projects-list');
-        list.empty();
-        
-        snap.forEach(doc => {
-            const m = doc.data();
-            
-            // Status Color Logic
-            let color = 'var(--mh-cyan)';
-            if(m.status === 'IN_PROGRESS') color = 'var(--mh-orange)';
-            if(m.status === 'COMPLETED') color = 'var(--mh-green)';
-
-            list.append(`
-                <div class="project-card" style="border-left: 3px solid ${color}; background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <h4 style="margin:0;">${m.title}</h4>
-                        <span style="color:${color}; font-weight:bold; font-size:0.8em;">${m.status}</span>
-                    </div>
-                    <div style="font-size:0.8em; color:#aaa; margin-top:5px;">
-                        ${m.type} | Budget: ${m.budget}
-                    </div>
-                </div>
-            `);
-        });
-    });
-}
-
-// 5. DEPLOY NEW MISSION (Form Handler)
-$('#student-mission-form').on('submit', async (e) => {
+// 2. CREATE MISSION (BROADCAST)
+$('#btn-transmit').click(async (e) => {
     e.preventDefault();
-    const btn = $(e.target).find('button');
-    btn.text("TRANSMITTING...").prop('disabled', true);
+    const btn = $(e.target);
+    btn.text("ENCRYPTING...").prop('disabled', true);
 
     try {
-        if(!currentUser) throw new Error("Authentication Lost.");
-
         await addDoc(collection(db, 'artifacts', dbID, 'missions'), {
             title: $('#req-title').val(),
-            budget: $('#req-budget').val(),
+            budget: Number($('#req-budget').val()), // Ensure number
             deadline: $('#req-deadline').val(),
             type: $('#req-type').val(),
             description: $('#req-desc').val(),
             status: 'OPEN',
             ownerId: currentUser.uid,
-            ownerName: currentUser.displayName || "Unknown Client",
+            ownerName: currentUser.displayName || "Unknown Client", // Stored for Admin, masked for Mercs
             timestamp: serverTimestamp()
         });
 
-        alert("MISSION UPLOADED TO HQ.");
-        e.target.reset(); // Clear the form
+        notify("SUCCESS", "Mission broadcast to Global Network.", "success");
+        $('#req-title').val(''); // Clear main input
         
     } catch (err) {
         console.error(err);
-        alert("ERROR: " + err.message);
+        notify("ERROR", "Transmission blocked.", "error");
     }
     btn.text("TRANSMIT REQUEST").prop('disabled', false);
 });
 
-// 6. LOGOUT
-$('#sidebar-logout, #menu-logout').click(async () => {
-    await signOut(auth);
-    window.location.href = 'DoD_Login_Style.html';
-});
+// 3. LOAD MY MISSIONS
+function loadMyMissions(uid) {
+    const q = query(
+        collection(db, 'artifacts', dbID, 'missions'), 
+        where("ownerId", "==", uid) // Only show MY missions
+    );
 
-// Inside createTaskCardHTML...
-let actionButton = '';
+    onSnapshot(q, (snapshot) => {
+        const list = $('#my-mission-list');
+        list.empty();
 
-// If the mission is done but not paid, show the Pay button
-if (data.status === 'REVIEW_PENDING' && data.paymentStatus !== 'PAID') {
-    actionButton = `
-        <button class="btn-pay-now" onclick="triggerPayout('${id}', '${data.freelancerId}', '${data.budget}')">
-            <i class="fas fa-money-bill-wave"></i> RELEASE FUNDS ($${data.budget})
-        </button>
-    `;
-} else if (data.paymentStatus === 'PAID') {
-    actionButton = `<div class="badge-paid">FUNDS RELEASED</div>`;
+        if(snapshot.empty) {
+            list.html('<div style="padding:20px; text-align:center; color:#555;">NO ACTIVE OPERATIONS</div>');
+            return;
+        }
+
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const id = docSnap.id;
+            
+            // PROTOCOL PHANTOM: Mask the Freelancer's Name
+            let mercDisplay = "PENDING ASSIGNMENT";
+            let actionBtn = `<span style="color:var(--mh-cyan); font-size:0.8em;">WAITING FOR OPERATIVE...</span>`;
+
+            if (data.status === 'IN_PROGRESS' || data.status === 'COMPLETED') {
+                const mercCode = data.freelancerId ? data.freelancerId.substring(0,5).toUpperCase() : "???";
+                mercDisplay = `<span style="color:var(--mh-gold);">ASSIGNED: OPERATIVE-${mercCode}</span>`;
+                
+                // Chat Button
+                actionBtn = `
+                    <button class="btn-small" onclick="window.openComms('${data.freelancerId}')">
+                        <i class="fas fa-comment-medical"></i> SECURE CHAT
+                    </button>
+                `;
+            }
+
+            if (data.status === 'COMPLETED') {
+                mercDisplay += ` <span style="color:var(--mh-green); font-weight:bold;">[MISSION COMPLETE]</span>`;
+                actionBtn = `<button class="btn-small" style="border-color:var(--mh-green); color:var(--mh-green);">PAYMENT RELEASED</button>`;
+            }
+
+            const card = `
+                <div class="mission-node">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>${data.title}</strong>
+                        <span style="color:var(--mh-gold);">$${data.budget}</span>
+                    </div>
+                    <div style="font-size:0.8em; margin-top:5px; color:#aaa;">${mercDisplay}</div>
+                    <div style="margin-top:10px;">${actionBtn}</div>
+                </div>
+            `;
+            list.append(card);
+        });
+    });
 }
 
-// Insert ${actionButton} somewhere in your card HTML, perhaps at the bottom
+// 4. GLOBAL ACTIONS
+window.openComms = (mercId) => {
+    // Switch to Chat Tab or Modal
+    startChatWith(mercId);
+    // You might need UI logic here to open the chat panel
+    notify("CONNECTING", "Establishing secure link...", "info");
+};
+
+// 5. LOGOUT
+$('#btn-logout').click(async () => {
+    await signOut(auth);
+    window.location.reload();
+});

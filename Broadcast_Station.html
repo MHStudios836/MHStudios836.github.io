@@ -1,0 +1,606 @@
+---
+permalink: /Broadcast_Station.html
+---
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH Studios™ | Global Broadcast Station</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Global real-time monitoring of the MH Studios freelance network.">
+    
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- CORE VARIABLES --- */
+        :root {
+            --bs-void: #020204;
+            --bs-panel: rgba(10, 15, 20, 0.9);
+            --bs-panel-border: rgba(0, 229, 255, 0.2);
+            
+            --bs-cyan: #00e5ff;
+            --bs-cyan-dim: rgba(0, 229, 255, 0.1);
+            --bs-cyan-glow: 0 0 10px rgba(0, 229, 255, 0.5);
+            
+            --bs-green: #00ff9d;
+            --bs-green-dim: rgba(0, 255, 157, 0.1);
+            
+            --bs-red: #ff004c;
+            
+            --bs-text: #e0f7fa;
+            --bs-text-mute: #546e7a;
+            
+            --scan-line-color: rgba(0, 229, 255, 0.05);
+        }
+
+        /* --- GLOBAL RESET & BASE --- */
+        * { box-sizing: border-box; outline: none; }
+        
+        body {
+            background-color: var(--bs-void);
+            color: var(--bs-text);
+            font-family: "Share Tech Mono", "Consolas", "Courier New", monospace; /* Tech Font */
+            margin: 0; padding: 0;
+            overflow: hidden; /* App-like feel, internal scrolling */
+            background-image: 
+                linear-gradient(0deg, transparent 24%, var(--scan-line-color) 25%, var(--scan-line-color) 26%, transparent 27%, transparent 74%, var(--scan-line-color) 75%, var(--scan-line-color) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, var(--scan-line-color) 25%, var(--scan-line-color) 26%, transparent 27%, transparent 74%, var(--scan-line-color) 75%, var(--scan-line-color) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+        }
+
+        /* SCROLLBARS */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--bs-cyan); }
+
+        /* --- LAYOUT GRID SYSTEM --- */
+        .station-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px; /* Left Feed, Main Map, Right Roster */
+            grid-template-rows: 60px 1fr 40px; /* Header, Content, Ticker */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- AREA 1: HEADER (SATELLITE LINK) --- */
+        .sat-header {
+            grid-column: 1 / -1;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 1px solid var(--bs-panel-border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+        
+        .brand-unit { display: flex; align-items: center; gap: 15px; }
+        .brand-unit img { height: 35px; filter: drop-shadow(0 0 5px var(--bs-cyan)); }
+        .brand-text { font-size: 1.2em; font-weight: bold; letter-spacing: 2px; color: #fff; }
+        .brand-sub { font-size: 0.7em; color: var(--bs-cyan); letter-spacing: 1px; }
+
+        .conn-stats { display: flex; gap: 20px; font-size: 0.8em; color: var(--bs-text-mute); }
+        .stat-node { display: flex; align-items: center; gap: 8px; }
+        .stat-val { color: var(--bs-green); font-weight: bold; }
+        
+        .blink-dot { width: 6px; height: 6px; background: var(--bs-green); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 5px var(--bs-green); } 50% { opacity: 0.3; } 100% { opacity: 1; box-shadow: 0 0 5px var(--bs-green); } }
+
+        .back-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--bs-panel-border);
+            color: var(--bs-cyan); padding: 8px 15px; cursor: pointer; transition: 0.3s;
+            font-family: inherit; font-size: 0.8em;
+        }
+        .back-btn:hover { background: var(--bs-cyan); color: #000; box-shadow: var(--bs-cyan-glow); }
+
+        /* --- AREA 2: LEFT FEED (LIVE TRANSMISSIONS) --- */
+        .feed-panel {
+            grid-column: 1 / 2;
+            background: var(--bs-panel);
+            border-right: 1px solid var(--bs-panel-border);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-head {
+            padding: 15px; background: rgba(0, 229, 255, 0.05);
+            border-bottom: 1px solid var(--bs-panel-border);
+            color: var(--bs-cyan); font-weight: bold; letter-spacing: 1px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .feed-filters {
+            display: flex; gap: 5px; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .filter-chip {
+            flex: 1; text-align: center; padding: 5px; font-size: 0.7em;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer; transition: 0.2s; color: #888;
+        }
+        .filter-chip:hover, .filter-chip.active {
+            border-color: var(--bs-cyan); color: var(--bs-cyan); background: var(--bs-cyan-dim);
+        }
+
+        .feed-stream { flex: 1; overflow-y: auto; padding: 0; }
+        
+        /* Mission Card Style */
+        .msn-node {
+            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s; position: relative;
+        }
+        .msn-node:hover { background: rgba(255,255,255,0.02); }
+        .msn-node::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+            background: transparent; transition: 0.2s;
+        }
+        .msn-node:hover::before { background: var(--bs-cyan); }
+        
+        .msn-top { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.7em; color: #666; }
+        .msn-title { font-size: 0.95em; color: #fff; margin-bottom: 5px; display: block; }
+        .msn-meta { display: flex; justify-content: space-between; align-items: center; }
+        .msn-budget { color: var(--bs-green); font-weight: bold; }
+        .msn-tag { padding: 2px 5px; border: 1px solid #444; font-size: 0.65em; border-radius: 3px; }
+
+        /* --- AREA 3: CENTER STAGE (GLOBAL MAP) --- */
+        .main-stage {
+            grid-column: 2 / 3;
+            position: relative;
+            background: radial-gradient(circle at center, #05101a 0%, #000 100%);
+            overflow: hidden;
+        }
+        
+        #global-map { width: 100%; height: 100%; display: block; }
+        
+        .map-overlay {
+            position: absolute; top: 20px; left: 20px; pointer-events: none;
+        }
+        .mo-title { font-size: 2em; color: rgba(255,255,255,0.1); font-weight: 900; }
+        .mo-sub { font-size: 0.8em; color: var(--bs-cyan); }
+
+        .radar-sweep {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80vh; height: 80vh; border-radius: 50%;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            z-index: 1; pointer-events: none;
+        }
+        .radar-sweep::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, transparent 300deg, rgba(0, 229, 255, 0.1) 360deg);
+            animation: radarSpin 4s linear infinite;
+        }
+        @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* --- AREA 4: RIGHT PANEL (THE ROSTER) --- */
+        .roster-panel {
+            grid-column: 3 / 4;
+            background: var(--bs-panel);
+            border-left: 1px solid var(--bs-panel-border);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        .roster-list { flex: 1; overflow-y: auto; padding: 10px; }
+        
+        .elite-card {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            padding: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+            transition: 0.2s;
+        }
+        .elite-card:hover { border-color: var(--bs-cyan); background: rgba(0, 229, 255, 0.05); }
+        
+        .ec-avatar { width: 40px; height: 40px; background: #222; border-radius: 50%; border: 1px solid #444; position: relative; }
+        .ec-status { 
+            position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; 
+            background: #555; border-radius: 50%; border: 1px solid #000; 
+        }
+        .ec-status.online { background: var(--bs-green); box-shadow: 0 0 5px var(--bs-green); }
+        
+        .ec-info h4 { margin: 0; font-size: 0.9em; color: #fff; }
+        .ec-info span { font-size: 0.7em; color: #888; }
+        .ec-rank { margin-left: auto; color: var(--bs-cyan); font-weight: bold; font-size: 0.8em; }
+
+        /* --- AREA 5: BOTTOM TICKER --- */
+        .ticker-bar {
+            grid-column: 1 / -1;
+            background: #000;
+            border-top: 1px solid var(--bs-panel-border);
+            display: flex; align-items: center;
+            overflow: hidden; white-space: nowrap;
+            font-size: 0.8em; color: var(--bs-cyan);
+        }
+        .ticker-label {
+            background: var(--bs-cyan); color: #000; padding: 0 15px; height: 100%;
+            display: flex; align-items: center; font-weight: bold; z-index: 2;
+        }
+        .ticker-content {
+            display: inline-block; padding-left: 100%;
+            animation: tickerMove 30s linear infinite;
+        }
+        @keyframes tickerMove { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        .ticker-item { display: inline-block; padding: 0 30px; color: rgba(255,255,255,0.7); }
+        .ticker-item b { color: #fff; }
+
+        /* --- POPUP MODAL (MISSION DETAILS) --- */
+        .holo-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 9000; display: none; align-items: center; justify-content: center;
+        }
+        .hm-content {
+            width: 500px; background: #050505; border: 1px solid var(--bs-cyan);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.2); padding: 30px; position: relative;
+        }
+        .hm-content::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--bs-cyan), transparent);
+        }
+        .hm-close {
+            position: absolute; top: 10px; right: 15px; color: #555; cursor: pointer; font-size: 1.5em;
+        }
+        .hm-close:hover { color: var(--bs-red); }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media screen and (max-width: 980px) {
+            .station-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 250px 1fr 1fr 30px; /* Header, Map, Feed, Roster, Ticker */
+                overflow-y: auto; height: auto;
+            }
+            .sat-header { position: sticky; top: 0; }
+            .feed-panel { grid-row: 3 / 4; height: 400px; }
+            .main-stage { grid-row: 2 / 3; height: 250px; }
+            .roster-panel { grid-row: 4 / 5; height: 300px; }
+            .ticker-bar { grid-row: 5 / 6; position: fixed; bottom: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="station-grid">
+        
+        <header class="sat-header">
+            <div class="brand-unit">
+                <img src="images/Logo_1.png" alt="MH Logo">
+                <div>
+                    <div class="brand-text">MH BROADCAST</div>
+                    <div class="brand-sub">GLOBAL UPLINK v9.0</div>
+                </div>
+            </div>
+
+            <div class="conn-stats" id="top-stats">
+                <div class="stat-node">
+                    <div class="blink-dot"></div>
+                    <span>LINK: <span class="stat-val">STABLE</span></span>
+                </div>
+                <div class="stat-node" style="display:none;" id="desktop-stats-extra">
+                    <span>PING: <span class="stat-val" id="val-ping">24ms</span></span>
+                </div>
+                <div class="stat-node">
+                    <span>NODES: <span class="stat-val" id="val-nodes">1,204</span></span>
+                </div>
+                <div class="stat-node">
+                    <span>OPS: <span class="stat-val" id="val-ops">85</span></span>
+                </div>
+            </div>
+
+            <button class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i> EXIT STATION</button>
+        </header>
+
+
+        <section class="feed-panel">
+            <div class="panel-head">
+                <span><i class="fas fa-satellite-dish"></i> TRANSMISSION FEED</span>
+                <i class="fas fa-cog" style="cursor:pointer; opacity:0.5;"></i>
+            </div>
+            
+            <div class="feed-filters">
+                <div class="filter-chip active" onclick="filterFeed('all')">ALL</div>
+                <div class="filter-chip" onclick="filterFeed('mission')">MISSIONS</div>
+                <div class="filter-chip" onclick="filterFeed('system')">SYSTEM</div>
+            </div>
+
+            <div class="feed-stream" id="mission-feed">
+                <div style="text-align:center; padding:20px; color:#555;">
+                    <i class="fas fa-circle-notch fa-spin"></i> SYNCING DATABASE...
+                </div>
+            </div>
+        </section>
+
+
+        <section class="main-stage">
+            <div class="radar-sweep"></div>
+            <div class="map-overlay">
+                <div class="mo-title">GLOBAL ACTIVITY</div>
+                <div class="mo-sub">LIVE GEOLOCATION TRACKING</div>
+            </div>
+            <canvas id="global-map"></canvas>
+            
+            <div style="position:absolute; bottom:20px; right:20px; display:flex; gap:10px;">
+                <button class="back-btn" onclick="resetMap()"><i class="fas fa-compress"></i></button>
+                <button class="back-btn" onclick="toggleRadar()"><i class="fas fa-radar"></i></button>
+            </div>
+        </section>
+
+
+        <section class="roster-panel">
+            <div class="panel-head">
+                <span><i class="fas fa-users"></i> ELITE OPERATIVES</span>
+                <span style="font-size:0.7em;">TOP 10</span>
+            </div>
+            
+            <div class="roster-list" id="elite-roster">
+                </div>
+
+            <div class="panel-head" style="margin-top:auto; border-top:1px solid var(--bs-panel-border);">
+                <span><i class="fas fa-chart-line"></i> MARKET TRENDS</span>
+            </div>
+            <div style="height:150px; padding:10px;">
+                <canvas id="traffic-chart"></canvas>
+            </div>
+        </section>
+
+
+        <div class="ticker-bar">
+            <div class="ticker-label">LATEST INTEL</div>
+            <div class="ticker-content" id="news-ticker">
+                <span class="ticker-item">SYSTEM: <b>Welcome to Broadcast Station v9.0</b></span>
+                <span class="ticker-item">ALERT: <b>High demand for Java Developers in Sector 7.</b></span>
+                <span class="ticker-item">MARKET: <b>Gold Package subscription price adjusting soon.</b></span>
+                <span class="ticker-item">SECURITY: <b>Firewall updated to patch 4.2.</b></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="holo-modal" id="mission-modal">
+        <div class="hm-content">
+            <div class="hm-close" onclick="$('#mission-modal').fadeOut(200)"><i class="fas fa-times"></i></div>
+            
+            <h2 style="color:var(--bs-cyan); margin-top:0;" id="modal-title">MISSION TITLE</h2>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">
+                <span id="modal-id" style="font-family:monospace; color:#666;">#ID-000</span>
+                <span id="modal-budget" style="color:var(--bs-green); font-weight:bold;">$0.00</span>
+            </div>
+            
+            <p id="modal-desc" style="color:#ccc; min-height:100px;">Description goes here...</p>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:20px;">
+                <div style="font-size:0.8em; color:#888;">CLIENT</div>
+                <div id="modal-client" style="font-weight:bold;">Unknown</div>
+            </div>
+
+            <button class="back-btn" style="width:100%; text-align:center;" onclick="alert('Please login to Accept Missions')">
+                <i class="fas fa-check-circle"></i> ACCEPT CONTRACT
+            </button>
+        </div>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+
+    <script>
+        const canvas = document.getElementById('global-map');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let connections = [];
+
+        function resize() {
+            width = canvas.width = document.querySelector('.main-stage').clientWidth;
+            height = canvas.height = document.querySelector('.main-stage').clientHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Particle Class (Represents Users/Nodes)
+        class Node {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.color = Math.random() > 0.9 ? '#ff004c' : '#00e5ff'; // 10% are Red (Admins/Alerts), 90% Cyan
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if(this.x < 0 || this.x > width) this.vx *= -1;
+                if(this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // Initialize Nodes
+        for(let i=0; i<80; i++) particles.push(new Node());
+
+        // Animation Loop
+        function animate() {
+            ctx.fillStyle = 'rgba(2, 3, 5, 0.2)'; // Trails effect
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw World Grid (Fake Globe Lines)
+            ctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for(let i=0; i<width; i+=50) { ctx.moveTo(i,0); ctx.lineTo(i,height); }
+            for(let i=0; i<height; i+=50) { ctx.moveTo(0,i); ctx.lineTo(width,i); }
+            ctx.stroke();
+
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                
+                // Draw Connections
+                particles.forEach((p2, index2) => {
+                    if(index === index2) return;
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 229, 255, ${0.1 - dist/1000})`;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+
+
+    <script type="module">
+        import { db, dbID } from './assets/js/firebase-init.js';
+        import { collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // --- MOCK DATA GENERATORS (To fill empty spaces initially) ---
+        const mockMissions = [
+            { title: "React Frontend Fix", budget: 150, tag: "DEV" },
+            { title: "Logo Design needed", budget: 50, tag: "DESIGN" },
+            { title: "Python Data Script", budget: 300, tag: "DATA" },
+            { title: "Video Edit 4K", budget: 100, tag: "VIDEO" },
+            { title: "Translate Doc to ES", budget: 40, tag: "TRANS" }
+        ];
+        
+        const mockUsers = [
+            { name: "Shadow_Coder", rank: "ELITE", score: 5.0 },
+            { name: "Pixel_Artist", rank: "VET", score: 4.9 },
+            { name: "Java_King", rank: "PRO", score: 4.8 },
+            { name: "Web_Ninja", rank: "PRO", score: 4.7 }
+        ];
+
+        // --- 1. POPULATE FEED ---
+        function addFeedItem(mission) {
+            const feed = document.getElementById('mission-feed');
+            const item = document.createElement('div');
+            item.className = 'msn-node';
+            item.innerHTML = `
+                <div class="msn-top">
+                    <span>${new Date().toLocaleTimeString()}</span>
+                    <span>#MSN-${Math.floor(Math.random()*9000)+1000}</span>
+                </div>
+                <span class="msn-title">${mission.title}</span>
+                <div class="msn-meta">
+                    <span class="msn-tag">${mission.tag || 'GEN'}</span>
+                    <span class="msn-budget">$${mission.budget}</span>
+                </div>
+            `;
+            // Modal Trigger
+            item.onclick = () => {
+                $('#modal-title').text(mission.title);
+                $('#modal-budget').text('$' + mission.budget);
+                $('#modal-client').text("Encrypted User");
+                $('#mission-modal').fadeIn(200).css('display','flex');
+            };
+            
+            feed.prepend(item);
+            if(feed.children.length > 50) feed.lastChild.remove(); // Keep memory low
+        }
+
+        // Initial Pop
+        mockMissions.forEach(m => addFeedItem(m));
+
+        // --- 2. POPULATE ROSTER ---
+        const roster = document.getElementById('elite-roster');
+        mockUsers.forEach(u => {
+            roster.innerHTML += `
+                <div class="elite-card">
+                    <div class="ec-avatar">
+                        <div class="ec-status online"></div>
+                    </div>
+                    <div class="ec-info">
+                        <h4>${u.name}</h4>
+                        <span>${u.rank} OPERATIVE</span>
+                    </div>
+                    <div class="ec-rank">${u.score}</div>
+                </div>
+            `;
+        });
+
+        // --- 3. TRAFFIC CHART ---
+        const ctxChart = document.getElementById('traffic-chart').getContext('2d');
+        new Chart(ctxChart, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '11:00', '12:00', '13:00', '14:00'],
+                datasets: [{
+                    label: 'System Load',
+                    data: [12, 19, 3, 5, 20],
+                    borderColor: '#00e5ff',
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(0, 229, 255, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { 
+                    x: { display: false }, 
+                    y: { display: false, min: 0 } 
+                }
+            }
+        });
+
+        // --- 4. FIREBASE LIVE LISTENER (REAL DATA) ---
+        // This connects to your real database to pull actual missions
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const q = query(collection(db, 'artifacts', dbID, 'missions'), orderBy("timestamp", "desc"), limit(20));
+                
+                onSnapshot(q, (snapshot) => {
+                    const feed = document.getElementById('mission-feed');
+                    // We don't clear the feed, we just prepend new ones to keep the "flow" feel
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const data = change.doc.data();
+                            // Create real object
+                            const realMission = {
+                                title: data.title,
+                                budget: data.budget,
+                                tag: data.type ? data.type.substring(0,4).toUpperCase() : 'GEN'
+                            };
+                            addFeedItem(realMission);
+                        }
+                    });
+                    
+                    // Update stats
+                    document.getElementById('val-ops').innerText = snapshot.size;
+                });
+            } catch (e) {
+                console.log("Offline Mode or Permission Error: " + e.message);
+            }
+        });
+
+        // --- 5. RANDOM PING SIMULATION ---
+        setInterval(() => {
+            document.getElementById('val-ping').innerText = (Math.floor(Math.random() * 50) + 10) + 'ms';
+            if(Math.random() > 0.7) {
+                // Add a random fake system log to ticker
+                const msgs = ["New Node Connected: Seoul", "Transaction Verified: $450", "Server Load: 45%", "Signal Intercepted"];
+                const msg = msgs[Math.floor(Math.random() * msgs.length)];
+                const ticker = document.getElementById('news-ticker');
+                ticker.innerHTML += `<span class="ticker-item">SYS: <b>${msg}</b></span>`;
+            }
+        }, 2000);
+
+    </script>
+</body>
+</html>

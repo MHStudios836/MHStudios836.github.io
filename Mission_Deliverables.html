@@ -1,0 +1,133 @@
+---
+permalink: /Mission_Deliverables.html
+---
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH Studios™ | Secure Uplink</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="robots" content="noindex, nofollow"> <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        body {
+            background: #000; color: #fff; font-family: 'Uni Sans', sans-serif;
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle at center, #111 0%, #000 70%);
+        }
+        .upload-card {
+            width: 500px; background: rgba(10, 15, 20, 0.95);
+            border: 1px solid #333; padding: 40px; border-radius: 8px;
+            text-align: center; position: relative;
+            box-shadow: 0 0 50px rgba(0, 128, 255, 0.1);
+        }
+        .upload-icon { font-size: 3em; color: #0080FF; margin-bottom: 20px; }
+        .file-zone {
+            border: 2px dashed #333; padding: 30px; margin: 20px 0;
+            border-radius: 4px; cursor: pointer; transition: 0.3s;
+        }
+        .file-zone:hover { border-color: #0080FF; background: rgba(0, 128, 255, 0.05); }
+        
+        .progress-container {
+            width: 100%; background: #222; height: 6px; border-radius: 3px;
+            margin-top: 20px; overflow: hidden; display: none;
+        }
+        .progress-bar {
+            height: 100%; width: 0%; background: #00ff41; transition: 0.2s;
+        }
+        .status-text { font-size: 0.8em; color: #888; margin-top: 10px; font-family: monospace; }
+        
+        .btn-action {
+            width: 100%; padding: 12px; background: #0080FF; color: #fff;
+            border: none; font-weight: bold; margin-top: 20px; cursor: pointer;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-card">
+        <div class="upload-icon"><i class="fas fa-satellite-dish"></i></div>
+        <h3>MISSION DELIVERABLES</h3>
+        <p style="color:#666; font-size:0.9em;">Upload the final project files. The client will receive them upon payment.</p>
+
+        <div class="file-zone" onclick="document.getElementById('file-input').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <div style="margin-top:10px;">CLICK TO SELECT FILE</div>
+            <div id="file-name" style="color:#00e5ff; font-size:0.8em; margin-top:5px;"></div>
+        </div>
+        <input type="file" id="file-input" style="display:none;">
+
+        <div class="progress-container" id="progress-box">
+            <div class="progress-bar" id="progress-fill"></div>
+        </div>
+        <div class="status-text" id="status-msg">WAITING FOR UPLINK...</div>
+
+        <button class="btn-action" id="btn-upload">INITIATE UPLOAD</button>
+        <button class="btn-action" style="background:transparent; border:1px solid #333; margin-top:10px;" onclick="history.back()">ABORT</button>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script type="module">
+        import { auth, db, dbID, storage } from './assets/js/firebase-init.js';
+        import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const missionId = urlParams.get('id');
+
+        // 1. FILE SELECTION
+        $('#file-input').change(function() {
+            const file = this.files[0];
+            if(file) $('#file-name').text(file.name);
+        });
+
+        // 2. UPLOAD LOGIC
+        $('#btn-upload').click(function() {
+            const file = $('#file-input')[0].files[0];
+            if(!file) return alert("NO FILE SELECTED");
+            if(!missionId) return alert("ERROR: NO MISSION ID LINKED");
+
+            // UI UPDATE
+            $('#progress-box').show();
+            $('#btn-upload').prop('disabled', true).text("UPLOADING...");
+
+            // STORAGE PATH: artifacts/MH.../mission_files/ID/filename
+            const storageRef = ref(storage, `artifacts/${dbID}/mission_files/${missionId}/${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    $('#progress-fill').css('width', progress + '%');
+                    $('#status-msg').text(`ENCRYPTING PACKETS: ${Math.round(progress)}%`);
+                },
+                (error) => {
+                    alert("UPLOAD FAILED: " + error.message);
+                    $('#btn-upload').prop('disabled', false).text("RETRY");
+                },
+                () => {
+                    // SUCCESS: Get Link & Save to Firestore
+                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                        await updateDoc(doc(db, 'artifacts', dbID, 'missions', missionId), {
+                            status: 'REVIEW_PENDING', // This triggers the "Pay" button for Student
+                            fileUrl: downloadURL,
+                            fileName: file.name,
+                            uploadedAt: serverTimestamp()
+                        });
+                        
+                        $('#status-msg').text("UPLOAD COMPLETE. REDIRECTING...");
+                        $('#progress-fill').css('background', '#00ff41');
+                        
+                        setTimeout(() => {
+                            window.location.href = 'Freelancers_Room.html';
+                        }, 1500);
+                    });
+                }
+            );
+        });
+    </script>
+</body>
+</html>

@@ -1,85 +1,82 @@
 /* assets/js/transaction-siphon.js */
-import { getFirestore, doc, runTransaction, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { app } from "./firebase-init.js";
-import { notify } from "./notification-hub.js";
-import { playSound } from "./sound-engine.js";
+/* STATUS: ACTIVE // FINANCIAL CORE */
 
-const db = getFirestore(app);
-const appId = 'mhstudios-836';
+import { db, dbID } from './firebase-init.js';
+import { doc, runTransaction, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-// CONFIGURATION
-const TAX_RATE = 0.20; // The Warlord's Cut (20%)
+const TAX_RATE = 0.20; // 20% Tax goes to MH Studios
 
 /**
- * EXECUTE PAYMENT SIPHON
- * Triggers when a Student releases funds for a completed mission.
- * * @param {string} missionId - The Mission Document ID
- * @param {string} freelancerId - The Mercenary getting paid
- * @param {number} totalAmount - The Budget (e.g., 500.00)
+ * PROCESS MISSION PAYOUT (Split Payment)
+ * 1. Takes money from Student (Simulation)
+ * 2. Adds Net Pay to Freelancer's Wallet
+ * 3. Adds Tax to Admin Vault
+ * 4. Marks Mission as COMPLETED (Hiding it from feeds)
  */
-export async function processMissionPayment(missionId, freelancerId, totalAmount) {
+export async function processMissionPayout(missionId, freelancerId, totalAmount) {
     const amount = parseFloat(totalAmount);
-    const adminCut = Number((amount * TAX_RATE).toFixed(2));
-    const freelancerNet = Number((amount - adminCut).toFixed(2));
+    const adminShare = Number((amount * TAX_RATE).toFixed(2));
+    const freelancerShare = Number((amount - adminShare).toFixed(2));
 
-    const missionRef = doc(db, 'artifacts', appId, 'missions', missionId);
-    const freelancerRef = doc(db, 'artifacts', appId, 'users', freelancerId);
-    const vaultRef = doc(db, 'artifacts', appId, 'system', 'vault'); // YOUR WALLET
-    const logRef = doc(db, 'artifacts', appId, 'financials', `TX_${Date.now()}`);
-
-    console.log(`SIPHONING FUNDS... TOTAL: $${amount} | CUT: $${adminCut} | MERC: $${freelancerNet}`);
+    const missionRef = doc(db, 'artifacts', dbID, 'missions', missionId);
+    const freelancerRef = doc(db, 'artifacts', dbID, 'users', freelancerId);
+    const vaultRef = doc(db, 'artifacts', dbID, 'system', 'vault');
 
     try {
         await runTransaction(db, async (transaction) => {
-            // 1. Verify Mission is still unpaid
-            const missionDoc = await transaction.get(missionRef);
-            if (!missionDoc.exists()) throw "Mission does not exist!";
-            if (missionDoc.data().paymentStatus === 'PAID') throw "Funds already released!";
-
-            // 2. Pay the Mercenary
+            // 1. UPDATE FREELANCER WALLET
             transaction.update(freelancerRef, {
-                balance: (missionDoc.data().balance || 0) + freelancerNet, // Add to withdrawable balance
-                totalEarnings: (missionDoc.data().totalEarnings || 0) + freelancerNet
+                balance: increment(freelancerShare),
+                xp: increment(500) // Bonus XP for completion
             });
 
-            // 3. Fill the Warlord's Vault
-            transaction.set(vaultRef, {
-                totalRevenue: (await getVaultBalance(transaction, vaultRef)) + adminCut,
-                lastDeposit: serverTimestamp()
-            }, { merge: true });
+            // 2. UPDATE ADMIN VAULT
+            transaction.update(vaultRef, {
+                balance: increment(adminShare),
+                totalRevenue: increment(adminShare)
+            });
 
-            // 4. Mark Mission as Paid
+            // 3. CLOSE MISSION (This removes it from Broadcast/Student feeds)
             transaction.update(missionRef, {
-                status: 'COMPLETED',
+                status: 'COMPLETED', // Changing status hides it from 'OPEN' queries
                 paymentStatus: 'PAID',
-                closedDate: serverTimestamp()
-            });
-
-            // 5. Create Financial Log (The Paper Trail)
-            transaction.set(logRef, {
-                type: 'MISSION_PAYOUT',
-                missionId: missionId,
-                gross: amount,
-                adminTax: adminCut,
-                netPayout: freelancerNet,
-                timestamp: serverTimestamp()
+                closedAt: serverTimestamp(),
+                finalPayout: freelancerShare,
+                adminTax: adminShare
             });
         });
 
-        // SUCCESS
-        playSound('granted'); // Or a 'ching' sound if you have it
-        notify("Transaction Secure", `Funds Released. Tax Siphoned: $${adminCut}`, "success");
+        console.log(`[FINANCE] Payout Complete. Tax Siphoned: $${adminShare}`);
         return true;
-
     } catch (e) {
-        console.error("SIPHON JAMMED:", e);
-        notify("Payment Error", e.toString(), "error");
-        return false;
+        console.error("[FINANCE] Transaction Failed:", e);
+        throw e;
     }
 }
 
-// Helper to safely get vault balance inside transaction
-async function getVaultBalance(t, ref) {
-    const doc = await t.get(ref);
-    return doc.exists() ? (doc.data().totalRevenue || 0) : 0;
+/**
+ * RECORD PRODUCT SALE (Armory)
+ */
+export async function recordProductSale(productId, price, buyerId) {
+    const productRef = doc(db, 'artifacts', dbID, 'products', productId);
+    const vaultRef = doc(db, 'artifacts', dbID, 'system', 'vault');
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            // 1. Add money to Vault
+            transaction.update(vaultRef, {
+                balance: increment(price),
+                totalRevenue: increment(price)
+            });
+
+            // 2. Increment Product Sales Counter
+            transaction.update(productRef, {
+                salesCount: increment(1)
+            });
+        });
+        return true;
+    } catch (e) {
+        console.error("[FINANCE] Product Sale Error:", e);
+        return false;
+    }
 }

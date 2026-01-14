@@ -1,485 +1,681 @@
+---
+permalink: /Product_Room.html
+---
 <!DOCTYPE HTML>
 <html lang="en">
-	<head>
-		<title>MH Studios™ | Product Detail</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-		<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
-		
-		<style>
-			/* ==========================================================================
-			   THEME: TITAN V5.2 (CYBER-NAVY AESTHETIC)
-			   ========================================================================== */
-			:root {
-				--mh-blue: #0080FF;
-				--mh-cyan: #00e5ff;
-				--mh-dark: #05070a;
-				--mh-panel: rgba(13, 17, 23, 0.95);
-				--mh-grid: rgba(0, 128, 255, 0.1);
-				--mh-text: #e0e0e0;
-				--mh-gold: #FFD700;
-			}
+<head>
+    <title>MH Studios™ | Asset Detail Terminal</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#05070a">
+    <meta name="description" content="Secure Asset Acquisition Interface.">
 
-			body {
-				background-color: #000;
-				color: var(--mh-text);
-				font-family: 'Uni Sans', sans-serif;
-				overflow-x: hidden;
-				margin: 0;
-			}
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* --- CORE IDENTITY --- */
+        :root {
+            --titan-dark: #05070a;
+            --titan-panel: rgba(13, 17, 23, 0.95);
+            --titan-blue: #0080FF;
+            --titan-cyan: #00e5ff;
+            --titan-red: #ff004c;
+            --titan-gold: #FFD700;
+            --titan-green: #00ff41;
+            --titan-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(20px);
+        }
 
-			/* --- SCROLLBAR --- */
-			::-webkit-scrollbar { width: 8px; }
-			::-webkit-scrollbar-track { background: #000; }
-			::-webkit-scrollbar-thumb { background: var(--mh-blue); border-radius: 4px; }
-			::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--titan-dark);
+            color: #e0e0e0;
+            font-family: "Uni Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0;
+            padding-top: 80px; /* Space for fixed header */
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(5, 7, 10, 0.92), rgba(5, 7, 10, 0.92)),
+                url('images/grid_bg.png');
+            background-attachment: fixed;
+            background-size: cover;
+        }
 
-			/* --- GLOBAL UTILITIES --- */
-			a { text-decoration: none; transition: 0.3s; }
-			
-			.section-header {
-				text-align: center;
-				margin-bottom: 80px;
-				position: relative;
-				display: block;
-			}
-			.section-header h2 {
-				font-size: 3em;
-				font-weight: 900;
-				letter-spacing: 5px;
-				text-transform: uppercase;
-				color: #fff;
-				margin: 0;
-				text-shadow: 0 0 20px rgba(0, 128, 255, 0.4);
-			}
-			.section-header span {
-				font-family: 'Courier New', monospace;
-				color: var(--mh-cyan);
-				font-size: 0.9em;
-				letter-spacing: 3px;
-				display: block;
-				margin-top: 10px;
-			}
-			.section-header::after {
-				content: '';
-				display: block;
-				width: 80px;
-				height: 4px;
-				background: var(--mh-blue);
-				margin: 20px auto 0;
-				box-shadow: 0 0 10px var(--mh-blue);
-			}
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3, h4, h5 { text-transform: uppercase; letter-spacing: 1px; color: #fff; margin: 0 0 15px 0; font-weight: 800; }
+        p { line-height: 1.6; color: #aaa; font-size: 0.95em; margin-bottom: 20px; }
+        a { text-decoration: none; color: var(--titan-cyan); transition: 0.3s; }
+        a:hover { color: #fff; text-shadow: 0 0 10px var(--titan-cyan); }
 
-			/* --- 1. NAVIGATION (STICKY HUD) --- */
-			#tactical-nav {
-				position: fixed; top: 0; left: 0; width: 100%;
-				padding: 15px 30px;
-				z-index: 999;
-				display: flex; justify-content: space-between; align-items: center;
-				background: rgba(5, 7, 10, 0.85);
-				backdrop-filter: blur(15px);
-				border-bottom: 1px solid rgba(255,255,255,0.1);
-				transition: 0.3s;
-			}
-			#tactical-nav.scrolled {
-				padding: 10px 30px;
-				background: rgba(0,0,0,0.95);
-				border-bottom-color: var(--mh-blue);
-			}
+        /* SCROLLBARS */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--titan-blue); }
 
-			.brand-link {
-				display: flex; align-items: center; gap: 15px;
-				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em;
-			}
-			.brand-link:hover { color: var(--mh-cyan); text-shadow: 0 0 10px var(--mh-cyan); }
-			.brand-link img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-blue)); }
+        /* --- HEADER (TACTICAL NAV) --- */
+        #titan-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            background: rgba(5, 7, 10, 0.95);
+            backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--titan-border);
+            z-index: 5000; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        .brand-module { display: flex; align-items: center; gap: 15px; }
+        .brand-module img { height: 40px; }
+        .brand-text { font-size: 1.1em; font-weight: 900; letter-spacing: 2px; }
 
-			.menu-trigger {
-				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; cursor: pointer;
-				padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2);
-				display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
-			}
-			.menu-trigger:hover {
-				background: var(--mh-blue); border-color: var(--mh-blue); color: #000; box-shadow: 0 0 15px var(--mh-blue);
-			}
+        .header-actions { display: flex; gap: 15px; }
+        .icon-btn {
+            width: 40px; height: 40px; border: 1px solid var(--titan-border); border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; color: #888; cursor: pointer;
+            transition: 0.3s; background: rgba(255,255,255,0.02);
+        }
+        .icon-btn:hover { color: var(--titan-cyan); border-color: var(--titan-cyan); background: rgba(0, 229, 255, 0.1); }
 
-			/* --- 2. MENU OVERLAY (THE VAULT) --- */
-			#menu-overlay {
-				position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
-				background: rgba(5, 7, 10, 0.98);
-				border-left: 2px solid var(--mh-blue);
-				z-index: 1000;
-				padding: 40px;
-				display: flex; flex-direction: column;
-				transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-				box-shadow: -20px 0 50px rgba(0,0,0,0.8);
-				overflow-y: auto;
-			}
-			#menu-overlay.active { right: 0; }
-			
-			.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
-			.menu-close:hover { color: var(--mh-red); }
+        /* --- MAIN LAYOUT GRID --- */
+        .product-container {
+            max-width: 1400px; margin: 40px auto; padding: 0 20px;
+            display: grid; grid-template-columns: 1fr 400px; gap: 40px;
+        }
 
-			/* MAIN LINKS */
-			.menu-links a, .menu-dropdown-btn {
-				display: flex; align-items: center; justify-content: space-between;
-				font-size: 1.2em; color: #fff; padding: 15px 0;
-				border-bottom: 1px solid rgba(255,255,255,0.1);
-				text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
-			}
-			.menu-links a:hover, .menu-dropdown-btn:hover {
-				color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan);
-			}
+        /* --- LEFT COLUMN: ASSET VISUALS & DATA --- */
+        .visual-sector { display: flex; flex-direction: column; gap: 30px; }
 
-			/* DROPDOWN SUB-MENU */
-			.dropdown-container {
-				display: none; /* Hidden by default */
-				background: rgba(255,255,255,0.03);
-				padding-left: 20px;
-				border-left: 1px solid var(--mh-blue);
-				margin-bottom: 10px;
-			}
-			.dropdown-container a {
-				font-size: 0.9em; color: #aaa; border-bottom: none; padding: 10px 0;
-			}
-			.dropdown-container a:hover { color: var(--mh-gold); padding-left: 10px; }
-			
-			/* Rotation for arrow */
-			.fa-chevron-down { transition: 0.3s; font-size: 0.8em; }
-			.menu-dropdown-btn.active .fa-chevron-down { transform: rotate(180deg); color: var(--mh-cyan); }
+        .main-image-frame {
+            width: 100%; height: 500px;
+            background: #000; border: 1px solid var(--titan-border);
+            border-radius: 8px; overflow: hidden; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .main-image-frame img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .main-image-frame:hover img { transform: scale(1.05); }
 
-			.menu-auth { margin-top: auto; display: grid; gap: 10px; }
-			
-			/* LANGUAGE GRID */
-			.lang-grid { display: flex; justify-content: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-			.lang-btn { width: 40px; height: 30px; opacity: 0.4; transition: 0.3s; border: 1px solid transparent; border-radius: 4px; padding: 2px; }
-			.lang-btn img { width: 100%; height: auto; display: block; }
-			.lang-btn:hover, .lang-btn.active { opacity: 1; border-color: var(--mh-cyan); transform: scale(1.1); }
+        .image-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 20px; background: linear-gradient(to top, #000, transparent);
+            pointer-events: none;
+        }
+        .io-badge {
+            background: var(--titan-blue); color: #fff; padding: 5px 12px;
+            font-size: 0.7em; font-weight: bold; border-radius: 4px; text-transform: uppercase;
+        }
 
-			.inspection-container {
-				max-width: 1200px;
-				margin: 40px auto;
-				padding: 20px;
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 50px;
-			}
+        .details-card {
+            background: var(--titan-panel); border: 1px solid var(--titan-border);
+            padding: 30px; border-radius: 8px; position: relative;
+        }
+        /* Corner Accent */
+        .details-card::before {
+            content: ''; position: absolute; top: -1px; left: -1px; width: 30px; height: 30px;
+            border-top: 3px solid var(--titan-blue); border-left: 3px solid var(--titan-blue);
+            border-radius: 8px 0 0 0;
+        }
 
-			/* --- LEFT: VIEWER --- */
-			.viewer-deck {
-				position: relative;
-				border: 1px solid var(--mh-blue);
-				background: rgba(0, 128, 255, 0.05);
-				overflow: hidden;
-				aspect-ratio: 1 / 1;
-			}
-			.product-main-img { width: 100%; height: 100%; object-fit: cover; }
-			.scan-line {
-				position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-				background: var(--mh-cyan); box-shadow: 0 0 15px var(--mh-cyan);
-				animation: scanMove 4s infinite linear; z-index: 5;
-			}
-			@keyframes scanMove { 0% { top: 0; } 100% { top: 100%; } }
+        .prod-title { font-size: 2.2em; text-shadow: 0 0 20px rgba(0, 128, 255, 0.3); margin-bottom: 10px; }
+        .prod-meta { display: flex; gap: 20px; font-size: 0.8em; color: #888; margin-bottom: 25px; border-bottom: 1px solid var(--titan-border); padding-bottom: 20px; }
+        .meta-item i { margin-right: 8px; color: var(--titan-blue); }
 
-			/* --- RIGHT: INTEL & CONTROLS --- */
-			.intel-deck { display: flex; flex-direction: column; gap: 15px; }
-			.product-title { font-size: 2.5em; font-weight: 900; text-transform: uppercase; margin: 0; }
-			.price-display { font-size: 1.8em; color: var(--mh-cyan); font-weight: bold; }
+        .tech-specs-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .tech-specs-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9em; }
+        .spec-label { color: #666; font-weight: bold; width: 150px; }
+        .spec-val { color: var(--titan-cyan); font-family: monospace; }
 
-			/* Quantity & Wishlist Row */
-			.purchase-config {
-				display: flex;
-				align-items: center;
-				gap: 20px;
-				margin-top: 10px;
-			}
-			.qty-input {
-				background: #000;
-				border: 1px solid var(--mh-blue);
-				color: #fff;
-				padding: 8px;
-				width: 70px;
-				text-align: center;
-			}
-			.wish-btn {
-				background: transparent;
-				border: 1px solid #444;
-				color: #888;
-				padding: 10px 15px;
-				cursor: pointer;
-				transition: 0.3s;
-			}
-			.wish-btn:hover { color: var(--mh-red); border-color: var(--mh-red); }
+        /* --- RIGHT COLUMN: ACTIONS & SOCIAL --- */
+        .sidebar-sector { display: flex; flex-direction: column; gap: 25px; }
 
-			.launch-btn {
-				background: var(--mh-blue);
-				color: #000;
-				padding: 18px;
-				font-weight: 900;
-				text-transform: uppercase;
-				letter-spacing: 2px;
-				cursor: pointer;
-				border: none;
-				clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
-			}
+        .action-card {
+            background: #0b0e11; border: 1px solid var(--titan-border);
+            padding: 25px; border-radius: 8px; position: sticky; top: 90px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
 
-			/* --- SOCIAL HUB --- */
-			.social-hub {
-				margin-top: 20px;
-				display: flex;
-				gap: 30px;
-				padding: 15px 0;
-				border-top: 1px solid rgba(255,255,255,0.1);
-			}
-			.social-action { cursor: pointer; color: #888; transition: 0.3s; font-size: 0.9em; }
-			.social-action:hover { color: var(--mh-cyan); }
-			.social-action i { margin-right: 5px; }
+        .price-tag { font-size: 2.5em; font-weight: 900; color: #fff; display: block; margin-bottom: 5px; }
+        .price-sub { font-size: 0.8em; color: var(--titan-green); margin-bottom: 25px; display: block; }
 
-			/* --- COMMENT SECTION --- */
-			.comment-section {
-				grid-column: 1 / -1;
-				background: var(--mh-panel);
-				padding: 30px;
-				border: 1px solid rgba(255,255,255,0.05);
-			}
-			.comment-input-box {
-				width: 100%;
-				background: rgba(0,0,0,0.3);
-				border: 1px solid #333;
-				color: #fff;
-				padding: 15px;
-				margin-bottom: 10px;
-				resize: none;
-			}
+        .btn-titan {
+            width: 100%; padding: 15px; border: none; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+            transition: 0.3s; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        
+        .btn-buy {
+            background: var(--titan-blue); color: #fff; margin-bottom: 15px;
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.2);
+        }
+        .btn-buy:hover { background: #fff; color: #000; box-shadow: 0 0 30px #fff; }
 
-			/* --- FOOTER --- */
-			.tactical-footer {
-				margin-top: 100px;
-				padding: 40px;
-				border-top: 1px solid var(--mh-blue);
-				font-size: 0.8em;
-				color: #555;
-				text-align: center;
-			}
-			.tactical-footer a { color: #888; text-decoration: none; margin: 0 10px; }
+        .btn-wish {
+            background: transparent; border: 1px solid var(--titan-border); color: #ccc;
+        }
+        .btn-wish:hover { border-color: var(--titan-red); color: var(--titan-red); }
 
-			#loading-screen {
-				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-				background: #000; z-index: 100; display: flex; justify-content: center; align-items: center;
-			}
-			
-			/* --- 11. FOOTER --- */
-            #tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; }
-            .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
-            .footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
-            .footer-col ul { list-style: none; padding: 0; }
-            .footer-col li { margin-bottom: 12px; }
-            .footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
-            .footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
-            .social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
-            .social-grid a { color: #555; transition: 0.3s; }
-            .social-grid a:hover { color: #fff; transform: translateY(-3px); }
-			
-			@media (max-width: 900px) {
-				.inspection-container { grid-template-columns: 1fr; }
-			}
-		</style>
-	</head>
-	<body>
+        .social-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px;
+        }
+        .soc-btn {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--titan-border);
+            padding: 10px; border-radius: 4px; text-align: center; color: #888;
+            cursor: pointer; font-size: 0.8em; transition: 0.3s;
+        }
+        .soc-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .soc-btn.active { color: var(--titan-red); border-color: var(--titan-red); }
 
-		
-		<nav id="tactical-nav">
-			<a href="index.html" class="brand-link">
-				<img src="images/Logo_2.png" alt="MH LOGO">
-				MH STUDIOS™
-			</a>
-			
-			<div class="menu-trigger" id="menu-btn">
-				<span>MENU</span>
-				<i class="fas fa-bars"></i>
-			</div>
-		</nav>
+        /* --- COMMENTS SECTION --- */
+        .comments-feed {
+            margin-top: 20px; max-height: 400px; overflow-y: auto;
+            border: 1px solid var(--titan-border); background: #000;
+            padding: 15px; border-radius: 4px;
+        }
+        .comment-node {
+            margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .cn-header { display: flex; justify-content: space-between; font-size: 0.75em; margin-bottom: 5px; }
+        .cn-user { color: var(--titan-cyan); font-weight: bold; }
+        .cn-time { color: #555; }
+        .cn-text { font-size: 0.9em; color: #ccc; }
 
-		<div id="menu-overlay">
-			<div class="menu-close"><i class="fas fa-times"></i></div>
+        .comment-input-area {
+            display: flex; gap: 10px; margin-top: 15px;
+        }
+        .titan-input {
+            flex: 1; background: #080a0c; border: 1px solid #333;
+            color: #fff; padding: 10px; border-radius: 4px;
+        }
+        .titan-input:focus { border-color: var(--titan-blue); }
 
-			<div class="menu-links">
-				<a href="index.html"><i class="fas fa-home" style="width:30px;"></i> Command Center</a>
-				<a href="Products_Services_Room.html"><i class="fas fa-cube" style="width:30px;"></i> The Armory</a>
-				<a href="Packages.html"><i class="fas fa-tags" style="width:30px;"></i> Clearance Levels</a>
-				
-				<div class="menu-dropdown-btn">
-					<span><i class="fas fa-layer-group" style="width:30px;"></i> PAGES</span>
-					<i class="fas fa-chevron-down"></i>
-				</div>
-				<div class="dropdown-container">
-					<a href="About_Us.html">About MH Studios</a>
-					<a href="Video_Design.html">Video Design</a>
-					<a href="Graphic_Design.html">Creative Arts® (Graphic)</a>
-					<a href="Web_Design.html">MH E-Services™ (Web)</a>
-					<a href="Translation_Design.html">Translation Ops</a>
-					<a href="Audio_Design.html">MH Sounds™ (Audio)</a>
-					<a href="Game_Design.html">MH Games™ (Project Ironclade)</a>
-				</div>
+        /* --- RELATED ASSETS (BOTTOM) --- */
+        .related-sector {
+            max-width: 1400px; margin: 60px auto; padding: 0 20px;
+        }
+        .related-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;
+        }
+        .mini-card {
+            background: var(--titan-panel); border: 1px solid var(--titan-border);
+            border-radius: 6px; overflow: hidden; transition: 0.3s;
+        }
+        .mini-card:hover { transform: translateY(-5px); border-color: var(--titan-blue); }
+        .mc-img { height: 150px; background: #000; background-size: cover; background-position: center; }
+        .mc-body { padding: 15px; }
+        .mc-title { font-size: 0.9em; font-weight: bold; margin-bottom: 5px; color: #fff; display: block; }
+        .mc-price { color: var(--titan-gold); font-size: 0.9em; }
 
-				<a href="#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
-			</div>
-			
-			<div class="menu-bottom" style="padding:20px; text-align:center;">
-				
-				<div id="dynamic-auth-buttons" style="margin-bottom: 20px;">
-				<a href="DoD_Login_Style.html" class="btn-main btn-gold" style="text-align:center;">OPERATIVE LOGIN</a>
-				<a href="DoD_Login_Style.html" class="btn-main btn-hollow" style="text-align:center;">REQUEST ACCESS</a>
-				</div>
+        /* --- MODAL (CHECKOUT & REPORT) --- */
+        .titan-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9000;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #0b0e11; border: 1px solid var(--titan-border);
+            width: 500px; padding: 30px; border-radius: 8px; position: relative;
+            box-shadow: 0 0 50px rgba(0, 128, 255, 0.2);
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-header { font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; color: #fff; display: flex; justify-content: space-between; }
+        .close-modal { cursor: pointer; color: #666; transition: 0.3s; }
+        .close-modal:hover { color: var(--titan-red); }
 
-				<div class="lang-grid">
-					<a href="#" class="lang-btn active" title="English"><img src="images/GB.png" alt="GB"></a>
-					<a href="#" class="lang-btn" title="Arabic"><img src="images/Ar.png" alt="AR"></a>
-					<a href="#" class="lang-btn" title="Dutch"><img src="images/Du.png" alt="NL"></a>
-					<a href="#" class="lang-btn" title="Russian"><img src="images/Ru.png" alt="RU"></a>
-				</div>
-			</div>
-		</div>
+        /* --- RESPONSIVE MATRIX --- */
+        @media screen and (max-width: 980px) {
+            .product-container { grid-template-columns: 1fr; }
+            .action-card { position: static; margin-top: 20px; }
+            .main-image-frame { height: 300px; }
+            .prod-title { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
 
-		<div class="inspection-container">
-			<div class="viewer-deck">
-				<div class="scan-line"></div>
-				<img src="" id="target-img" class="product-main-img" alt="Artifact">
-			</div>
+    <header id="titan-header">
+        <a href="index.html" class="brand-module">
+            <img src="images/Logo_1.png" alt="MH Logo">
+            <div class="brand-text">
+                <span style="color:#fff;">MH</span><span style="color:var(--titan-blue);">ARMORY</span>
+            </div>
+        </a>
 
-			<div class="intel-deck">
-				<div style="font-family:monospace; color:var(--mh-blue);">OBJ_ID: <span id="target-id">---</span></div>
-				<h1 class="product-title" id="target-title">LOADING...</h1>
-				<div class="price-display" id="target-price">$0.00</div>
-				
-				<p id="target-desc" style="color:#aaa; line-height:1.6; border-left:2px solid var(--mh-blue); padding-left:15px;"></p>
+        <div class="header-actions">
+            <a href="Products_Services_Room.html" class="icon-btn" title="Back to Armory">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="icon-btn" title="My Cart">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="icon-btn" id="user-status-indicator" title="User Status">
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+    </header>
 
-				<div class="purchase-config">
-					<div>
-						<label style="font-size:0.7em; display:block; color:#555;">QUANTITY</label>
-						<input type="number" value="1" min="1" class="qty-input" id="target-qty">
-					</div>
-					<button class="wish-btn" id="wish-btn">
-						<i class="far fa-heart"></i> WISHLIST
-					</button>
-				</div>
+    <main class="product-container">
 
-				<button class="launch-btn" id="buy-btn">PURCHASE PROTOCOL</button>
+        <section class="visual-sector">
+            
+            <div class="main-image-frame">
+                <img id="p-image" src="images/placeholder_product.png" alt="Asset Visual">
+                <div class="image-overlay">
+                    <span class="io-badge" id="p-branch">CLASSIFIED</span>
+                </div>
+            </div>
 
-				<div class="social-hub">
-					<div class="social-action"><i class="far fa-thumbs-up"></i> LIKE</div>
-					<div class="social-action"><i class="far fa-comment"></i> COMMENT</div>
-					<div class="social-action"><i class="fas fa-share-alt"></i> SHARE</div>
-				</div>
-			</div>
+            <div class="details-card">
+                <h1 class="prod-title" id="p-name">LOADING ASSET DATA...</h1>
+                
+                <div class="prod-meta">
+                    <span class="meta-item"><i class="fas fa-cube"></i> <span id="p-id">ID-0000</span></span>
+                    <span class="meta-item"><i class="fas fa-calendar-alt"></i> <span id="p-date">Today</span></span>
+                    <span class="meta-item"><i class="fas fa-shield-alt"></i> VERIFIED</span>
+                </div>
 
-			<div class="comment-section">
-				<h3 style="color:var(--mh-blue); text-transform:uppercase;">Transmission Logs (Comments)</h3>
-				<textarea class="comment-input-box" placeholder="Enter secure message..."></textarea>
-				<button class="filter-btn" style="padding:10px 20px; border:1px solid var(--mh-blue); color:var(--mh-blue); background:none; cursor:pointer;">POST MESSAGE</button>
-				
-				<div style="margin-top:30px; opacity:0.5;">
-					<div style="border-bottom:1px solid #222; padding:10px 0;">
-						<strong>USER_B4:</strong> This asset changed my entire workflow. Solid encryption.
-					</div>
-				</div>
-			</div>
-		</div>
+                <h3><i class="fas fa-info-circle" style="color:var(--titan-blue);"></i> MISSION BRIEF (DESCRIPTION)</h3>
+                <p id="p-desc">
+                    System is retrieving the asset description from the secure archive. Please stand by...
+                </p>
 
-		<footer id="tactical-footer">
-			<div class="footer-grid">
-				<div class="footer-col">
-					<h4>MH STUDIOS™</h4>
-					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
-					<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
-				</div>
-				<div class="footer-col">
-					<h4>SECTORS</h4>
-					<ul>
-						<li><a href="Products_Services_Room.html">The Armory</a></li>
-						<li><a href="Packages.html">Service Packages</a></li>
-						<li><a href="#guild-sector">The Guild</a></li>
-						<li><a href="DoD_Login_Style.html">Operative Login</a></li>
-					</ul>
-				</div>
-				<div class="footer-col">
-					<h4>LEGAL PROTOCOLS</h4>
-					<ul>
-						<li><a href="#">Privacy Policy</a></li>
-						<li><a href="#">Terms of Engagement</a></li>
-						<li><a href="#">Refund Policy</a></li>
-						<li><a href="#">PCI-DSS Compliance</a></li>
-					</ul>
-				</div>
-				<div class="footer-col">
-					<h4>SECURE CHANNELS</h4>
-					<div class="social-grid">
-						<a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
-						<a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
-						<a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
-						<a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
-					</div>
-				</div>
-			</div>
+                <h3><i class="fas fa-microchip" style="color:var(--titan-blue);"></i> TECHNICAL SPECIFICATIONS</h3>
+                <table class="tech-specs-table">
+                    <tr>
+                        <td class="spec-label">FILE TYPE</td>
+                        <td class="spec-val">ZIP / PDF / EXE</td>
+                    </tr>
+                    <tr>
+                        <td class="spec-label">VERSION</td>
+                        <td class="spec-val">v2.4 (Stable)</td>
+                    </tr>
+                    <tr>
+                        <td class="spec-label">LICENSE</td>
+                        <td class="spec-val">Commercial Use</td>
+                    </tr>
+                    <tr>
+                        <td class="spec-label">SUPPORT</td>
+                        <td class="spec-val" style="color:var(--titan-green);">ACTIVE (24/7)</td>
+                    </tr>
+                </table>
+            </div>
 
-		</footer>
-		
-		<script type="module" src="assets/js/auth-router.js"></script>
-		<script src="assets/js/jquery.min.js"></script>
-		<script type="module" src="assets/js/shop-detail.js"></script>
-		<script type="module" src="assets/js/black-box.js"></script>
-		
-		<script>
-			// --- MENU LOGIC ---
-			$('#menu-btn').on('click', function() {
-				$('#menu-overlay').addClass('active');
-			});
-			$('.menu-close, .menu-links a').on('click', function() {
-				// Don't close if clicking the dropdown button itself
-				if(!$(this).hasClass('menu-dropdown-btn')) {
-					$('#menu-overlay').removeClass('active');
-				}
-			});
+        </section>
 
-			// --- DROPDOWN LOGIC ---
-			$('.menu-dropdown-btn').on('click', function() {
-				$(this).toggleClass('active');
-				$(this).next('.dropdown-container').slideToggle(300);
-			});
 
-			// --- LANGUAGE LOGIC ---
-			$('.lang-btn').on('click', function(e) {
-				e.preventDefault();
-				$('.lang-btn').removeClass('active');
-				$(this).addClass('active');
-				console.log("Language switched to: " + $(this).attr('title'));
-			});
+        <aside class="sidebar-sector">
+            
+            <div class="action-card">
+                <span class="price-tag" id="p-price">$0.00</span>
+                <span class="price-sub"><i class="fas fa-check-circle"></i> INSTANT DIGITAL DELIVERY</span>
 
-			// --- SCROLL NAVBAR LOGIC ---
-			$(window).on('scroll', function() {
-				if ($(window).scrollTop() > 50) {
-					$('#tactical-nav').addClass('scrolled');
-				} else {
-					$('#tactical-nav').removeClass('scrolled');
-				}
-			});
+                <button class="btn-titan btn-buy" onclick="openCheckout()">
+                    <i class="fas fa-download"></i> ACQUIRE ASSET
+                </button>
 
-			// --- SCROLL REVEAL ---
-			$(window).on('scroll', function() {
-				$('.holo-card, .service-node, .log-entry').each(function() {
-					var top_of_element = $(this).offset().top;
-					var bottom_of_window = $(window).scrollTop() + $(window).height();
-					
-					if(bottom_of_window > top_of_element + 50) {
-						$(this).css({'opacity':'1', 'transform':'translateY(0)'});
-					}
-				});
-			});
+                <button class="btn-titan btn-wish" onclick="toggleWishlist()">
+                    <i class="far fa-star"></i> ADD TO WISHLIST
+                </button>
 
-			// Initial State
-			$('.holo-card, .service-node, .log-entry').css({'opacity':'0', 'transform':'translateY(30px)', 'transition':'0.6s all ease'});
-		</script>
-	</body>
+                <div class="social-grid">
+                    <div class="soc-btn" id="btn-like" onclick="actionLike()">
+                        <i class="far fa-heart"></i> <span id="like-count">0</span>
+                    </div>
+                    <div class="soc-btn" onclick="actionShare()">
+                        <i class="fas fa-share-alt"></i> SHARE
+                    </div>
+                    <div class="soc-btn" onclick="openReportModal()" style="border-color:rgba(255,0,0,0.2);">
+                        <i class="fas fa-flag"></i> REPORT
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-card">
+                <h3><i class="fas fa-comments" style="color:var(--titan-blue);"></i> OPERATIVE CHATTER</h3>
+                
+                <div class="comments-feed" id="comments-container">
+                    <div style="text-align:center; padding:20px; color:#444;">NO COMMS DETECTED</div>
+                </div>
+
+                <div class="comment-input-area">
+                    <input type="text" id="comment-input" class="titan-input" placeholder="Type encrypted message...">
+                    <button class="icon-btn" style="background:var(--titan-blue); color:#fff; border:none;" onclick="actionComment()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+    </main>
+
+    <section class="related-sector">
+        <h3><i class="fas fa-boxes"></i> RELATED DEPLOYMENTS</h3>
+        <div class="related-grid">
+            <div class="mini-card">
+                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
+                <div class="mc-body">
+                    <a href="#" class="mc-title">Advanced React Dashboard</a>
+                    <span class="mc-price">$45.00</span>
+                </div>
+            </div>
+            <div class="mini-card">
+                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
+                <div class="mc-body">
+                    <a href="#" class="mc-title">Python Automation Script</a>
+                    <span class="mc-price">$20.00</span>
+                </div>
+            </div>
+            <div class="mini-card">
+                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
+                <div class="mc-body">
+                    <a href="#" class="mc-title">UI Kit - Dark Mode</a>
+                    <span class="mc-price">$35.00</span>
+                </div>
+            </div>
+            <div class="mini-card">
+                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
+                <div class="mc-body">
+                    <a href="#" class="mc-title">Firebase Rules Template</a>
+                    <span class="mc-price">$15.00</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <footer style="border-top:1px solid #222; margin-top:50px; padding:40px; text-align:center; background:#020202; color:#555;">
+        <p>&copy; 2026 MH Studios. Secure Connection Established.</p>
+    </footer>
+
+
+    <div id="modal-checkout" class="titan-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>SECURE CHECKOUT</span>
+                <span class="close-modal" onclick="closeModals()"><i class="fas fa-times"></i></span>
+            </div>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:4px; margin-bottom:20px; display:flex; gap:15px;">
+                <img id="chk-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+                <div>
+                    <div id="chk-name" style="font-weight:bold; color:#fff;">Product Name</div>
+                    <div id="chk-price" style="color:var(--titan-gold);">$0.00</div>
+                </div>
+            </div>
+
+            <form id="checkout-form">
+                <label style="font-size:0.8em; color:#888;">PAYMENT METHOD</label>
+                <select class="titan-input" style="width:100%; margin-bottom:15px;">
+                    <option>Credits (Wallet Balance)</option>
+                    <option>Credit Card (Stripe)</option>
+                    <option>PayPal</option>
+                </select>
+
+                <label style="font-size:0.8em; color:#888;">CONFIRM EMAIL</label>
+                <input type="email" class="titan-input" style="width:100%; margin-bottom:20px;" placeholder="delivery@email.com" required>
+
+                <div style="font-size:0.7em; color:#666; margin-bottom:20px;">
+                    <i class="fas fa-lock"></i> Transaction is encrypted via SSL-256.
+                </div>
+
+                <button type="submit" class="btn-titan btn-buy" style="margin:0;">
+                    CONFIRM PAYMENT
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-report" class="titan-modal">
+        <div class="modal-content" style="border-color:var(--titan-red);">
+            <div class="modal-header">
+                <span style="color:var(--titan-red);">REPORT VIOLATION</span>
+                <span class="close-modal" onclick="closeModals()"><i class="fas fa-times"></i></span>
+            </div>
+            <p>Please select the reason for flagging this asset.</p>
+            <select id="report-reason" class="titan-input" style="width:100%; margin-bottom:15px;">
+                <option>Copyright Infringement</option>
+                <option>Malicious Software</option>
+                <option>False Advertising</option>
+                <option>Inappropriate Content</option>
+            </select>
+            <textarea id="report-desc" class="titan-input" rows="3" placeholder="Additional details..." style="width:100%; margin-bottom:20px;"></textarea>
+            <button class="btn-titan" style="background:var(--titan-red); color:#fff;" onclick="submitReport()">SUBMIT REPORT</button>
+        </div>
+    </div>
+
+
+    <script src="assets/js/jquery.min.js"></script>
+    
+    <script type="module">
+        // 1. IMPORT FIREBASE CORE
+        import { auth, db, dbID } from './assets/js/firebase-init.js';
+        import { 
+            doc, getDoc, collection, addDoc, serverTimestamp, 
+            updateDoc, arrayUnion, arrayRemove, increment, onSnapshot, query, orderBy 
+        } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { notify } from './assets/js/notification-hub.js';
+
+        // 2. STATE VARIABLES
+        let currentProductId = null;
+        let productData = null;
+        let currentUser = null;
+
+        // 3. INITIALIZATION
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check Auth
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if(user) {
+                    $('#user-status-indicator').css('color', 'var(--titan-green)');
+                }
+            });
+
+            // Get Product ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            currentProductId = urlParams.get('id');
+
+            if(currentProductId) {
+                loadProductData(currentProductId);
+                listenToComments(currentProductId);
+            } else {
+                // Mock Data for Demo if no ID
+                loadMockData();
+            }
+        });
+
+        // 4. DATA LOADING LOGIC
+        async function loadProductData(id) {
+            try {
+                const docRef = doc(db, 'artifacts', dbID, 'products', id);
+                const snap = await getDoc(docRef);
+
+                if (snap.exists()) {
+                    productData = snap.data();
+                    renderProduct(productData);
+                    checkIfLiked(productData);
+                } else {
+                    alert("ASSET NOT FOUND IN ARCHIVE.");
+                    window.location.href = "Products_Services_Room.html";
+                }
+            } catch (e) {
+                console.error("DATA FETCH ERROR:", e);
+                loadMockData(); // Fallback
+            }
+        }
+
+        function renderProduct(data) {
+            $('#p-name').text(data.name);
+            $('#p-price').text('$' + data.price);
+            $('#p-desc').text(data.description);
+            $('#p-branch').text(data.branch || "GENERAL");
+            $('#p-id').text("ID-" + currentProductId.substring(0,6).toUpperCase());
+            
+            if(data.imageUrl) {
+                $('#p-image').attr('src', data.imageUrl);
+            }
+            if(data.likeCount) {
+                $('#like-count').text(data.likeCount);
+            }
+        }
+
+        function loadMockData() {
+            renderProduct({
+                name: "Titan Stealth Suit (Demo)",
+                price: 999.99,
+                description: "This is a demonstration asset because no ID was provided in the URL. Real assets load from Firestore.",
+                branch: "HARDWARE",
+                likeCount: 42,
+                imageUrl: "images/placeholder_product.png"
+            });
+            currentProductId = "DEMO_ID";
+        }
+
+        // 5. SOCIAL LOGIC (LIKES)
+        window.actionLike = async function() {
+            if(!currentUser) return notify("ACCESS DENIED", "Login required to vote.", "warn");
+            if(!currentProductId) return;
+
+            const btn = $('#btn-like');
+            const isActive = btn.hasClass('active');
+            const ref = doc(db, 'artifacts', dbID, 'products', currentProductId);
+
+            // Optimistic UI
+            if(isActive) {
+                btn.removeClass('active').css('color', '');
+                $('#like-count').text( parseInt($('#like-count').text()) - 1 );
+                await updateDoc(ref, { likes: arrayRemove(currentUser.uid), likeCount: increment(-1) });
+            } else {
+                btn.addClass('active').css('color', 'var(--titan-red)');
+                $('#like-count').text( parseInt($('#like-count').text()) + 1 );
+                await updateDoc(ref, { likes: arrayUnion(currentUser.uid), likeCount: increment(1) });
+                notify("VOTE RECORDED", "Asset endorsement logged.", "success");
+            }
+        };
+
+        function checkIfLiked(data) {
+            if(currentUser && data.likes && data.likes.includes(currentUser.uid)) {
+                $('#btn-like').addClass('active').css('color', 'var(--titan-red)');
+            }
+        }
+
+        // 6. COMMENTS LOGIC
+        function listenToComments(id) {
+            const q = query(
+                collection(db, 'artifacts', dbID, 'products', id, 'comments'),
+                orderBy('timestamp', 'desc')
+            );
+
+            onSnapshot(q, (snapshot) => {
+                const container = $('#comments-container');
+                container.empty();
+                
+                if(snapshot.empty) {
+                    container.html('<div style="text-align:center; padding:20px; color:#444;">NO COMMS DETECTED</div>');
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const c = docSnap.data();
+                    const time = c.timestamp ? new Date(c.timestamp.seconds * 1000).toLocaleString() : '';
+                    container.append(`
+                        <div class="comment-node">
+                            <div class="cn-header">
+                                <span class="cn-user">${c.userName}</span>
+                                <span class="cn-time">${time}</span>
+                            </div>
+                            <div class="cn-text">${c.text}</div>
+                        </div>
+                    `);
+                });
+            });
+        }
+
+        window.actionComment = async function() {
+            const txt = $('#comment-input').val();
+            if(!txt.trim()) return;
+            if(!currentUser) return notify("ACCESS DENIED", "Login required to communicate.", "warn");
+
+            try {
+                await addDoc(collection(db, 'artifacts', dbID, 'products', currentProductId, 'comments'), {
+                    userId: currentUser.uid,
+                    userName: currentUser.displayName || "Operative",
+                    text: txt,
+                    timestamp: serverTimestamp()
+                });
+                $('#comment-input').val(''); // Clear
+            } catch(e) {
+                notify("TRANSMISSION ERROR", "Message failed.", "error");
+            }
+        };
+
+        // 7. SHARE & WISHLIST
+        window.actionShare = function() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url);
+            notify("LINK SECURED", "Copied to clipboard.", "info");
+        };
+
+        window.toggleWishlist = function() {
+            if(!currentUser) return notify("ACCESS DENIED", "Login required.", "warn");
+            notify("WISHLIST UPDATED", "Asset added to tactical reserve.", "success");
+        };
+
+        // 8. MODAL CONTROLS
+        window.openCheckout = function() {
+            if(!currentUser) return notify("ACCESS DENIED", "Login required to purchase.", "warn");
+            $('#chk-name').text(productData ? productData.name : "Unknown Asset");
+            $('#chk-price').text('$' + (productData ? productData.price : "0.00"));
+            if(productData && productData.imageUrl) $('#chk-img').attr('src', productData.imageUrl);
+            
+            $('#modal-checkout').css('display', 'flex');
+        };
+
+        window.openReportModal = function() {
+            $('#modal-report').css('display', 'flex');
+        };
+
+        window.closeModals = function() {
+            $('.titan-modal').fadeOut(200);
+        };
+
+        // 9. CHECKOUT SUBMISSION
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                // In a real app, this connects to Stripe
+                // Here we log the order to Firestore
+                await addDoc(collection(db, 'artifacts', dbID, 'orders'), {
+                    itemId: currentProductId,
+                    itemName: productData.name,
+                    price: productData.price,
+                    buyerId: currentUser.uid,
+                    status: 'PAID',
+                    timestamp: serverTimestamp()
+                });
+
+                closeModals();
+                alert("PAYMENT SUCCESSFUL. ASSET TRANSFERRED TO YOUR INVENTORY.");
+            } catch(e) {
+                alert("PAYMENT GATEWAY ERROR: " + e.message);
+            }
+        });
+        
+        // 10. REPORT SUBMISSION
+        window.submitReport = function() {
+            notify("REPORT FILED", "Admin team notified of violation.", "error");
+            closeModals();
+        };
+
+    </script>
+
+</body>
 </html>

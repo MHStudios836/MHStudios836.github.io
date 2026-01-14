@@ -651,21 +651,106 @@ permalink: /DoD_Login_Style.html
 				}
 			});
 		</script>
+		
 		<script type="module">
-			// Adding type="module" is the secret sauce here!
-			import { attachHoverSounds, playSound } from './assets/js/sound-engine.js';
+			// 1. IMPORT CORE TOOLS
+			import { auth, db, dbID } from './assets/js/firebase-init.js';
+			import { 
+				signInWithEmailAndPassword, 
+				GoogleAuthProvider, 
+				signInWithPopup 
+			} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+			import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-			document.addEventListener('DOMContentLoaded', () => {
-				// 1. Initialize the audio markers
-				attachHoverSounds('.sector-btn, .btn-abort, .btn-sign, .nav-link, button, a');
+			// 2. DOM ELEMENTS (Matching your specific HTML IDs)
+			const loginForm = document.getElementById('login-form');
+			const statusText = document.getElementById('status-text');
+			const googleBtn = document.getElementById('google-btn');
+
+			// TACTICAL UI: Typewriter Status
+			function typeStatus(text, color = "#00e5ff") {
+				if (!statusText) return;
+				statusText.style.color = color;
+				statusText.innerHTML = `<i class="fas fa-terminal"></i> ${text}`;
+			}
+
+			// 3. ROUTING LOGIC (The Traffic Controller)
+			const DASHBOARDS = {
+				'admin': 'Admin_Room.html',
+				'student': 'Student_Room.html',
+				'freelancer': 'Freelancers_Room.html'
+			};
+
+			async function routeUser(user) {
+				typeStatus("> VERIFYING CLEARANCE...", "#FFD700");
 				
-				// 2. Play the 'Access Granted' startup sound
-				// Note: Some browsers require a user click first, 
-				// but since they clicked "Login" to get here, it should fire!
-				playSound('granted');
-				
-				console.log("HUD Audio Systems: ONLINE");
+				try {
+					// Path: artifacts > MH_STUDIOS_V1 > users > {uid}
+					const userRef = doc(db, 'artifacts', dbID, 'users', user.uid);
+					const userSnap = await getDoc(userRef);
+
+					if (userSnap.exists()) {
+						const role = userSnap.data().role || 'student';
+						typeStatus(`> ACCESS GRANTED: ${role.toUpperCase()}`, "#00ff41");
+						
+						setTimeout(() => {
+							window.location.href = DASHBOARDS[role] || 'index.html';
+						}, 1000);
+					} else {
+						// New User Registration
+						typeStatus("> NEW OPERATIVE DETECTED. INITIALIZING...", "#0080FF");
+						await setDoc(userRef, {
+							name: user.displayName || "New Operative",
+							email: user.email,
+							role: 'student',
+							createdAt: serverTimestamp(),
+							isOnline: true,
+							balance: 0
+						});
+						window.location.href = 'Student_Room.html';
+					}
+				} catch (err) {
+					console.error(err);
+					typeStatus("> DATABASE LINK FAILURE", "#ff004c");
+				}
+			}
+
+			// 4. EMAIL/PASSWORD LOGIN
+			loginForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const email = document.getElementById('email').value;
+				const password = document.getElementById('password').value;
+
+				typeStatus("> ATTEMPTING HANDSHAKE...");
+
+				try {
+					const userCredential = await signInWithEmailAndPassword(auth, email, password);
+					await routeUser(userCredential.user);
+				} catch (error) {
+					console.error(error);
+					typeStatus(`> ERROR: INVALID CREDENTIALS`, "#ff004c");
+				}
 			});
-		</script>
+
+			// 5. GOOGLE LOGIN
+			googleBtn.addEventListener('click', async () => {
+				const provider = new GoogleAuthProvider();
+				typeStatus("> INITIATING GOOGLE LINK...");
+				try {
+					const result = await signInWithPopup(auth, provider);
+					await routeUser(result.user);
+				} catch (error) {
+					typeStatus("> GOOGLE AUTH FAILED", "#ff004c");
+				}
+			});
+
+			// 6. AUDIO & HOVER EFFECTS (Optional, from your previous setup)
+			import { attachHoverSounds } from './assets/js/sound-engine.js';
+			document.addEventListener('DOMContentLoaded', () => {
+				try {
+					attachHoverSounds('.sector-btn, .btn-sign-in, #google-btn');
+				} catch(e) { console.log("Sound engine offline."); }
+			});
+		</script>	
 	</body>
 </html>
