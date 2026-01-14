@@ -407,86 +407,35 @@ permalink: /Student_Room.html
 			@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 			/* ==========================================================================
-			   FINAL MOBILE OPTIMIZATION (SCROLL, LOGO, & MENU FIX)
-			   ========================================================================== */
-			@media screen and (max-width: 980px) {
+   STUDENT ROOM: MOBILE RESTRUCTURE (BLUE TACTICAL)
+   ========================================================================== */
+@media screen and (max-width: 980px) {
+    
+    /* 1. FORCE SINGLE COLUMN LAYOUT */
+    .dashboard-grid, .split-screen-container {
+        display: flex;
+        flex-direction: column !important;
+    }
 
-				/* 1. SCROLL FIX: RESTORE VERTICAL MOVEMENT */
-				html, body {
-					overflow-x: hidden !important; /* Stop side scroll */
-					overflow-y: auto !important;   /* Allow up/down scroll */
-					height: auto !important;
-					position: static !important;
-				}
+    /* 2. STACK PANELS */
+    .panel-left, .panel-right, .mission-card {
+        width: 100% !important;
+        margin-right: 0 !important;
+        margin-bottom: 2em;
+    }
 
-				#app-container {
-					display: block !important;
-					width: 100% !important;
-					height: auto !important;
-					overflow: visible !important;
-				}
+    /* 3. FORM ELEMENTS SIZE UP */
+    input, select, textarea {
+        font-size: 16px !important; /* Prevents iOS zoom on focus */
+    }
 
-				/* 2. LOGO RESTORATION (INJECT IMAGE) */
-				/* Since we hide the sidebar, we recreate the logo in the top-left */
-				#app-container::before {
-					content: ""; /* No text, just image */
-					display: block;
-					position: fixed;
-					top: 15px;
-					left: 20px;
-					width: 180px; /* Adjust width as needed */
-					height: 50px;
-					background: url('images/Logo_2.png') no-repeat left center; /* Pointing to your logo */
-					background-size: contain;
-					z-index: 9999;
-					pointer-events: none; /* Let clicks pass through if needed */
-				}
-
-				/* 3. LAYOUT & WIDTH FIX (Stops horizontal overflow) */
-				/* We strip margins and enforce border-box */
-				#app-container > div:not(.sidebar) {
-					margin: 0 !important;
-					width: 100% !important;
-					max-width: 100vw !important;
-					padding: 90px 15px 40px 15px !important; /* Header Clearance */
-					box-sizing: border-box !important;
-				}
-
-				.sidebar { display: none !important; }
-
-				/* 4. FINANCIAL TABLE FIX (Scrollable but styled) */
-				.tactical-table-wrapper {
-					width: 100%;
-					overflow-x: auto;
-					-webkit-overflow-scrolling: touch;
-					background: rgba(0,0,0,0.2);
-					border: 1px solid rgba(255,255,255,0.1);
-					border-radius: 4px;
-					padding-bottom: 5px; /* Space for scrollbar */
-				}
-				
-				table { white-space: nowrap; } /* Prevents ugly text wrapping */
-
-				/* 5. BUTTON VISIBILITY FIX (Freelancer Room) */
-				.task-social-grid button, 
-				.social-btn, 
-				.action-btn {
-					color: #e0e0e0 !important; /* Force Light Gray Text */
-					border-color: rgba(255,255,255,0.2) !important;
-				}
-				
-				/* Make icons pop */
-				.task-social-grid i { color: var(--mh-cyan); }
-				.like-trigger i { color: var(--mh-red); }
-
-				/* 6. MENU BUTTON POSITION */
-				#menu-btn {
-					position: fixed;
-					top: 20px;
-					right: 20px;
-					z-index: 10000;
-				}
-			}
+    /* 4. TABLE SCROLL FIX (For Mission History) */
+    .table-wrapper {
+        overflow-x: auto;
+        white-space: nowrap;
+        border: 1px solid rgba(0, 229, 255, 0.2); /* Cyan Border */
+    }
+}
 		</style>
 	</head>
 	<body>
@@ -498,6 +447,12 @@ permalink: /Student_Room.html
 
 		<div id="menu-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:200; display:none; flex-direction:column; justify-content:center; align-items:center;">
 			<div class="menu-close" style="position:absolute; top:30px; right:30px; font-size:2em; color:var(--mh-red); cursor:pointer;"><i class="fas fa-times"></i></div>
+			<div class="menu-search-container">
+			<form class="menu-search-form" onsubmit="event.preventDefault(); alert('SEARCHING DATABASE...');">
+				<input type="text" placeholder="SEARCH DATABASE..." />
+				<button type="submit"><i class="fas fa-search"></i></button>
+			</form>
+			</div>
 			<div class="menu-links" style="text-align:center; font-size:1.5em; line-height:2;">
 				<div data-target="dashboard-panel" style="color:#fff; cursor:pointer;">DASHBOARD</div>
 				<div data-target="new-mission-panel" style="color:var(--mh-gold); cursor:pointer;">+ NEW MISSION</div>
@@ -748,7 +703,54 @@ permalink: /Student_Room.html
 							</div>
 						</div>
 
-					</div> <footer id="tactical-footer">
+					</div> 
+					
+					<div class="titan-panel">
+					<h2 class="glitch-text">>> INITIALIZE NEW MISSION</h2>
+					
+					<form id="create-mission-form">
+						<div class="form-grid">
+							<div class="input-block">
+								<label>OPERATION TITLE</label>
+								<input type="text" id="m-title" class="tac-input" placeholder="e.g. Build E-Commerce Site" required>
+							</div>
+							<div class="input-block">
+								<label>BUDGET LIMIT ($)</label>
+								<input type="number" id="m-budget" class="tac-input" placeholder="500" required>
+							</div>
+						</div>
+
+						<div class="form-grid">
+							<div class="input-block">
+								<label>SECTOR</label>
+								<select id="m-sector" class="tac-input">
+									<option value="WEB">Web Development</option>
+									<option value="GRAPHIC">Graphic Design</option>
+									<option value="VIDEO">Video Ops</option>
+									<option value="CODE">Programming (C++/Python)</option>
+								</select>
+							</div>
+							<div class="input-block">
+								<label>URGENCY</label>
+								<select id="m-urgency" class="tac-input">
+									<option value="STANDARD">Standard (7 Days)</option>
+									<option value="HIGH">High Priority (48h)</option>
+									<option value="CRITICAL">CRITICAL (ASAP)</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="input-block">
+							<label>MISSION PARAMETERS</label>
+							<textarea id="m-desc" class="tac-input" rows="4" placeholder="Describe objectives..." required></textarea>
+						</div>
+
+						<button type="submit" class="titan-btn titan-login" style="width:100%;">
+							<i class="fas fa-satellite-dish"></i> BROADCAST MISSION
+						</button>
+					</form>
+				</div>					
+					<footer id="tactical-footer">
 						<div class="footer-grid">
 							<div class="footer-col">
 								<h4>MH STUDIOS™</h4>
@@ -1071,6 +1073,23 @@ permalink: /Student_Room.html
 					}
 
 				});
+		</script>
+		<script type="module">
+			import { createMission } from './assets/js/mission-control.js';
+
+			document.getElementById('create-mission-form').addEventListener('submit', (e) => {
+				e.preventDefault();
+				
+				const data = {
+					title: document.getElementById('m-title').value,
+					budget: document.getElementById('m-budget').value,
+					sector: document.getElementById('m-sector').value,
+					urgency: document.getElementById('m-urgency').value,
+					description: document.getElementById('m-desc').value
+				};
+
+				createMission(data);
+			});
 		</script>
 	</body>
 </html>
