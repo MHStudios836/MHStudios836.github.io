@@ -350,6 +350,26 @@ permalink: /DoD_Login_Style.html
 				.sys-info {
 					display: none; 
 				}
+				
+				/* --- PASSWORD EYE STYLES --- */
+				.password-wrapper {
+					position: relative;
+					width: 100%;
+				}
+				.password-toggle {
+					position: absolute;
+					right: 15px;
+					top: 50%;
+					transform: translateY(-50%);
+					cursor: pointer;
+					color: var(--mh-blue);
+					z-index: 10;
+					transition: 0.3s;
+				}
+				.password-toggle:hover {
+					color: #fff;
+					text-shadow: 0 0 10px var(--mh-blue);
+				}
 			}
 
 			/* KEYBOARD FIX: When screen gets short */
@@ -433,7 +453,10 @@ permalink: /DoD_Login_Style.html
 					</div>
 					<div class="input-frame">
 						<label>> PASSWORD</label>
-						<input type="password" class="tac-input" id="login-pass" required>
+						<div class="password-wrapper">
+							<input type="password" id="password" class="mh-input" placeholder="••••••" required>
+							<i class="fas fa-eye password-toggle" onclick="togglePass('password', this)"></i>
+						</div>
 						<div style="text-align: right;">
 							<a href="#" id="forgot-btn" class="forgot-link">FORGOT PASSWORD?</a>
 						</div>
@@ -473,9 +496,10 @@ permalink: /DoD_Login_Style.html
 						<input type="hidden" id="reg-role" value="client">
 					</div>
 
-					<div class="input-frame">
-						<label>> CREATE PASSWORD</label>
-						<input type="password" class="tac-input" id="reg-pass" required>
+					<label>> CREATE SECURITY CODE</label>
+					<div class="password-wrapper">
+						<input type="password" id="reg-password" class="mh-input" placeholder="••••••" required>
+						<i class="fas fa-eye password-toggle" onclick="togglePass('reg-password', this)"></i>
 					</div>
 
 					<button type="submit" class="execute-btn" style="border-color:var(--mh-blue); color:var(--mh-blue);">INITIALIZE PROFILE</button>
@@ -652,32 +676,98 @@ permalink: /DoD_Login_Style.html
 			});
 		</script>
 		
+		<script>
+			// 1. PASSWORD EYE TOGGLE
+			function togglePass(id, icon) {
+				console.log("Toggle activated for:", id); // Debug check
+				const input = document.getElementById(id);
+				
+				if (input.type === "password") {
+					input.type = "text";
+					icon.classList.remove('fa-eye');
+					icon.classList.add('fa-eye-slash');
+					icon.style.color = "#00e5ff"; // Visual feedback
+				} else {
+					input.type = "password";
+					icon.classList.remove('fa-eye-slash');
+					icon.classList.add('fa-eye');
+					icon.style.color = ""; // Reset color
+				}
+			}
+
+			// 2. SWITCH TABS (LOGIN / REGISTER)
+			function switchMode(mode) {
+				if(mode === 'register') {
+					document.getElementById('login-section').style.display = 'none';
+					document.getElementById('register-section').style.display = 'block';
+					updateStatus("> INITIATING RECRUITMENT PROTOCOL...", "#FFD700");
+				} else {
+					document.getElementById('register-section').style.display = 'none';
+					document.getElementById('login-section').style.display = 'block';
+					updateStatus("> RETURNING TO SECURE LOGIN...", "#00e5ff");
+				}
+			}
+
+			// Helper for the Status Text
+			function updateStatus(text, color) {
+				const errBox = document.getElementById('login-error');
+				if(errBox) {
+					errBox.style.display = 'block';
+					errBox.style.color = color || "#00e5ff";
+					errBox.style.borderColor = color || "#00e5ff";
+					errBox.innerText = text;
+				}
+			}
+		</script>
+		
 		<script type="module">
-			// 1. IMPORT CORE WEAPONS
+			// 1. IMPORT FIREBASE ARSENAL
 			import { auth, db, dbID } from './assets/js/firebase-init.js';
 			import { 
 				signInWithEmailAndPassword, 
 				createUserWithEmailAndPassword,
 				GoogleAuthProvider, 
-				signInWithPopup 
+				signInWithPopup,
+				updateProfile
 			} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-			import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+			import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+			import { attachHoverSounds } from './assets/js/sound-engine.js';
 
-			// 2. DOM ELEMENTS
-			const loginForm = document.getElementById('login-form');
-			const statusText = document.getElementById('status-text') || document.createElement('div'); // Fallback if ID missing
-			const googleBtn = document.getElementById('google-btn') || document.getElementById('btn-google'); // Handle both ID variations
+			// 2. UI UTILITIES (Eye Toggle & Form Switcher)
+			window.togglePass = (id, icon) => {
+				const input = document.getElementById(id);
+				if (input.type === "password") {
+					input.type = "text";
+					icon.classList.remove('fa-eye');
+					icon.classList.add('fa-eye-slash');
+				} else {
+					input.type = "password";
+					icon.classList.remove('fa-eye-slash');
+					icon.classList.add('fa-eye');
+				}
+			};
 
-			// TYPEWRITER STATUS EFFECT
+			window.switchMode = (mode) => {
+				if(mode === 'register') {
+					document.getElementById('login-section').style.display = 'none';
+					document.getElementById('register-section').style.display = 'block';
+					typeStatus("> INITIATING RECRUITMENT PROTOCOL...", "#FFD700");
+				} else {
+					document.getElementById('register-section').style.display = 'none';
+					document.getElementById('login-section').style.display = 'block';
+					typeStatus("> RETURNING TO SECURE LOGIN...", "#00e5ff");
+				}
+			};
+
 			function typeStatus(text, color = "#00e5ff") {
-				console.log(`[SYSTEM]: ${text}`);
-				if(document.getElementById('login-error')) {
-					const errBox = document.getElementById('login-error');
+				const errBox = document.getElementById('login-error');
+				if(errBox) {
 					errBox.style.display = 'block';
 					errBox.style.color = color;
 					errBox.style.borderColor = color;
 					errBox.innerText = text;
 				}
+				console.log(`[SYSTEM]: ${text}`);
 			}
 
 			// 3. THE "GOD MODE" ROUTER
@@ -719,14 +809,13 @@ permalink: /DoD_Login_Style.html
 						else window.location.href = 'Student_Room.html';
 
 					} else {
-						// NEW USER (DEFAULT TO STUDENT)
-						typeStatus("> NEW SIGNAL. REGISTERING AS STUDENT...", "#0080FF");
+						// NEW USER (Google Login or Register) -> DEFAULT TO STUDENT
+						typeStatus("> NEW SIGNAL. REGISTERING...", "#0080FF");
 						await setDoc(userRef, {
 							name: user.displayName || user.email.split('@')[0],
 							email: user.email,
 							role: 'student',
 							createdAt: serverTimestamp(),
-							isOnline: true,
 							balance: 0,
 							xp: 0
 						});
@@ -735,62 +824,75 @@ permalink: /DoD_Login_Style.html
 
 				} catch (err) {
 					console.error("ROUTING ERROR:", err);
-					typeStatus("> DATABASE CONNECTION SEVERED: " + err.message, "#ff004c");
+					typeStatus("> DATABASE ERROR: " + err.message, "#ff004c");
 				}
 			}
 
-			// 4. INTELLIGENT LOGIN/REGISTER HANDLER
-			if(loginForm) {
-				loginForm.addEventListener('submit', async (e) => {
-					e.preventDefault(); // STOP THE PAGE REFRESH!
-					
-					const email = document.getElementById('email').value;
-					const password = document.getElementById('password').value;
-
-					typeStatus("> ESTABLISHING UPLINK...");
-
-					try {
-						// TRY LOGIN FIRST
-						const userCredential = await signInWithEmailAndPassword(auth, email, password);
-						await routeUser(userCredential.user);
-
-					} catch (error) {
-						// IF LOGIN FAILS BECAUSE USER NOT FOUND -> REGISTER THEM
-						if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-							typeStatus("> ID NOT FOUND. CREATING NEW OPERATIVE...", "#FFD700");
-							try {
-								const newUser = await createUserWithEmailAndPassword(auth, email, password);
-								await routeUser(newUser.user);
-							} catch (regError) {
-								typeStatus(`> REGISTRATION FAILED: ${regError.code}`, "#ff004c");
-							}
-						} else {
-							typeStatus(`> ACCESS DENIED: ${error.code}`, "#ff004c");
+			// 4. EVENT LISTENERS
+			document.addEventListener('DOMContentLoaded', () => {
+				
+				// A. LOGIN FORM SUBMIT
+				const loginForm = document.getElementById('login-form');
+				if(loginForm) {
+					loginForm.addEventListener('submit', async (e) => {
+						e.preventDefault();
+						const email = document.getElementById('email').value;
+						const pass = document.getElementById('password').value;
+						typeStatus("> AUTHENTICATING...");
+						try {
+							const cred = await signInWithEmailAndPassword(auth, email, pass);
+							await routeUser(cred.user);
+						} catch (err) {
+							typeStatus("> ACCESS DENIED: " + err.code, "#ff004c");
 						}
-					}
-				});
-			}
+					});
+				}
 
-			// 5. GOOGLE HANDLER
-			if(googleBtn) {
-				googleBtn.addEventListener('click', async (e) => {
-					e.preventDefault();
+				// B. REGISTER FORM SUBMIT
+				const regForm = document.getElementById('register-form');
+				if(regForm) {
+					regForm.addEventListener('submit', async (e) => {
+						e.preventDefault();
+						const name = document.getElementById('reg-name').value;
+						const email = document.getElementById('reg-email').value;
+						const pass = document.getElementById('reg-password').value;
+						
+						typeStatus("> CREATING NEW IDENTITY...");
+						try {
+							const cred = await createUserWithEmailAndPassword(auth, email, pass);
+							// Update Auth Profile
+							await updateProfile(cred.user, { displayName: name });
+							// Route (which creates DB entry)
+							await routeUser(cred.user);
+						} catch (err) {
+							typeStatus("> REGISTRATION FAILED: " + err.message, "#ff004c");
+						}
+					});
+				}
+
+				// C. GOOGLE BUTTONS (BOTH LOGIN & REGISTER)
+				const handleGoogle = async () => {
 					const provider = new GoogleAuthProvider();
-					typeStatus("> INITIATING GOOGLE LINK...");
+					typeStatus("> CONTACTING GOOGLE...", "#FFD700");
 					try {
 						const result = await signInWithPopup(auth, provider);
 						await routeUser(result.user);
-					} catch (error) {
-						console.error(error);
-						typeStatus("> GOOGLE AUTH FAILED: " + error.code, "#ff004c");
+					} catch (err) {
+						console.error(err);
+						typeStatus("> GOOGLE LINK FAILED: " + err.code, "#ff004c");
 					}
-				});
-			}
-			
-			// 6. SOUND ENGINE LINK
-			import { attachHoverSounds } from './assets/js/sound-engine.js';
-			document.addEventListener('DOMContentLoaded', () => {
-				try { attachHoverSounds('.btn-login, .mh-input'); } catch(e) {}
+				};
+
+				// Attach to Login Google Button
+				const btnGoogleLogin = document.getElementById('btn-google-login');
+				if(btnGoogleLogin) btnGoogleLogin.addEventListener('click', handleGoogle);
+
+				// Attach to Register Google Button (if you added it)
+				const btnGoogleReg = document.getElementById('btn-google-reg');
+				if(btnGoogleReg) btnGoogleReg.addEventListener('click', handleGoogle);
+
+				// Init Sounds
+				try { attachHoverSounds('.btn-login, .mh-input, .btn-google'); } catch(e) {}
 			});
 		</script>
 	</body>

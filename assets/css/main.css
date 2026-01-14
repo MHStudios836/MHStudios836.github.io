@@ -5348,6 +5348,46 @@ body.has-ticker {
     cursor: pointer;
 }
 
+/* ==========================================================================
+   TITAN PASSWORD PATCH (FIXES MAIN.CSS CONFLICT)
+   ========================================================================== */
+
+/* 1. The Container: Forces it to act like a standard input block */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    display: block;
+    margin-bottom: 2em; /* Matches the spacing of your other inputs in main.css */
+}
+
+/* 2. The Input: Fixes text overlap & removes double spacing */
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+    width: 100% !important;
+    padding-right: 45px !important; /* CRITICAL: Makes room for the eye so text doesn't hit it */
+    margin-bottom: 0 !important;    /* We moved the margin to the wrapper above */
+    box-sizing: border-box;         /* Ensures padding doesn't stretch the box */
+}
+
+/* 3. The Eye Icon: Pins it perfectly to the right */
+.password-toggle {
+    position: absolute;
+	pointer-events: auto !important; /* Forces the element to accept clicks */
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%); /* Perfectly centers vertically */
+    cursor: pointer !important;
+    color: var(--mh-blue, #0080FF); /* Uses your blue variable, fallback to blue */
+    z-index: 100 !important; /* Ensures it sits ON TOP of the input */
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+
+/* Hover Effect */
+.password-toggle:hover {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 128, 255, 0.8);
+}
 /* --- END CUSTOM STYLES 
 
 
