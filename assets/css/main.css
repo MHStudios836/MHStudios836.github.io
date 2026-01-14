@@ -5222,4 +5222,130 @@ body.has-ticker {
     }
 }
 
+/* ==========================================================================
+   OPERATION RISING EMPIRE: MOBILE PATCH (V1.0)
+   Target: Fix Sidebar Crushing & Dashboard Stacking
+   ========================================================================== */
+
+@media screen and (max-width: 980px) {
+
+    /* 1. COLLAPSE LAYOUT (Force Full Width) */
+    #wrapper {
+        padding-left: 0 !important; /* Remove space reserved for sidebar */
+    }
+
+    #main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 4em 1.5em 2em 1.5em !important; /* Add top padding for the Menu Button */
+    }
+
+    /* 2. THE SIDEBAR (HEADER) - HIDE IT UNTIL TOGGLED */
+    #header {
+        transform: translateX(-100%); /* Hide off-screen left */
+        width: 275px; /* Keep original width when open */
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10000;
+        transition: transform 0.5s ease;
+        background: #05070a; /* Dark background */
+        box-shadow: 6px 0px 15px rgba(0,0,0,0.5);
+    }
+
+    /* Class added by main.js when menu is open */
+    body.is-menu-visible #header {
+        transform: translateX(0); /* Slide in */
+    }
+
+    /* 3. THE MENU BUTTON (HAMBURGER) */
+    /* If you don't have a visible button, this creates one */
+    #titleBar {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 44px;
+        background: #1a1a1a; /* Dark bar at top */
+        z-index: 9999;
+    }
+
+    .toggle {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 60px;
+        height: 44px;
+        line-height: 44px;
+        text-align: center;
+        color: #fff;
+        font-size: 1.2em;
+        cursor: pointer;
+    }
+    
+    .toggle:before {
+        content: '\f0c9'; /* FontAwesome Bars Icon */
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+    }
+}
+
+/* 4. ADMIN DASHBOARD FIXES (Admin_Room.html) */
+@media screen and (max-width: 736px) {
+    
+    /* Force Grid/Tables to Scroll instead of breaking */
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Stack Flex Containers (Dashboards) */
+    .features, .posts, .spotlights {
+        display: block !important;
+    }
+
+    .features article, .posts article {
+        width: 100% !important;
+        margin: 0 0 2em 0 !important;
+    }
+
+    /* Admin Room Panels */
+    .panel {
+        padding: 1.5em !important;
+    }
+}
+
+/* MENU SEARCH BAR DESIGN */
+.menu-search-container {
+    padding: 2em 2em 1em 2em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.menu-search-form {
+    display: flex;
+    position: relative;
+}
+.menu-search-form input {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 0.75em 2.5em 0.75em 1em; /* Space for icon */
+    border-radius: 4px;
+    font-family: "Uni Sans", sans-serif;
+}
+.menu-search-form button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 3em;
+    background: none;
+    border: none;
+    color: var(--mh-blue, #0080FF); /* Default Blue, override in Freelancer */
+    cursor: pointer;
+}
+
 /* --- END CUSTOM STYLES --- */
