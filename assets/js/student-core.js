@@ -77,23 +77,31 @@ function loadMyMissions(uid) {
             let mercDisplay = "PENDING ASSIGNMENT";
             let actionBtn = `<span style="color:var(--mh-cyan); font-size:0.8em;">WAITING FOR OPERATIVE...</span>`;
 
-            if (data.status === 'IN_PROGRESS' || data.status === 'COMPLETED') {
-                const mercCode = data.freelancerId ? data.freelancerId.substring(0,5).toUpperCase() : "???";
-                mercDisplay = `<span style="color:var(--mh-gold);">ASSIGNED: OPERATIVE-${mercCode}</span>`;
-                
-                // Chat Button
+			// CASE 1: Mission Accepted (In Progress)
+            if (data.status === 'IN_PROGRESS') {
                 actionBtn = `
-                    <button class="btn-small" onclick="window.openComms('${data.freelancerId}')">
-                        <i class="fas fa-comment-medical"></i> SECURE CHAT
-                    </button>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-small" onclick="window.openComms('${data.freelancerId}')">CHAT</button>
+                        <a href="Task_Checkout.html?id=${id}&title=${encodeURIComponent(data.title)}&price=${data.budget}&merc=${data.freelancerId}" 
+                           class="btn-small" style="background:var(--mh-green); border:none; color:#000;">
+                           FINISH & PAY
+                        </a>
+                    </div>
                 `;
             }
-
-            if (data.status === 'COMPLETED') {
-                mercDisplay += ` <span style="color:var(--mh-green); font-weight:bold;">[MISSION COMPLETE]</span>`;
-                actionBtn = `<button class="btn-small" style="border-color:var(--mh-green); color:var(--mh-green);">PAYMENT RELEASED</button>`;
+            
+            // CASE 2: Completed (Paid)
+            else if (data.status === 'COMPLETED') {
+                actionBtn = `<span style="color:var(--mh-green); font-size:0.8em;">PAID & ARCHIVED</span>`;
+            } 
+            
+            // CASE 3: Still Open
+            else {
+                actionBtn = `<span style="color:#666; font-size:0.8em;">WAITING FOR OPERATIVE...</span>`;
             }
 
+            // ... append card ...
+			
             const card = `
                 <div class="mission-node">
                     <div style="display:flex; justify-content:space-between;">
