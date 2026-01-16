@@ -4,7 +4,7 @@ permalink: /DoD_Login_Style.html
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<title>MH Studios™ | Operative Access</title>
+		<title>MH&AS Studios™ | Operative Access</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		
@@ -411,7 +411,7 @@ permalink: /DoD_Login_Style.html
 					<div class="brand-lockup">
 						<a href="index.html" class="brand-link">
 							<img src="images/Logo_1.png" alt="MH LOGO">
-							MH STUDIOS™
+							MH&AS STUDIOS™
 						</a>
 					</div>
 					<div class="sys-info">
@@ -446,7 +446,7 @@ permalink: /DoD_Login_Style.html
 					<div class="toggle-btn" id="btn-signup">REGISTER</div>
 				</div>
 
-				<form id="login-form">
+				<form id="login-form" onsubmit="event.preventDefault();">
 					<div class="input-frame">
 						<label>> SECURE EMAIL</label>
 						<input type="email" class="tac-input" id="login-email" required>
@@ -471,7 +471,7 @@ permalink: /DoD_Login_Style.html
 					</div>
 				</form>
 
-				<form id="register-form" class="hidden">
+				<form id="register-form" onsubmit="event.preventDefault();" class="hidden">
 					<div class="input-frame">
 						<label>> FULL NAME</label>
 						<input type="text" class="tac-input" id="reg-name" required>
