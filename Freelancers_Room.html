@@ -4,7 +4,7 @@ permalink: /Freelancers_Room.html
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <title>MH Studios™ | Mercenary Command (Titan Class)</title>
+    <title>MA STUDIOS™ | Mercenary Command (Titan Class)</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#05070a">
@@ -15,6 +15,7 @@ permalink: /Freelancers_Room.html
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+	<script type="module" src="assets/js/auth-router.js"></script>
     
     <style>
         /* --- 1. CORE VARIABLES (PLASMA ORANGE THEME) --- */
@@ -425,6 +426,8 @@ permalink: /Freelancers_Room.html
             </div>
         </div>
     </header>
+	
+<div class="titan-panel" style="margin: 20px; min-height: 95vh; padding: 20px;">
 
     <nav id="menu-overlay">
         <div class="mo-header">
@@ -800,6 +803,8 @@ permalink: /Freelancers_Room.html
         </main>
     </div>
 
+</div> <div id="system-status-hud">...</div>
+
     <footer id="merc-footer">
         <div class="footer-cols">
             <div>
@@ -918,6 +923,29 @@ permalink: /Freelancers_Room.html
 					window.location.href = 'DoD_Login_Style.html';
 				}
 			});
+		});
+	</script>
+	
+	<div id="system-status-hud">
+    <div class="status-dot"></div>
+    <span id="network-status">SYSTEM ONLINE</span>
+	</div>
+
+	<script>
+		// HUD Logic
+		const hudStatus = document.getElementById('network-status');
+		const hudDot = document.querySelector('.status-dot');
+		
+		window.addEventListener('offline', () => {
+			hudStatus.innerText = "CONNECTION LOST";
+			hudStatus.style.color = "#ff004c"; 
+			hudDot.style.backgroundColor = "#ff004c";
+		});
+		
+		window.addEventListener('online', () => {
+			hudStatus.innerText = "SYSTEM ONLINE";
+			hudStatus.style.color = "#00ff41"; 
+			hudDot.style.backgroundColor = "#00ff41";
 		});
 	</script>
 

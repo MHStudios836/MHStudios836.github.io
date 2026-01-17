@@ -5388,6 +5388,102 @@ body.has-ticker {
     color: #fff;
     text-shadow: 0 0 10px rgba(0, 128, 255, 0.8);
 }
+
+/* --- TITAN CLASS REDESIGN --- */
+
+/* 1. The Glass Panel (Replaces standard white backgrounds) */
+.titan-panel {
+    background: rgba(13, 17, 23, 0.85); /* Dark semi-transparent */
+    backdrop-filter: blur(12px);       /* The "Frosted Glass" effect */
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border-radius: 12px;
+    color: #e0e0e0;
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.titan-panel:hover {
+    transform: translateY(-2px);
+    border-color: var(--mh-blue, #0080FF);
+    box-shadow: 0 10px 40px 0 rgba(0, 128, 255, 0.2);
+}
+
+/* 2. Tactical Inputs (For Forms) */
+.titan-input {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    border-radius: 6px;
+}
+
+.titan-input:focus {
+    border-color: var(--mh-blue, #0080FF) !important;
+    box-shadow: 0 0 10px rgba(0, 128, 255, 0.5);
+    outline: none;
+}
+
+/* 3. The "Debug" HUD (Status Indicator) */
+#system-status-hud {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid #333;
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #00ff41; /* Hacker Green */
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #00ff41;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.7); }
+    70% { opacity: 1; box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); }
+    100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); }
+}
+
+/* --- LOGO NATIVE SHADOWS --- */
+
+/* Gold (Admin) */
+.glow-gold {
+    filter: drop-shadow(0 0 8px var(--mh-gold, #FFD700));
+    transition: filter 0.3s ease;
+}
+.glow-gold:hover {
+    filter: drop-shadow(0 0 15px var(--mh-gold, #FFD700));
+}
+
+/* Cyan (Student) */
+.glow-cyan {
+    filter: drop-shadow(0 0 8px var(--mh-cyan, #00e5ff));
+    transition: filter 0.3s ease;
+}
+.glow-cyan:hover {
+    filter: drop-shadow(0 0 15px var(--mh-cyan, #00e5ff));
+}
+
+/* Orange (Freelancer) */
+.glow-orange {
+    filter: drop-shadow(0 0 8px var(--mh-orange, #ffae00));
+    transition: filter 0.3s ease;
+}
+.glow-orange:hover {
+    filter: drop-shadow(0 0 15px var(--mh-orange, #ffae00));
+}
 /* --- END CUSTOM STYLES 
 
 

@@ -1,5 +1,6 @@
 /* assets/js/auth-guard.js */
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// FIXED: Now uses v12.7.0 to match the rest of the fleet
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import { app } from "./firebase-init.js";
 
 const auth = getAuth(app);
@@ -23,21 +24,14 @@ export function requireAuth(onSuccess) {
 }
 
 /**
- * specific check for roles if needed later
+ * Specific check for roles if needed later
  */
 export function requireRole(allowedRoles, userRole) {
     if (!allowedRoles.includes(userRole)) {
         alert("ACCESS DENIED: INSUFFICIENT CLEARANCE.");
-        window.location.href = 'Mission_Control.html'; // Fallback
+        // Redirect to a neutral ground or back to their specific HQ
+        window.location.href = 'index.html'; 
         return false;
     }
     return true;
 }
-
-import { notify } from './notification-hub.js';
-
-// Replace: alert("CONTRACT CONFIRMED");
-notify("Contract", "Transmission Secure. Mission Accepted.", "success");
-
-// Replace: alert("ERROR: PLEASE RETRY");
-notify("System Error", "Uplink Failed. Check your connection.", "error");

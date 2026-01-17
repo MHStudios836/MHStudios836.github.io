@@ -326,5 +326,95 @@
 						$menu._hide();
 
 			});
+			
+			/* assets/js/main.js - APPEND TO BOTTOM */
+
+			document.addEventListener("DOMContentLoaded", () => {
+				sanitizeInterface();
+				activateProfilePhoto();
+				activateLogoLink();
+			});
+
+			function sanitizeInterface() {
+				console.log(">> SYSTEM: SANITIZING DUMMY DATA...");
+				
+				// The specific "Dummy Values" you mentioned
+				const dummyTargets = [
+					{ find: "142", replace: "0" },
+					{ find: "98%", replace: "0%" },
+					{ find: "$14,200", replace: "$0.00" },
+					{ find: "$500.00", replace: "$0.00" },
+					{ find: "Rank - Private", replace: "Rank - Recruit" },
+					{ find: "Active Tasks", replace: "0 Active Tasks" }
+				];
+
+				// Scan all text elements (Span, H1-H6, P, B)
+				document.querySelectorAll('span, h1, h2, h3, h4, h5, p, b, strong').forEach(el => {
+					// Only target elements with no children (just text)
+					if (el.children.length === 0) {
+						const text = el.innerText.trim();
+						
+						dummyTargets.forEach(target => {
+							if (text.includes(target.find)) {
+								el.innerText = target.replace;
+								el.classList.add('zeroed-value'); // Mark it so we can animate it later
+							}
+						});
+					}
+				});
+			}
+			
+			function activateProfilePhoto() {
+			const profilePic = document.getElementById('profile-pic');
+			
+			if (profilePic) {
+				// 1. Add Visual Cue (Cursor)
+				profilePic.style.cursor = "pointer";
+				profilePic.title = "Click to Change Identification";
+				
+				// 2. Create the Hidden File Input
+				const fileInput = document.createElement('input');
+				fileInput.type = 'file';
+				fileInput.accept = 'image/*';
+				fileInput.style.display = 'none';
+				document.body.appendChild(fileInput);
+
+				// 3. Link Click to Input
+				profilePic.addEventListener('click', () => {
+					fileInput.click();
+				});
+
+				// 4. Handle File Selection (Preview only for now)
+				fileInput.addEventListener('change', (e) => {
+					const file = e.target.files[0];
+					if (file) {
+						const reader = new FileReader();
+						reader.onload = (e) => {
+							profilePic.src = e.target.result; // Show new image immediately
+							// TODO: Add Firestore Upload Logic here in Step 5
+						};
+						reader.readAsDataURL(file);
+						}
+					});
+				}
+			}
+		
+			function activateLogoLink() {
+			// Find the logo image. Usually in #header img or .logo img
+			const logoImg = document.querySelector('#header img') || document.querySelector('.logo img');
+			
+			if (logoImg) {
+				logoImg.style.cursor = "pointer";
+				logoImg.addEventListener('click', () => {
+					window.location.href = 'index.html'; // Return to Base
+				});
+				
+				// Determine Room Type for Color matching
+				const path = window.location.pathname;
+				if (path.includes("Admin")) logoImg.classList.add('glow-gold');
+				else if (path.includes("Student")) logoImg.classList.add('glow-cyan');
+				else if (path.includes("Freelancer")) logoImg.classList.add('glow-orange');
+			}
+		}
 
 })(jQuery);

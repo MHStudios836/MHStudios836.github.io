@@ -19,4 +19,4 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export const dbID = "MH_STUDIOS_V1"; // Make sure this matches your Firestore path exactly!
+export const dbID = "MH_Studios_Project"; // Make sure this matches your Firestore path exactly!

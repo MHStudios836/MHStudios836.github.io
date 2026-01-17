@@ -1,7 +1,7 @@
 /* assets/js/admin-core.js - MASTER CONTROL */
-import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 import { app } from "./firebase-init.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
 const db = getFirestore(app);
 const auth = getAuth(app);

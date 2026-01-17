@@ -244,19 +244,47 @@ permalink: /Broadcast_Station.html
         }
         .hm-close:hover { color: var(--bs-red); }
 
-        /* --- MOBILE RESPONSIVE --- */
-        @media screen and (max-width: 980px) {
-            .station-grid {
-                grid-template-columns: 1fr;
-                grid-template-rows: 60px 250px 1fr 1fr 30px; /* Header, Map, Feed, Roster, Ticker */
-                overflow-y: auto; height: auto;
-            }
-            .sat-header { position: sticky; top: 0; }
-            .feed-panel { grid-row: 3 / 4; height: 400px; }
-            .main-stage { grid-row: 2 / 3; height: 250px; }
-            .roster-panel { grid-row: 4 / 5; height: 300px; }
-            .ticker-bar { grid-row: 5 / 6; position: fixed; bottom: 0; width: 100%; }
+/* --- MOBILE PATCH (COVERS 720px - 740px GLITCH) --- */
+    @media screen and (max-width: 740px) {
+        
+        /* 1. Stack the Layout */
+        .titan-panel {
+            height: auto !important; /* Disable fixed height on phone */
+            min-height: 60vh;
+            margin-bottom: 80px; /* Space for the floating chat button */
         }
+
+        /* 2. Adjust Header for Thumbs */
+        h2 { font-size: 1.2em !important; }
+        
+        /* 3. Make Mission Cards Compact */
+        .mission-card {
+            padding: 10px !important;
+        }
+        .mission-card h3 {
+            font-size: 1em !important;
+        }
+        .mission-card .badge {
+            font-size: 0.6em !important;
+            padding: 3px 6px !important;
+        }
+
+        /* 4. Chat Panel Mobile Override */
+        #global-comms-panel {
+            width: 100% !important;
+            height: 50vh !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            border-radius: 15px 15px 0 0;
+            border: none !important;
+            border-top: 2px solid var(--mh-cyan) !important;
+        }
+
+        /* 5. Fix the "Feed Status" Text */
+        #feed-status {
+            display: none; /* Hide non-essential text on mobile */
+        }
+    }
     </style>
 </head>
 <body>
@@ -267,7 +295,7 @@ permalink: /Broadcast_Station.html
             <div class="brand-unit">
                 <img src="images/Logo_1.png" alt="MH Logo">
                 <div>
-                    <div class="brand-text">MH BROADCAST</div>
+                    <div class="brand-text">MH™ BROADCAST STATION</div>
                     <div class="brand-sub">GLOBAL UPLINK v9.0</div>
                 </div>
             </div>
@@ -304,11 +332,39 @@ permalink: /Broadcast_Station.html
                 <div class="filter-chip" onclick="filterFeed('system')">SYSTEM</div>
             </div>
 
-            <div class="feed-stream" id="mission-feed">
-                <div style="text-align:center; padding:20px; color:#555;">
-                    <i class="fas fa-circle-notch fa-spin"></i> SYNCING DATABASE...
-                </div>
-            </div>
+			<div class="titan-panel" style="height: 80vh; display: flex; flex-direction: column;">
+				
+				<div style="border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+					<h2 style="margin: 0; color: var(--bs-cyan);">GLOBAL TASK MARKET</h2>
+					<div>
+						<span style="color: #666; font-size: 0.8em; margin-right: 10px;">FILTER:</span>
+						<select id="filter-type" class="titan-input" style="padding: 5px;">
+							<option value="ALL">All Sectors</option>
+							<option value="GRAPHIC_DESIGN">Graphic Design</option>
+							<option value="PROGRAMMING">Programming</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="titan-panel" style="height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+					
+					<div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+						<div>
+							<h2 style="margin: 0; color: var(--bs-cyan);"><i class="fas fa-globe-americas"></i> GLOBAL OPERATIONS</h2>
+							<span style="font-size: 0.8em; color: #666;">LIVE SATELLITE FEED // SECTOR: ALL</span>
+						</div>
+						<div id="feed-status" style="color: var(--mh-green); font-size: 0.8em;">LIVE</div>
+					</div>
+
+					<div id="global-task-list" style="flex: 1; overflow-y: auto; padding-right: 5px; scroll-behavior: smooth;">
+						<div style="text-align: center; padding: 40px; color: #444;">
+							<i class="fas fa-circle-notch fa-spin fa-2x"></i><br>ESTABLISHING UPLINK...
+						</div>
+					</div>
+
+				</div>
+
+			</div>
         </section>
 
 
@@ -381,6 +437,7 @@ permalink: /Broadcast_Station.html
     </div>
 
     <script src="assets/js/jquery.min.js"></script>
+	<script type="module" src="assets/js/broadcast-core.js"></script>
 
     <script>
         const canvas = document.getElementById('global-map');
@@ -463,144 +520,159 @@ permalink: /Broadcast_Station.html
     </script>
 
 
-    <script type="module">
-        import { db, dbID } from './assets/js/firebase-init.js';
-        import { collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+	<script type="module">
+		import { auth, db, dbID } from "./assets/js/firebase-init.js";
+		import { initComms, transmitMessage } from "./assets/js/squad-comms.js"; 
+		import { toggleLike, shareContent } from "./assets/js/social-interactions.js"; 
+		import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+		import { formatBounty } from "./assets/js/data-transformer.js";
 
-        // --- MOCK DATA GENERATORS (To fill empty spaces initially) ---
-        const mockMissions = [
-            { title: "React Frontend Fix", budget: 150, tag: "DEV" },
-            { title: "Logo Design needed", budget: 50, tag: "DESIGN" },
-            { title: "Python Data Script", budget: 300, tag: "DATA" },
-            { title: "Video Edit 4K", budget: 100, tag: "VIDEO" },
-            { title: "Translate Doc to ES", budget: 40, tag: "TRANS" }
-        ];
-        
-        const mockUsers = [
-            { name: "Shadow_Coder", rank: "ELITE", score: 5.0 },
-            { name: "Pixel_Artist", rank: "VET", score: 4.9 },
-            { name: "Java_King", rank: "PRO", score: 4.8 },
-            { name: "Web_Ninja", rank: "PRO", score: 4.7 }
-        ];
+		// =========================================================
+		// 1. CORE SYSTEMS (REAL DATA)
+		// =========================================================
 
-        // --- 1. POPULATE FEED ---
-        function addFeedItem(mission) {
-            const feed = document.getElementById('mission-feed');
-            const item = document.createElement('div');
-            item.className = 'msn-node';
-            item.innerHTML = `
-                <div class="msn-top">
-                    <span>${new Date().toLocaleTimeString()}</span>
-                    <span>#MSN-${Math.floor(Math.random()*9000)+1000}</span>
-                </div>
-                <span class="msn-title">${mission.title}</span>
-                <div class="msn-meta">
-                    <span class="msn-tag">${mission.tag || 'GEN'}</span>
-                    <span class="msn-budget">$${mission.budget}</span>
-                </div>
-            `;
-            // Modal Trigger
-            item.onclick = () => {
-                $('#modal-title').text(mission.title);
-                $('#modal-budget').text('$' + mission.budget);
-                $('#modal-client').text("Encrypted User");
-                $('#mission-modal').fadeIn(200).css('display','flex');
-            };
-            
-            feed.prepend(item);
-            if(feed.children.length > 50) feed.lastChild.remove(); // Keep memory low
-        }
+		// A. INITIALIZE GLOBAL CHAT
+		const chatDisplay = document.getElementById('global-chat-log');
+		if (chatDisplay) {
+			initComms("GLOBAL", chatDisplay); 
+		}
 
-        // Initial Pop
-        mockMissions.forEach(m => addFeedItem(m));
+		// B. SEND MESSAGE LOGIC
+		window.sendGlobalMessage = async () => {
+			const input = document.getElementById('global-msg-input');
+			const text = input.value.trim();
+			if (!text || !auth.currentUser) return;
 
-        // --- 2. POPULATE ROSTER ---
-        const roster = document.getElementById('elite-roster');
-        mockUsers.forEach(u => {
-            roster.innerHTML += `
-                <div class="elite-card">
-                    <div class="ec-avatar">
-                        <div class="ec-status online"></div>
-                    </div>
-                    <div class="ec-info">
-                        <h4>${u.name}</h4>
-                        <span>${u.rank} OPERATIVE</span>
-                    </div>
-                    <div class="ec-rank">${u.score}</div>
-                </div>
-            `;
-        });
+			await transmitMessage(
+				auth.currentUser.displayName, 
+				"OPERATIVE", 
+				text, 
+				"GLOBAL"
+			);
+			input.value = "";
+		};
+		
+		document.getElementById('global-msg-input')?.addEventListener('keypress', (e) => {
+			if(e.key === 'Enter') window.sendGlobalMessage();
+		});
 
-        // --- 3. TRAFFIC CHART ---
-        const ctxChart = document.getElementById('traffic-chart').getContext('2d');
-        new Chart(ctxChart, {
-            type: 'line',
-            data: {
-                labels: ['10:00', '11:00', '12:00', '13:00', '14:00'],
-                datasets: [{
-                    label: 'System Load',
-                    data: [12, 19, 3, 5, 20],
-                    borderColor: '#00e5ff',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(0, 229, 255, 0.1)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { 
-                    x: { display: false }, 
-                    y: { display: false, min: 0 } 
-                }
-            }
-        });
+		// C. MISSION FEED (REAL FIRESTORE DATA)
+		const feedList = document.getElementById('global-task-list');
+		const q = query(
+			collection(db, 'artifacts', dbID, 'missions'),
+			where("status", "==", "OPEN"),
+			where("visibility", "==", "PUBLIC"),
+			orderBy("createdAt", "desc")
+		);
 
-        // --- 4. FIREBASE LIVE LISTENER (REAL DATA) ---
-        // This connects to your real database to pull actual missions
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                const q = query(collection(db, 'artifacts', dbID, 'missions'), orderBy("timestamp", "desc"), limit(20));
-                
-                onSnapshot(q, (snapshot) => {
-                    const feed = document.getElementById('mission-feed');
-                    // We don't clear the feed, we just prepend new ones to keep the "flow" feel
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === "added") {
-                            const data = change.doc.data();
-                            // Create real object
-                            const realMission = {
-                                title: data.title,
-                                budget: data.budget,
-                                tag: data.type ? data.type.substring(0,4).toUpperCase() : 'GEN'
-                            };
-                            addFeedItem(realMission);
-                        }
-                    });
-                    
-                    // Update stats
-                    document.getElementById('val-ops').innerText = snapshot.size;
-                });
-            } catch (e) {
-                console.log("Offline Mode or Permission Error: " + e.message);
-            }
-        });
+		onSnapshot(q, (snapshot) => {
+			if(snapshot.empty) {
+				feedList.innerHTML = "<div style='text-align:center; padding:40px; color:#666;'><i class='fas fa-satellite-dish'></i> WAITING FOR SIGNALS...</div>";
+				return;
+			}
+			feedList.innerHTML = ""; 
+			snapshot.forEach(doc => {
+				const data = doc.data();
+				const card = createBroadcastCard(data, doc.id);
+				feedList.innerHTML += card;
+			});
 
-        // --- 5. RANDOM PING SIMULATION ---
-        setInterval(() => {
-            document.getElementById('val-ping').innerText = (Math.floor(Math.random() * 50) + 10) + 'ms';
-            if(Math.random() > 0.7) {
-                // Add a random fake system log to ticker
-                const msgs = ["New Node Connected: Seoul", "Transaction Verified: $450", "Server Load: 45%", "Signal Intercepted"];
-                const msg = msgs[Math.floor(Math.random() * msgs.length)];
-                const ticker = document.getElementById('news-ticker');
-                ticker.innerHTML += `<span class="ticker-item">SYS: <b>${msg}</b></span>`;
-            }
-        }, 2000);
+			// Update Stats Logic (If elements exist)
+			if(document.getElementById('val-ops')) 
+				document.getElementById('val-ops').innerText = snapshot.size;
+		});
 
-    </script>
+		// D. CARD RENDERER
+		function createBroadcastCard(data, id) {
+			let border = "var(--bs-cyan)";
+			if (data.priority === "HIGH") border = "var(--mh-orange)";
+			if (data.priority === "CRITICAL") border = "var(--mh-red)";
+			
+			const likeCount = data.likes ? data.likes.length : 0;
+			const isLiked = data.likes && auth.currentUser && data.likes.includes(auth.currentUser.uid);
+			const heartColor = isLiked ? "var(--mh-red)" : "#666";
+
+			return `
+			<div class="titan-panel" style="margin-bottom: 12px; padding: 15px; border-left: 4px solid ${border}; background: rgba(0,0,0,0.4);">
+				<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+					<div style="flex: 1;">
+						<span class="badge" style="background: ${border}; color: #000; font-weight: bold;">${data.priority || 'NORM'}</span>
+						<h3 style="margin: 5px 0; color: #fff;">${data.title}</h3>
+						<div style="font-size: 0.8em; color: #888;">${data.creatorName}</div>
+					</div>
+					<div style="text-align: right;">
+						<div style="color: var(--mh-green); font-size: 1.3em; font-weight: 800;">${formatBounty(data.budget)}</div>
+					</div>
+				</div>
+				
+				<div style="margin-top: 15px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+					<button class="titan-btn" style="padding: 5px 10px; color: ${heartColor};" 
+						onclick="toggleLike('missions', '${id}', '${auth.currentUser ? auth.currentUser.uid : ''}')">
+						<i class="fas fa-heart"></i> ${likeCount}
+					</button>
+
+					<button class="titan-btn" style="padding: 5px 10px;" 
+						onclick="shareContent('${data.title}', 'Check out this mission on MH Studios')">
+						<i class="fas fa-share-alt"></i>
+					</button>
+
+					<button class="titan-btn" style="margin-left: auto; background: var(--bs-cyan); color: #000;" 
+						onclick="alert('Use the Freelancer Room to Accept Contracts')">
+						<i class="fas fa-file-contract"></i> DETAILS
+					</button>
+				</div>
+			</div>
+			`;
+		}
+
+		// =========================================================
+		// 2. VISUAL FX (ATMOSPHERE ONLY)
+		// =========================================================
+
+		// A. TRAFFIC CHART (If Canvas Exists)
+		const chartCanvas = document.getElementById('traffic-chart');
+		if (chartCanvas) {
+			new Chart(chartCanvas.getContext('2d'), {
+				type: 'line',
+				data: {
+					labels: ['10:00', '11:00', '12:00', '13:00', '14:00'],
+					datasets: [{
+						label: 'Network Load',
+						data: [12, 19, 3, 5, 20],
+						borderColor: '#00e5ff',
+						borderWidth: 1,
+						pointRadius: 0,
+						tension: 0.4,
+						fill: true,
+						backgroundColor: 'rgba(0, 229, 255, 0.1)'
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: { legend: { display: false } },
+					scales: { x: { display: false }, y: { display: false } }
+				}
+			});
+		}
+
+		// B. RANDOM SYSTEM PINGS (The "Live" Feel)
+		setInterval(() => {
+			const pingEl = document.getElementById('val-ping');
+			if(pingEl) pingEl.innerText = (Math.floor(Math.random() * 50) + 10) + 'ms';
+			
+			// Random Ticker Updates
+			if(Math.random() > 0.8) {
+				const msgs = ["Node Connected: Amman", "Secure Link: Verified", "Packet Loss: 0%", "Uplink Stable"];
+				const msg = msgs[Math.floor(Math.random() * msgs.length)];
+				const ticker = document.getElementById('news-ticker'); // Ensure you have this ID in your HTML
+				if(ticker) ticker.innerHTML += `<span style="margin-right:20px; color:#00e5ff;">SYS: <b>${msg}</b></span>`;
+			}
+		}, 2000);
+
+		// EXPOSE FUNCTIONS
+		window.toggleLike = toggleLike;
+		window.shareContent = shareContent;
+	</script>
 </body>
 </html>

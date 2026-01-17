@@ -14,3 +14,14 @@ Thumbs.db
 
 # Keep your original protection
 assets/js/firebase-init.js
+
+# Ignore System Files
+node_modules/
+functions/node_modules/
+.firebase/
+.firebaserc
+firebase-debug.log
+
+# Ignore Environment Secrets (If you have them later)
+.env
+.DS_Store

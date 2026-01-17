@@ -4,7 +4,7 @@ permalink: /Student_Room.html
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <title>MH Studios™ | Field Command (Mobile Elite)</title>
+    <title>MA STUDIOS™ | Field Command (Mobile Elite)</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#05070a">
@@ -14,6 +14,7 @@ permalink: /Student_Room.html
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+	<script type="module" src="assets/js/auth-router.js"></script>
     
     <style>
         /* --- 1. CORE VARIABLES --- */
@@ -264,6 +265,11 @@ permalink: /Student_Room.html
 </head>
 <body>
 
+	<div id="system-status-hud">
+		<div class="status-dot"></div>
+		<span id="network-status">SYSTEM ONLINE: STABLE</span>
+	</div>
+
     <header id="tactical-header">
         <a href="index.html" class="brand-module">
             <img src="images/Logo_1.png" alt="MH">
@@ -297,18 +303,45 @@ permalink: /Student_Room.html
     <div class="layout-container">
         
         <aside>
-            <div class="profile-card">
-                <div class="profile-cover"></div>
-                <div class="profile-avatar"></div>
-                <div class="profile-body">
-                    <span class="p-name" id="user-display-name">Loading Agent...</span>
-                    <span class="p-rank">STUDENT CLEARANCE</span>
-                    <div class="p-stats-row" style="margin-top:15px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between;">
-                        <span style="color:var(--mh-blue); font-weight:bold;">LVL 4</span>
-                        <span style="color:var(--mh-gold);">98% REP</span>
-                    </div>
-                </div>
-            </div>
+		<div class="profile-card" style="text-align:center; padding:30px; border-bottom:1px solid rgba(255,255,255,0.1);">
+			
+			<div class="profile-avatar" style="margin-bottom:15px; position:relative;">
+				<div style="width:100px; height:100px; background:#111; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; border:2px solid var(--mh-blue);">
+					<i class="fas fa-user-astronaut" style="font-size:3em; color:#333;"></i>
+				</div>
+				<div style="width:15px; height:15px; background:var(--mh-green); border-radius:50%; position:absolute; bottom:5px; right:calc(50% - 40px); border:2px solid #000;"></div>
+			</div>
+
+			<h3 id="student-name" style="margin:0; color:#fff; text-transform:uppercase; letter-spacing:2px;">
+				INITIALIZING...
+			</h3>
+			<div id="student-id" style="font-size:0.7em; color:var(--mh-blue); margin-bottom:20px; font-family:monospace;">
+				ID: PENDING-UPLINK
+			</div>
+
+			<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+				
+				<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:4px;">
+					<div style="font-size:0.7em; color:#888;">CURRENT RANK</div>
+					<div id="student-rank" style="color:var(--mh-gold); font-weight:bold;">PRIVATE</div>
+				</div>
+
+				<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:4px;">
+					<div style="font-size:0.7em; color:#888;">CLEARANCE</div>
+					<div id="student-level" style="color:var(--mh-cyan); font-weight:bold;">LVL 1</div>
+				</div>
+			</div>
+
+			<div style="background:linear-gradient(45deg, rgba(0,255,65,0.1), transparent); padding:15px; border-radius:4px; border:1px solid rgba(0,255,65,0.2);">
+				<div style="font-size:0.8em; color:var(--mh-green); margin-bottom:5px;">
+					<i class="fas fa-wallet"></i> ACCOUNT BALANCE
+				</div>
+				<div id="student-balance" style="font-size:1.8em; font-weight:900; color:#fff; text-shadow:0 0 10px rgba(0,255,65,0.5);">
+					$0.00
+				</div>
+			</div>
+
+		</div>
 
             <nav class="nav-tabs">
                 <div class="tab-btn active" onclick="switchTab('tab-dashboard')">
@@ -371,26 +404,62 @@ permalink: /Student_Room.html
             </section>
 
             <section id="tab-create" class="panel-section">
-                <div class="section-header"><h2>NEW MISSION</h2></div>
-                <div class="task-card">
-                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">MISSION TITLE</label>
-                    <input type="text" class="mh-input" placeholder="e.g. Java Project Help">
-                    
-                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">TYPE</label>
-                    <select class="mh-select">
-                        <option>Programming</option>
-                        <option>Design</option>
-                        <option>Translation</option>
-                    </select>
+				<div id="tab-create" class="panel-section" style="display:none;">
+					<div class="titan-panel" style="border-left: 4px solid var(--mh-blue);">
+						<h3 style="color: var(--mh-blue); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+							<i class="fas fa-satellite-dish"></i> INITIATE NEW MISSION
+						</h3>
 
-                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">BUDGET ($)</label>
-                    <input type="number" class="mh-input" placeholder="50.00">
+						<div style="display: flex; gap: 10px; margin-bottom: 15px;">
+							<input type="text" id="task-title" class="titan-input" placeholder="Mission Objective (Title)" style="flex: 2;">
+							<select id="task-type" class="titan-input" style="flex: 1;">
+								<option value="GRAPHIC_DESIGN">Graphic Design</option>
+								<option value="PROGRAMMING">Programming/IT</option>
+								<option value="ACADEMIC_WRITING">Academic Writing</option>
+								<option value="VIDEO_EDITING">Video Editing</option>
+								<option value="DATA_ENTRY">Data Entry</option>
+							</select>
+						</div>
 
-                    <label style="display:block; margin-bottom:5px; color:#888; font-size:0.8em;">DETAILS</label>
-                    <textarea class="mh-textarea" rows="5" placeholder="Mission briefing..."></textarea>
+						<div style="display: flex; gap: 10px; margin-bottom: 15px;">
+							<input type="number" id="task-budget" class="titan-input" placeholder="Budget ($)" style="flex: 1;">
+							<input type="datetime-local" id="task-deadline" class="titan-input" style="flex: 1;" title="Mission Deadline">
+						</div>
 
-                    <button class="btn btn-primary btn-full"><i class="fas fa-paper-plane"></i> DEPLOY</button>
-                </div>
+						<div style="display: flex; gap: 10px; margin-bottom: 15px;">
+							<select id="task-priority" class="titan-input" style="flex: 1;">
+								<option value="NORMAL">Priority: Normal</option>
+								<option value="HIGH">Priority: HIGH</option>
+								<option value="CRITICAL">Priority: CRITICAL</option>
+							</select>
+							<select id="task-visibility" class="titan-input" style="flex: 1;">
+								<option value="PUBLIC">Visibility: Global (Public)</option>
+								<option value="PRIVATE">Visibility: Private (Invite Only)</option>
+							</select>
+						</div>
+
+						<textarea id="task-desc" class="titan-input" placeholder="Mission Details & Intelligence..." style="width: 100%; height: 100px; margin-bottom: 15px;"></textarea>
+
+						<div id="drop-zone" style="border: 2px dashed #444; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px; background: rgba(0,0,0,0.3);">
+							<i class="fas fa-cloud-upload-alt" style="font-size: 2em; color: var(--mh-cyan);"></i>
+							<p style="margin: 5px 0; color: #aaa;">Drop Intelligence Files Here (Max 1GB)</p>
+							<input type="file" id="task-files" multiple style="display: none;">
+							<button onclick="document.getElementById('task-files').click()" class="titan-btn" style="padding: 5px 10px; font-size: 0.8em; margin-top:5px;">BROWSE FILES</button>
+							<div id="file-list" style="margin-top: 10px; font-size: 0.8em; color: var(--mh-green);"></div>
+						</div>
+						
+						<div id="upload-progress-container" style="width: 100%; background: #222; height: 5px; margin-bottom: 15px; display: none;">
+							<div id="upload-progress-bar" style="height: 100%; background: var(--mh-green); width: 0%;"></div>
+						</div>
+
+						<div style="display: flex; gap: 10px; justify-content: flex-end;">
+							<button class="titan-btn" style="background: rgba(255, 0, 76, 0.1); color: var(--mh-red); border:1px solid var(--mh-red);" onclick="this.closest('form').reset()">ABORT</button>
+							<button id="btn-deploy-task" class="titan-btn" style="background: var(--mh-blue); color: white; width: 200px;">
+								<i class="fas fa-rocket"></i> DEPLOY MISSION
+							</button>
+						</div>
+					</div>
+				</div>
             </section>
 
             <section id="tab-chat" class="panel-section">
@@ -479,7 +548,7 @@ permalink: /Student_Room.html
 		</div>
 			<div class="footer-grid">
 				<div class="footer-col">
-					<h4>MH STUDIOS™</h4>
+					<h4>MA STUDIOS™</h4>
 					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
 					<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
 				</div>
@@ -516,6 +585,7 @@ permalink: /Student_Room.html
     <script src="assets/js/jquery.min.js"></script>
     <script type="module" src="assets/js/firebase-init.js"></script>
     <script type="module" src="assets/js/student-core.js"></script>
+	
     
 	<script>
         // --- MOBILE TABS LOGIC ---
@@ -540,6 +610,43 @@ permalink: /Student_Room.html
             });
         });
     </script>
+	
+	<script>
+			// Simple Network Listener
+			window.addEventListener('offline', () => {
+				document.getElementById('network-status').innerText = "CONNECTION LOST";
+				document.getElementById('network-status').style.color = "#ff004c"; // Red
+				document.querySelector('.status-dot').style.backgroundColor = "#ff004c";
+			});
+			window.addEventListener('online', () => {
+				document.getElementById('network-status').innerText = "SYSTEM ONLINE: STABLE";
+				document.getElementById('network-status').style.color = "#00ff41"; // Green
+				document.querySelector('.status-dot').style.backgroundColor = "#00ff41";
+			});
+	</script>
+	
+	<div id="system-status-hud">
+    <div class="status-dot"></div>
+    <span id="network-status">SYSTEM ONLINE</span>
+	</div>
+
+	<script>
+		// HUD Logic
+		const hudStatus = document.getElementById('network-status');
+		const hudDot = document.querySelector('.status-dot');
+		
+		window.addEventListener('offline', () => {
+			hudStatus.innerText = "CONNECTION LOST";
+			hudStatus.style.color = "#ff004c"; 
+			hudDot.style.backgroundColor = "#ff004c";
+		});
+		
+		window.addEventListener('online', () => {
+			hudStatus.innerText = "SYSTEM ONLINE";
+			hudStatus.style.color = "#00ff41"; 
+			hudDot.style.backgroundColor = "#00ff41";
+		});
+	</script>
 
     <script type="module">
         import { initChatSystem } from './assets/js/chat-core.js';

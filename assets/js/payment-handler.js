@@ -1,10 +1,9 @@
 /* assets/js/payment-handler.js */
 import { auth, db, dbID } from './firebase-init.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import { recordProductSale } from './transaction-siphon.js';
 
 $(document).ready(() => {
-    // 1. LOAD URL PARAMS (Populate the Receipt)
+    // 1. LOAD URL PARAMS
     const urlParams = new URLSearchParams(window.location.search);
     const itemId = urlParams.get('id');
     const itemName = urlParams.get('name');
@@ -14,8 +13,7 @@ $(document).ready(() => {
         $('#item-name').text(itemName || "Unknown Artifact");
         $('#total-price').text("$" + itemPrice);
     } else {
-        alert("ERROR: No Invoice Detected.");
-        window.location.href = 'Products_Services_Room.html';
+        console.warn("No Item ID found in URL.");
     }
 
     // 2. EXECUTE PAYMENT
@@ -25,30 +23,29 @@ $(document).ready(() => {
         
         if(!auth.currentUser) return alert("LOGIN REQUIRED");
 
-        btn.prop('disabled', true).text("VERIFYING FUNDS...");
+        btn.prop('disabled', true).text("PROCESSING...");
 
         try {
             // A. Create Order Record
+            // THIS TRIGGER IS WHAT WAKES UP THE CLOUD FUNCTION 'processOrder'
             await addDoc(collection(db, 'artifacts', dbID, 'orders'), {
                 buyerId: auth.currentUser.uid,
                 itemId: itemId,
                 itemName: itemName,
                 price: parseFloat(itemPrice),
                 timestamp: serverTimestamp(),
-                status: 'PAID'
+                status: 'PENDING' // The Cloud Function will change this to COMPLETED or FAILED
             });
 
-            // B. Update Vault & Analytics
-            await recordProductSale(itemId, parseFloat(itemPrice), auth.currentUser.uid);
-
-            // C. Success
-            alert("PAYMENT SUCCESSFUL. ASSET TRANSFERRED.");
+            // B. Success Message (UI Only)
+            // We assume success here, but the real logic happens in the background
+            alert("ORDER PLACED. VERIFYING FUNDS & TRANSFERRING ASSET...");
             window.location.href = 'Products_Services_Room.html';
 
         } catch (error) {
             console.error(error);
-            alert("TRANSACTION DECLINED: " + error.message);
-            btn.prop('disabled', false).text("RE-TRY TRANSACTION");
+            alert("CONNECTION ERROR: " + error.message);
+            btn.prop('disabled', false).text("CONFIRM PAYMENT");
         }
     });
 });

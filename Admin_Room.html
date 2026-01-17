@@ -4,14 +4,14 @@ permalink: /Admin_Room.html
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <title>MH Studios™ | Warlord Command (Admin HQ)</title>
+    <title>MA Studios™ | Warlord Command (Admin HQ)</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#000000">
     <meta name="robots" content="noindex, nofollow"> <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
-    
+    <script type="module" src="assets/js/auth-router.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -249,6 +249,16 @@ permalink: /Admin_Room.html
         }
         .log-entry { margin-bottom: 5px; border-bottom: 1px solid #111; padding-bottom: 2px; }
         .log-time { color: #555; margin-right: 10px; }
+		
+		/* --- 13. MEGA FOOTER --- */
+        #merc-footer {
+            background: #020304; border-top: 1px solid var(--mh-border);
+            padding: 60px 30px; margin-top: 60px;
+        }
+        .footer-cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; max-width: 1400px; margin: 0 auto; }
+        .ft-social { display: flex; gap: 15px; margin-top: 20px; }
+        .ft-social a { width: 35px; height: 35px; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .ft-social a:hover { background: var(--mh-orange); color: #000; }
 
         /* --- MOBILE OVERRIDES --- */
         @media screen and (max-width: 980px) {
@@ -309,6 +319,12 @@ permalink: /Admin_Room.html
             <button id="admin-logout" class="btn-red" style="margin-left:auto; border:none;">
                 <i class="fas fa-power-off"></i>
             </button>
+			<div class="um-info">
+			<div id="system-status-hud">
+				<div class="status-dot"></div>
+				<span id="network-status">COMMAND LINK: STABLE</span>
+			</div>
+			</div>
         </div>
     </nav>
 
@@ -336,6 +352,7 @@ permalink: /Admin_Room.html
         </div>
     </header>
 
+<div class="titan-panel" style="margin: 20px; min-height: 95vh; padding: 20px;">
 
     <main class="main-stage">
 
@@ -618,8 +635,62 @@ permalink: /Admin_Room.html
             </div>
         </div>
     </div>
+	
+	    <footer id="merc-footer">
+			<div class="footer-cols">
+				<div>
+					<div class="brand-module" style="margin-bottom:20px;">
+						<img src="images/Logo_1.png" style="height:35px;">
+						<div class="brand-text">
+							<span class="main">MH STUDIOS</span>
+						</div>
+					</div>
+					<p>The premier network for elite digital contractors. Secure, anonymous, and lucrative.</p>
+					<div class="ft-social">
+						<a href="#"><i class="fab fa-discord"></i></a>
+						<a href="#"><i class="fab fa-github"></i></a>
+						<a href="#"><i class="fab fa-twitter"></i></a>
+					</div>
+				</div>
+				<div>
+					<h4 style="color:#fff;">RESOURCES</h4>
+					<ul>
+						<li><a href="#">API Documentation</a></li>
+						<li><a href="#">Market Analytics</a></li>
+						<li><a href="#">Security Protocol</a></li>
+					</ul>
+				</div>
+				<div>
+					<h4 style="color:#fff;">LEGAL</h4>
+					<ul>
+						<li><a href="#">Contract Terms</a></li>
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Dispute Resolution</a></li>
+					</ul>
+				</div>
+				<div>
+					<h4 style="color:#fff;">SUPPORT</h4>
+					<p><i class="fas fa-envelope"></i> ops@mhstudios.net</p>
+					<p><i class="fas fa-headset"></i> Live Support: Online</p>
+				</div>
+			</div>
+			<div style="text-align:center; margin-top:50px; padding-top:20px; border-top:1px solid #111; color:#444; font-size:0.8em;">
+				&copy; 2026 MH Studios. All Rights Reserved. Clearance Level: Confidential.
+			</div>
+		</footer>
 
     <script src="assets/js/jquery.min.js"></script>
+	
+	<script>
+		window.addEventListener('offline', () => {
+			document.getElementById('network-status').innerText = "LINK SEVERED";
+			document.querySelector('.status-dot').style.backgroundColor = "#ff004c";
+		});
+		window.addEventListener('online', () => {
+			document.getElementById('network-status').innerText = "COMMAND LINK: STABLE";
+			document.querySelector('.status-dot').style.backgroundColor = "#00ff41";
+		});
+	</script>
 
     <script>
         // 1. PANEL SWITCHING
@@ -723,7 +794,28 @@ permalink: /Admin_Room.html
         // 4. EXPOSE REFRESH FUNCTIONS TO WINDOW (For the buttons to work)
         window.initMissionGrid = initMissionGrid;
     </script>
-    
+    <div id="system-status-hud">
+    <div class="status-dot"></div>
+    <span id="network-status">SYSTEM ONLINE</span>
+	</div>
+
+	<script>
+		// HUD Logic
+		const hudStatus = document.getElementById('network-status');
+		const hudDot = document.querySelector('.status-dot');
+		
+		window.addEventListener('offline', () => {
+			hudStatus.innerText = "CONNECTION LOST";
+			hudStatus.style.color = "#ff004c"; 
+			hudDot.style.backgroundColor = "#ff004c";
+		});
+		
+		window.addEventListener('online', () => {
+			hudStatus.innerText = "SYSTEM ONLINE";
+			hudStatus.style.color = "#00ff41"; 
+			hudDot.style.backgroundColor = "#00ff41";
+		});
+	</script>
     <script type="module" src="assets/js/admin-command-console.js"></script>
 
 </body>

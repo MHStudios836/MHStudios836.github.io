@@ -515,6 +515,8 @@ permalink: /DoD_Login_Style.html
 	</div>
 
 		<script src="assets/js/jquery.min.js"></script>
+		
+		<script src="assets/js/jquery.scrolly.min.js"></script>
 		<script src="assets/js/browser.min.js"></script>
 		<script src="assets/js/breakpoints.min.js"></script>
 		<script src="assets/js/util.js"></script>
@@ -674,6 +676,41 @@ permalink: /DoD_Login_Style.html
 					typeStatus("> GOOGLE LINK FAILED.", "#ff004c");
 				}
 			});
+			
+			// --- THE ROUTER ---
+			const routeUser = async (user) => {
+				console.log("> ROUTING IDENTITY: " + user.uid);
+				
+				// Check if user exists in our Database
+				const userRef = doc(db, 'artifacts', DB_ID, COLL_USERS, user.uid);
+				const userSnap = await getDoc(userRef);
+
+				if (userSnap.exists()) {
+					// VETERAN USER -> Check Rank and Redirect
+					const data = userSnap.data();
+					const role = data.role;
+					console.log("> RANK CONFIRMED: " + role);
+
+					if (role === 'admin') window.location.href = "Admin_Room.html";
+					else if (role === 'freelancer') window.location.href = "Freelancers_Room.html";
+					else window.location.href = "Student_Room.html"; // Default for students
+				} else {
+					// NEW RECRUIT -> Create File
+					console.log("> NEW RECRUIT. ASSIGNING RANK: STUDENT...");
+					
+					await setDoc(userRef, {
+						uid: user.uid,
+						email: user.email,
+						displayName: user.displayName || "Unknown Operative",
+						role: "student", // DEFAULT RANK
+						wallet_balance: 0.00,
+						joinedAt: serverTimestamp(),
+						is_banned: false
+					});
+
+					window.location.href = "Student_Room.html";
+				}
+			};
 		</script>
 		
 		<script>
