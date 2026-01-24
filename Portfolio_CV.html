@@ -178,32 +178,43 @@ permalink: /Portfolio_CV.html
         }
 
 		/* --- LOGO REACTOR CORE --- */
-		.brand-title img {
-			height: 35px;
-			transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
-			font-family: 'Uni Sans', sans-serif;
-			transform-origin: center;
+		.brand-title {
+			display: flex; 
+			align-items: center; 
+			gap: 15px;
+			text-decoration: none;
 			cursor: pointer;
-			filter: drop-shadow(0 0 0 rgba(0,0,0,0)); /* Default state */
 		}
 
-		/* HOVER: Tactical Zoom */
-		.brand-title img:hover {
-			transform: scale(1.3) rotate(5deg); /* Zoom + Slight Tilt */
-			filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+		/* 1. TEXT GLOW ON HOVER (Targets the span inside) */
+		.brand-title:hover span { 
+			color: #fff !important; /* Flash white briefly */
+			text-shadow: 0 0 15px var(--merc-orange); /* Orange Glow */
 		}
 
-		/* CLICK: Titan Core Overload (Triggered by JS) */
+		/* 2. IMAGE BASE STATE */
+		.brand-title img {
+			transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
+			transform-origin: center;
+			filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+		}
+
+		/* 3. IMAGE ZOOM ON HOVER (Triggered when you hover ANY PART of .brand-title) */
+		.brand-title:hover img {
+			transform: scale(1.3); /* The Zoom */
+			filter: drop-shadow(0 0 10px rgba(255, 174, 0, 0.6)); /* Orange Shadow */
+		}
+
+		/* CLICK ANIMATION (Keep existing logic) */
 		.brand-title img.core-active {
 			animation: titanPulse 0.4s ease-out forwards;
-			/* This filter forces the image to glow Pure Orange */
 			filter: sepia(100%) hue-rotate(5deg) saturate(1000%) drop-shadow(0 0 25px var(--merc-orange));
 		}
 
 		@keyframes titanPulse {
 			0% { transform: scale(1.3); }
-			40% { transform: scale(0.9); } /* Compression Phase */
-			60% { transform: scale(1.4); } /* Expansion Phase */
+			40% { transform: scale(0.9); }
+			60% { transform: scale(1.4); }
 			100% { transform: scale(1.3); }
 		}
 
@@ -484,11 +495,13 @@ permalink: /Portfolio_CV.html
 	</div>
 	
 	<header id="merc-header">
-        <a href="https://mhstudios836.github.io" class="brand-title">
-            <img src="images/Logo_1.png" alt="MH LOGO">
-            <span>MH Studios™<span style="color:var(--merc-orange)"></span></span>
-			<div class="job-role" style="color: var(--tech-blue); font-size: 0.7em; font-weight: bold; margin-bottom: 5px; display: block;">Business Resume Page</div>
-        </a>
+		<a href="https://mhstudios836.github.io" class="brand-title">
+			<img src="images/Logo_1.png" alt="MH LOGO" style="height: 28px; width: 28px;">
+			<div style="display:flex; flex-direction:column; justify-content:center;">
+				<span style="color:var(--merc-orange); font-size: 1.2em; margin-bottom: 0px; font-family: 'Uni Sans', sans-serif; transition: 0.3s;">MH Studios™</span>
+				<div class="job-role" style="color: var(--tech-blue); font-size: 0.7em; font-weight: bold; margin-bottom: 5px; display: block; font-family: 'Uni Sans', sans-serif;">Business Resume Page <i class="fas fa-satellite-dish"></i></div>
+			</div>
+		</a>
         <div class="menu-toggle" onclick="toggleNav()">
             <i class="fas fa-bars"></i>
         </div>
@@ -949,5 +962,6 @@ permalink: /Portfolio_CV.html
 </body>
 
 </html>
+
 
 
