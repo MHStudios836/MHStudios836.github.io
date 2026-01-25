@@ -19,4 +19,8 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export const dbID = "MH_Studios_Project"; // Make sure this matches your Firestore path exactly!
+
+// === THE INDUSTRIAL STANDARD CONSTANT ===
+// This variable ensures ALL your pages talk to the exact same folder defined in your Rules.
+// "artifacts" is the Collection, "MH_Studios_Project" is the Document.
+export const DB_PATH = "artifacts/MH_Studios_Project";

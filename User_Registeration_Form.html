@@ -1,0 +1,396 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | DOSSIER CREATION</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* TITAN FORM THEME */
+        :root {
+            --titan-blue: #0080FF;
+            --titan-orange: #ffae00;
+            --titan-dark: #05070a;
+            --titan-panel: rgba(13, 17, 23, 0.95);
+        }
+
+        body {
+            background-color: var(--titan-dark);
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images/bg_tactical.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: 'Uni Sans', sans-serif;
+            margin: 0; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .dossier-card {
+            width: 100%; max-width: 600px;
+            background: var(--titan-panel);
+            border: 1px solid #333;
+            border-top: 3px solid var(--titan-blue); /* Default Blue */
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            position: relative;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        /* DYNAMIC THEME COLORS */
+        .theme-student { border-top-color: var(--titan-blue); }
+        .theme-student h2, .theme-student .highlight { color: var(--titan-blue); }
+        .theme-student .action-btn { background: var(--titan-blue); color: #000; }
+
+        .theme-merc { border-top-color: var(--titan-orange); }
+        .theme-merc h2, .theme-merc .highlight { color: var(--titan-orange); }
+        .theme-merc .action-btn { background: var(--titan-orange); color: #000; }
+
+        h2 { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .full-width { grid-column: span 2; }
+
+        .titan-group label { display: block; font-size: 0.75em; color: #888; margin-bottom: 8px; letter-spacing: 1px; }
+        .titan-input {
+            width: 100%; padding: 12px;
+            background: #0b0e11; border: 1px solid #333;
+            color: #fff; border-radius: 4px; outline: none; transition: 0.3s;
+        }
+        .titan-input:focus { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+
+        .action-btn {
+            width: 100%; padding: 15px; border: none; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            transition: 0.3s; margin-top: 20px;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
+        .action-btn:hover { filter: brightness(1.2); }
+
+        /* CONDITIONAL SECTIONS */
+        .role-section { display: none; }
+        .role-section.active { display: block; animation: fadeIn 0.5s; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+		
+		/* --- INSERT THIS INTO YOUR (STYLE) --- */
+		/* FILE UPLOAD ZONE */
+		.upload-zone {
+			border: 2px dashed #333;
+			background: rgba(0,0,0,0.3);
+			padding: 20px;
+			text-align: center;
+			cursor: pointer;
+			transition: 0.3s;
+			border-radius: 4px;
+			color: #666;
+		}
+		.upload-zone:hover {
+			border-color: #fff;
+			color: #fff;
+			background: rgba(255,255,255,0.05);
+		}
+		.upload-zone.file-selected {
+			border-color: var(--titan-green, #00ff41);
+			color: var(--titan-green, #00ff41);
+			background: rgba(0, 255, 65, 0.05);
+		}
+
+		/* WRONG ROLE SWITCHER */
+		.switch-link {
+			display: block;
+			text-align: center;
+			margin-top: 15px;
+			font-size: 0.75em;
+			color: #666;
+			text-decoration: none;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+		.switch-link:hover { color: #fff; }
+
+        /* MOBILE */
+        @media (max-width: 600px) { .input-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="dossier-card theme-student" id="main-card">
+        <h2 id="form-title">
+            <span><i class="fas fa-file-contract"></i> DOSSIER INITIALIZATION</span>
+            <span style="font-size:0.6em; opacity:0.7;" id="role-badge">RECRUIT</span>
+        </h2>
+
+        <form id="dossier-form">
+            
+            <div class="input-grid">
+                <div class="titan-group">
+                    <label>FIRST NAME</label>
+                    <input type="text" id="core-fname" class="titan-input" placeholder="REQUIRED" required>
+                </div>
+                <div class="titan-group">
+                    <label>LAST NAME</label>
+                    <input type="text" id="core-lname" class="titan-input" placeholder="REQUIRED" required>
+                </div>
+                <div class="titan-group full-width">
+                    <label>CONTACT UPLINK (PHONE)</label>
+                    <input type="tel" id="core-phone" class="titan-input" placeholder="+962 7X XXX XXXX" required>
+                </div>
+                <div class="titan-group">
+                    <label>OPERATIVE AGE</label>
+                    <input type="number" id="core-age" class="titan-input" placeholder="YEARS" required>
+                </div>
+                <div class="titan-group">
+                    <label>BASE LOCATION</label>
+                    <input type="text" id="core-loc" class="titan-input" placeholder="CITY, COUNTRY" required>
+                </div>
+            </div>
+
+            <div id="section-student" class="role-section">
+                <div style="margin-bottom:15px; border-left:3px solid var(--titan-blue); padding-left:15px;">
+                    <p style="margin:0; color:var(--titan-blue); font-size:0.9em;">ACADEMIC PROFILE</p>
+                </div>
+                <div class="input-grid">
+                    <div class="titan-group full-width">
+                        <label>UNIVERSITY / INSTITUTION</label>
+                        <select id="std-uni" class="titan-input">
+                            <option value="JUST">JUST (Jordan Univ. of Science & Tech)</option>
+                            <option value="UOY">University of Yarmouk</option>
+                            <option value="UJ">University of Jordan</option>
+                            <option value="PSUT">PSUT (Princess Sumaya)</option>
+                            <option value="HU">Hashemite University</option>
+                            <option value="OTHER">Other Institution</option>
+                        </select>
+                    </div>
+                    <div class="titan-group full-width">
+                        <label>MAJOR / SPECIALIZATION</label>
+                        <input type="text" id="std-major" class="titan-input" placeholder="e.g. Computer Science">
+                    </div>
+                    <div class="titan-group full-width">
+                        <label>EDUCATION LEVEL</label>
+                        <select id="std-lvl" class="titan-input">
+                            <option value="univ">Undergraduate (Bachelors)</option>
+                            <option value="grad">Postgraduate (Masters/PhD)</option>
+                            <option value="hs">High School</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-merc" class="role-section">
+                <div style="margin-bottom:15px; border-left:3px solid var(--titan-orange); padding-left:15px;">
+                    <p style="margin:0; color:var(--titan-orange); font-size:0.9em;">OPERATOR PROFILE</p>
+                </div>
+                <div class="input-grid">
+                    <div class="titan-group full-width">
+                        <label>AFFILIATED COMPANY (OPTIONAL)</label>
+                        <input type="text" id="ops-comp" class="titan-input" placeholder="LEAVE EMPTY IF FREELANCE">
+                    </div>
+                    <div class="titan-group">
+                        <label>EDUCATION LEVEL</label>
+                        <select id="ops-lvl" class="titan-input">
+                            <option value="grad">Graduate (Expert)</option>
+                            <option value="univ">University Student</option>
+                            <option value="none">Self-Taught</option>
+                        </select>
+                    </div>
+                    <div class="titan-group">
+                        <label>PRIMARY SKILL</label>
+                        <input type="text" id="ops-skill" class="titan-input" placeholder="e.g. PYTHON">
+                    </div>
+                </div>
+            </div>
+			
+			<div class="input-grid">
+				<div class="titan-group full-width">
+					<label>ID VERIFICATION / CREDENTIALS (OPTIONAL)</label>
+					<div class="upload-zone" onclick="document.getElementById('id-file').click()">
+						<i class="fas fa-id-card" style="font-size:1.5em; margin-bottom:10px;"></i><br>
+						<span id="file-label">CLICK TO UPLOAD ID OR PASSPORT</span>
+						<input type="file" id="id-file" hidden onchange="updateFileLabel(this)">
+					</div>
+				</div>
+			</div>
+
+            <button type="submit" id="btn-submit" class="action-btn">CONFIRM INTEL</button>
+        </form>
+
+    </div>
+
+	<script type="module">
+		import { auth, db, storage, DB_PATH } from './assets/js/firebase-init.js'; // ADDED STORAGE
+		import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+		import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js"; // ADDED IMPORTS
+		import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+		let currentRole = 'student';
+		let currentUid = null;
+
+		// 1. INITIALIZE & DETECT ROLE
+		onAuthStateChanged(auth, async (user) => {
+			if (!user) { window.location.href = 'DoD_Login_Style.html'; return; }
+			currentUid = user.uid;
+
+			const userRef = doc(db, `${DB_PATH}/users/${user.uid}`);
+			const snap = await getDoc(userRef);
+
+			if (snap.exists()) {
+				const data = snap.data();
+				currentRole = data.role || 'student';
+				
+				// Pre-fill Name
+				if(data.name) {
+					const parts = data.name.split(' ');
+					document.getElementById('core-fname').value = parts[0] || '';
+					document.getElementById('core-lname').value = parts.slice(1).join(' ') || '';
+				}
+
+				adaptInterface(currentRole);
+			}
+		});
+
+		// 2. UI ADAPTER
+		function adaptInterface(role) {
+			currentRole = role; // Update global var
+			const card = document.getElementById('main-card');
+			const title = document.getElementById('form-title');
+			const badge = document.getElementById('role-badge');
+			const btn = document.getElementById('btn-submit');
+			const switcher = document.getElementById('role-switch-btn');
+
+			// Reset Sections
+			document.getElementById('section-student').classList.remove('active');
+			document.getElementById('section-merc').classList.remove('active');
+
+			if (role === 'freelancer') {
+				// MERC THEME
+				card.className = "dossier-card theme-merc";
+				title.innerHTML = '<span><i class="fas fa-crosshairs"></i> OPERATOR ENLISTMENT</span>';
+				badge.innerText = "MERC CLASS";
+				btn.innerText = "DEPLOY TO FIELD";
+				document.getElementById('section-merc').classList.add('active');
+				createSwitcher("Mistake? Switch to Student Enrollment");
+			} else {
+				// STUDENT THEME
+				card.className = "dossier-card theme-student";
+				title.innerHTML = '<span><i class="fas fa-graduation-cap"></i> STUDENT ENROLLMENT</span>';
+				badge.innerText = "ACADEMIC CLASS";
+				btn.innerText = "COMPLETE REGISTRATION";
+				document.getElementById('section-student').classList.add('active');
+				createSwitcher("Mistake? Switch to Mercenary Enlistment");
+			}
+		}
+
+		// Helper to create the switch button dynamically
+		function createSwitcher(text) {
+			let el = document.getElementById('sw-link');
+			if(!el) {
+				el = document.createElement('div');
+				el.id = 'sw-link';
+				el.className = 'switch-link';
+				el.onclick = toggleRole;
+				document.querySelector('#dossier-form').appendChild(el);
+			}
+			el.innerHTML = `<i class="fas fa-sync"></i> ${text}`;
+		}
+
+		// 3. TOGGLE ROLE FUNCTION
+		window.toggleRole = () => {
+			const newRole = (currentRole === 'student') ? 'freelancer' : 'student';
+			adaptInterface(newRole);
+		};
+
+		// 4. FILE UI UPDATE
+		window.updateFileLabel = (input) => {
+			if (input.files.length > 0) {
+				document.getElementById('file-label').innerText = "SECURE FILE LOADED: " + input.files[0].name;
+				document.querySelector('.upload-zone').classList.add('file-selected');
+			}
+		};
+
+		// 5. SUBMISSION LOGIC
+		document.getElementById('dossier-form').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const btn = document.getElementById('btn-submit');
+			const originalText = btn.innerText;
+			btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> ENCRYPTING DATA...';
+			btn.disabled = true;
+
+			try {
+				// A. UPLOAD ID (If selected) 
+				let idUrl = "";
+				const fileInput = document.getElementById('id-file');
+				if (fileInput.files.length > 0) {
+					const file = fileInput.files[0];
+					const storageRef = ref(storage, `confidential/users/${currentUid}/ID_${Date.now()}`);
+					await uploadBytes(storageRef, file);
+					idUrl = await getDownloadURL(storageRef);
+				}
+
+				// B. CORE DATA
+				const fname = document.getElementById('core-fname').value;
+				const lname = document.getElementById('core-lname').value;
+				
+				const baseData = {
+					first_name: fname,
+					last_name: lname,
+					name: `${fname} ${lname}`,
+					phone: document.getElementById('core-phone').value,
+					age: document.getElementById('core-age').value,
+					location: document.getElementById('core-loc').value,
+					id_document_url: idUrl, // Save the URL
+					role: currentRole, // Ensure the role is updated if they switched
+					updatedAt: serverTimestamp(),
+					registration_complete: true,
+					wallet_balance: 0
+				};
+
+				// C. ROLE SPECIFIC DATA
+				let redirectTarget = "";
+				
+				if (currentRole === 'student') {
+					baseData.checkpoint = 4; 
+					baseData.education = {
+						university: document.getElementById('std-uni').value,
+						major: document.getElementById('std-major').value,
+						level: document.getElementById('std-lvl').value
+					};
+					redirectTarget = 'Terms_Conditions.html?mode=induction';
+				} 
+				else if (currentRole === 'freelancer') {
+					baseData.checkpoint = 4;
+					const contractId = "OPS-" + Math.floor(1000 + Math.random() * 9000);
+					
+					baseData.operator_data = {
+						contract_id: contractId,
+						company: document.getElementById('ops-comp').value || "Freelance",
+						education_level: document.getElementById('ops-lvl').value,
+						primary_skill: document.getElementById('ops-skill').value,
+						status: 'ACTIVE', 
+						ops_type: 'MERCENARY'
+					};
+					baseData.tier = 'MERCENARY'; // Ensure Tier is set
+					redirectTarget = 'Freelancers_Room.html';
+				}
+
+				// D. SAVE TO FIRESTORE
+				const userRef = doc(db, `${DB_PATH}/users/${currentUid}`);
+				await updateDoc(userRef, baseData);
+
+				// E. REDIRECT
+				console.log("DOSSIER UPDATED.");
+				window.location.href = redirectTarget;
+
+			} catch (err) {
+				console.error(err);
+				alert("SYSTEM ERROR: " + err.message);
+				btn.innerHTML = originalText;
+				btn.disabled = false;
+			}
+		});
+	</script>
+</body>
+</html>

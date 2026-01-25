@@ -1,86 +1,92 @@
-// assets/js/auth-router.js
-// THE GATEKEEPER: Manages Access Control based on User Roles
+/* assets/js/auth-router.js */
+/* STATUS: COORDINATED WITH CHECKPOINT SYSTEM & ROLES */
 
-import { auth, db, appId } from './firebase-init.js';
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { auth, db, DB_PATH } from './firebase-init.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-// 1. THE MAP: Where does each Rank belong?
-const ROLE_DESTINATIONS = {
-    'admin': 'Admin_Room.html',
+// 1. ROLE DESTINATIONS
+const HQ_MAP = {
     'student': 'Student_Room.html',
-    'freelancer': 'Freelancers_Room.html',
-    'corporate': 'Corporates_Room.html'
+    'admin': 'Admin_Room.html',
+    'freelancer': 'Freelancers_Room.html'
 };
 
-// 2. THE GREEN ZONES: Pages anyone can visit (Logged in or not)
-const PUBLIC_SECTORS = [
+// 2. PUBLIC ZONES (Green Zones)
+const GREEN_ZONES = [
     'index.html',
     'DoD_Login_Style.html',
     'About_Us.html',
-    'Service_Request_Form.html',
+    'User_Registeration_Form.html', // Need to allow access to finish setup
+    'Terms_Conditions.html',
+    'Privacy_Policy.html',
     'Products_Services_Room.html',
-    'Packages.html',
-    'Product_Room.html',
-    'Privacy_Policy.html'
+    'Product_Room.html'
 ];
 
-// 3. MAIN SECURITY LOOP
 onAuthStateChanged(auth, async (user) => {
     const currentPath = window.location.pathname;
-    const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+    const pageName = currentPath.split('/').pop();
 
-    console.log(`[GATEKEEPER] Scanning: ${currentPage}`);
-
-    // --- SCENARIO A: NO ID (Not Logged In) ---
+    // --- SCENARIO A: GUEST (NOT LOGGED IN) ---
     if (!user) {
-        if (PUBLIC_SECTORS.includes(currentPage) || currentPage === "") {
-            return; 
+        // If trying to access a restricted page, kick to login
+        if (!GREEN_ZONES.includes(pageName) && pageName !== '') {
+            console.warn("UNAUTHORIZED. REDIRECTING TO LOGIN.");
+            window.location.href = 'DoD_Login_Style.html';
         }
-        console.warn(">> UNAUTHORIZED ENTITY DETECTED. REDIRECTING TO LOGIN.");
-        window.location.href = 'DoD_Login_Style.html';
         return;
     }
 
-    // --- SCENARIO B: OPERATIVE LOGGED IN (Check Clearance) ---
+    // --- SCENARIO B: OPERATIVE LOGGED IN ---
     try {
-        const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'user_profile', 'role_data');
-        const snapshot = await getDoc(userDocRef);
+        const userRef = doc(db, `${DB_PATH}/users/${user.uid}`);
+        const snap = await getDoc(userRef);
 
-        if (snapshot.exists()) {
-            const userData = snapshot.data();
-            const myRole = userData.role;
-            const myHQ = ROLE_DESTINATIONS[myRole];
+        if (snap.exists()) {
+            const data = snap.data();
+            const role = data.role || 'student';
+            const cp = data.checkpoint || 1; // Default to 1 (Registration)
 
-            console.log(`>> OPERATIVE ID: ${user.uid} | RANK: ${myRole}`);
+            console.log(`>> ID: ${user.uid} | ROLE: ${role} | CP: ${cp}`);
 
-            // SECURITY CHECK: Are they in the wrong HQ?
-            if (currentPage.includes('_Room.html') && currentPage !== myHQ && !PUBLIC_SECTORS.includes(currentPage)) {
-                if (currentPage !== 'Broadcast_Station.html') {
-                     alert(`>> RESTRICTED SECTOR. RETURNING TO ${myRole.toUpperCase()} HQ.`);
-                     window.location.href = myHQ;
+            // 1. CHECKPOINT ENFORCEMENT (The "Lost Recruit" Logic)
+            if (role === 'student') {
+                if (cp === 1 && pageName !== 'User_Registeration_Form.html') {
+                    window.location.href = 'User_Registeration_Form.html';
+                    return;
+                }
+                if (cp === 2 && pageName !== 'Terms_Conditions.html') {
+                    window.location.href = 'Terms_Conditions.html?mode=induction';
+                    return;
+                }
+                if (cp === 3 && pageName !== 'Privacy_Policy.html') {
+                    window.location.href = 'Privacy_Policy.html?mode=induction';
+                    return;
                 }
             }
 
-            // If on Login Page but already logged in, send them to HQ
-            if (currentPage === 'DoD_Login_Style.html') {
-                window.location.href = myHQ;
+            // 2. ROLE REDIRECTION (Stop Cows from entering Admin HQ)
+            // If they are on a "Room" page, make sure it's THEIR room.
+            if (pageName.includes('_Room.html')) {
+                const authorizedHQ = HQ_MAP[role];
+                if (pageName !== authorizedHQ && authorizedHQ) {
+                    alert(`RESTRICTED SECTOR. RETURNING TO ${role.toUpperCase()} HQ.`);
+                    window.location.href = authorizedHQ;
+                }
+            }
+
+            // 3. LOGIN PAGE BOUNCE
+            // If logged in and fully set up (CP=4), don't stay on Login page
+            if (pageName === 'DoD_Login_Style.html' && cp >= 4) {
+                window.location.href = HQ_MAP[role];
             }
 
         } else {
-            console.error(">> CRITICAL ERROR: User has Auth but no Database Profile.");
+            console.error("USER AUTHENTICATED BUT NO DB PROFILE.");
         }
 
-    } catch (error) {
-        console.error(">> GATEKEEPER SYSTEM FAILURE:", error);
+    } catch (e) {
+        console.error("GATEKEEPER FAILURE:", e);
     }
 });
-
-// 4. LOGOUT PROTOCOL
-window.executeLogout = async () => {
-    const confirmExit = confirm(">> CONFIRM DISENGAGEMENT?");
-    if (confirmExit) {
-        await signOut(auth);
-        window.location.href = 'DoD_Login_Style.html';
-    }
-};

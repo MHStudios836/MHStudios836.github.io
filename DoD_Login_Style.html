@@ -351,6 +351,45 @@ permalink: /DoD_Login_Style.html
 					display: none; 
 				}
 				
+				/* --- INSERT AT BOTTOM OF (style) --- */
+				/* Role Toggle Switch */
+				.role-switch {
+					display: flex;
+					margin-bottom: 20px;
+					background: rgba(0,0,0,0.5);
+					border: 1px solid #333;
+					border-radius: 4px;
+					overflow: hidden;
+				}
+
+				.role-opt {
+					flex: 1;
+					padding: 12px;
+					text-align: center;
+					cursor: pointer;
+					color: #666;
+					font-size: 0.85em;
+					transition: 0.3s;
+					font-weight: bold;
+					letter-spacing: 1px;
+					border-bottom: 3px solid transparent;
+				}
+
+				.role-opt:hover { color: #fff; background: rgba(255,255,255,0.05); }
+
+				/* Active States */
+				.role-opt.active-student {
+					background: rgba(0, 128, 255, 0.15);
+					color: #fff;
+					border-bottom-color: var(--titan-blue, #0080FF);
+				}
+
+				.role-opt.active-merc {
+					background: rgba(255, 174, 0, 0.15);
+					color: #fff;
+					border-bottom-color: #ffae00;
+				}
+				
 				/* --- PASSWORD EYE STYLES --- */
 				.password-wrapper {
 					position: relative;
@@ -471,40 +510,69 @@ permalink: /DoD_Login_Style.html
 					</div>
 				</form>
 
-				<form id="register-form" onsubmit="event.preventDefault();" class="hidden">
+				<form id="form-register">
+					
 					<div class="input-frame">
 						<label>> FULL NAME</label>
-						<input type="text" class="tac-input" id="reg-name" required>
+						<input type="text" id="reg-name" class="titan-field" placeholder="REQUIRED" required>
 					</div>
+
 					<div class="input-frame">
 						<label>> EMAIL ADDRESS</label>
-						<input type="email" class="tac-input" id="reg-email" required>
+						<input type="email" id="reg-email" class="titan-field" placeholder="REQUIRED" required>
 					</div>
 					
 					<div class="input-frame">
 						<label>> DESIGNATION</label>
 						<div class="role-grid">
-							<div class="role-card selected" data-role="client">
+							<div class="role-card selected" data-role="student" onclick="selectDesignation('student')">
 								<div class="role-icon"><i class="fas fa-user-graduate"></i></div>
 								<div class="role-label">STUDENT</div>
 							</div>
-							<div class="role-card" data-role="freelancer">
+							<div class="role-card" data-role="freelancer" onclick="selectDesignation('freelancer')">
 								<div class="role-icon"><i class="fas fa-terminal"></i></div>
 								<div class="role-label">FREELANCER</div>
 							</div>
 						</div>
-						<input type="hidden" id="reg-role" value="client">
+						<input type="hidden" id="reg-role" value="student">
 					</div>
 
-					<label>> CREATE SECURITY CODE</label>
-					<div class="password-wrapper">
-						<input type="password" id="reg-password" class="mh-input" placeholder="••••••" required>
-						<i class="fas fa-eye password-toggle" onclick="togglePass('reg-password', this)"></i>
+					<div class="input-frame">
+						<label>> SECURITY CODE</label>
+						<input type="password" id="reg-pass" class="titan-field" placeholder="••••••" required>
 					</div>
 
-					<button type="submit" class="execute-btn" style="border-color:var(--mh-blue); color:var(--mh-blue);">INITIALIZE PROFILE</button>
+					<button type="submit" id="btn-register" class="cmd-btn btn-reg" style="background:var(--mh-blue); color:#000;">
+						INITIALIZE PROFILE
+					</button>
+
 				</form>
 
+				<div class="auth-divider"><span>OR</span></div>
+				<div style="text-align:center;">
+					<button class="social-btn" id="btn-google-reg" style="width:100%; justify-content:center;">
+						<i class="fab fa-google"></i> <span style="margin-left:10px;">REGISTER WITH GOOGLE</span>
+					</button>
+				</div>
+				
+				<div class="oauth-divider"><span>OR REGISTER WITH</span></div>
+
+					<div class="oauth-grid">
+						<button type="button" class="oauth-btn" id="google-reg-btn" title="Google">
+							<i class="fab fa-google"></i>
+						</button>
+						<button type="button" class="oauth-btn" id="twitter-reg-btn" title="Twitter" onclick="alert('UPLINK OFFLINE')">
+							<i class="fab fa-twitter"></i>
+						</button>
+						<button type="button" class="oauth-btn" id="github-reg-btn" title="GitHub" onclick="alert('UPLINK OFFLINE')">
+							<i class="fab fa-github"></i>
+						</button>
+					</div>
+
+					<div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #666;">
+						<a href="#" style="color: #FFD700; text-decoration: none;">Apply for Mercenary Status</a>
+					</div>
+				
 				<div class="status-log" id="status-display"></div>
 				
 				<a href="index.html" class="home-link">
@@ -560,377 +628,209 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			// A. IMPORTS
-			import { auth, db, dbID } from './assets/js/firebase-init.js';
-			import { 
-				signInWithEmailAndPassword, 
-				createUserWithEmailAndPassword, 
-				GoogleAuthProvider,
-				signInWithPopup,
-				signOut 
-			} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-			import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+				import { auth, db, DB_PATH } from './assets/js/firebase-init.js';
+				import { 
+					signInWithEmailAndPassword, 
+					createUserWithEmailAndPassword, 
+					updateProfile, 
+					GoogleAuthProvider, 
+					signInWithPopup 
+				} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+				import { 
+					doc, setDoc, getDoc, serverTimestamp, updateDoc 
+				} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-			// B. UI STATUS FUNCTION
-			function typeStatus(text, color) {
-				const statusBox = $('#status-display, #auth-status').first();
-				if(statusBox.length) {
-					statusBox.text(text).css('color', color || '#fff').fadeIn();
-				} else {
-					console.log("MH-LOG:", text);
-				}
-			}
-
-			// C. CONNECTION SUCCESS REVEALER
-			$(document).ready(() => {
-				console.log("MH CLOUD: CONNECTION ESTABLISHED.");
-				$('#page-loader').fadeOut(600); 
-				$('.login-container').css('display', 'flex').hide().delay(300).fadeIn(800);
-			});
-
-			// D. LOGIN HANDLER
-			$('#login-form').on('submit', async (e) => {
-				e.preventDefault();
-				const email = $('#login-email').val();
-				const pass = $('#login-pass').val();
+				// --- 1. UI FUNCTIONS ---
 				
-				typeStatus("> VERIFYING CREDENTIALS...", "#fff");
+				function typeStatus(text, color = "#00e5ff") {
+					const alertBox = document.getElementById('sys-alert');
+					alertBox.style.display = 'block';
+					alertBox.style.color = color;
+					alertBox.style.borderColor = color;
+					alertBox.style.background = color + '10'; // 10% opacity
+					alertBox.innerText = text;
+					console.log(`[SYSTEM]: ${text}`);
+				}
 
-				try {
-					const cred = await signInWithEmailAndPassword(auth, email, pass);
-					const userRef = doc(db, 'artifacts', dbID, 'users', cred.user.uid);
-					const docSnap = await getDoc(userRef);
+				window.switchTab = (tab) => {
+					document.getElementById('sys-alert').style.display = 'none';
+					if(tab === 'login') {
+						document.getElementById('panel-login').style.display = 'block';
+						document.getElementById('panel-register').style.display = 'none';
+						document.getElementById('tab-login').classList.add('active');
+						document.getElementById('tab-register').classList.remove('active');
+					} else {
+						document.getElementById('panel-login').style.display = 'none';
+						document.getElementById('panel-register').style.display = 'block';
+						document.getElementById('tab-login').classList.remove('active');
+						document.getElementById('tab-register').classList.add('active');
+					}
+				};
 
-					if (docSnap.exists()) {
-						const role = docSnap.data().role;
-						if (role === 'banned') {
-							typeStatus("> ERROR: ACCESS REVOKED.", "#ff004c");
-							await signOut(auth);
+				// YOUR REQUESTED CARD SELECTOR LOGIC
+				window.selectDesignation = (role) => {
+					// Update hidden input
+					document.getElementById('reg-role').value = role;
+
+					// Visual Updates
+					document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+					const target = document.querySelector(`.role-card[data-role="${role}"]`);
+					if(target) target.classList.add('selected');
+
+					// Button Update
+					const btn = document.getElementById('btn-register');
+					if(role === 'freelancer') {
+						btn.innerText = "INITIALIZE MERCENARY";
+						btn.style.background = "#ffae00"; // Orange
+					} else {
+						btn.innerText = "INITIALIZE STUDENT";
+						btn.style.background = "#0080FF"; // Blue
+					}
+				};
+
+				// --- 2. THE GOD MODE ROUTER ---
+				
+				async function routeUser(user) {
+					typeStatus("> VERIFYING BIOMETRICS...", "#FFD700");
+					
+					try {
+						const userRef = doc(db, `${DB_PATH}/users/${user.uid}`);
+						const userSnap = await getDoc(userRef);
+
+						// GOD MODE CHECK
+						if (user.email === "mhjerjawi836@gmail.com") {
+							typeStatus("> COMMANDER RECOGNIZED. OVERRIDING PROTOCOLS...", "#ff004c");
+							await setDoc(userRef, {
+								name: "COMMANDER",
+								email: user.email,
+								role: 'admin',
+								rank: 'GENERAL',
+								lastLogin: serverTimestamp()
+							}, { merge: true });
+							setTimeout(() => window.location.href = 'Admin_Room.html', 1000);
 							return;
 						}
-						typeStatus(`> WELCOME, ${role.toUpperCase()}.`, "#00ff41");
-						setTimeout(() => {
-							window.location.href = (role === 'admin') ? 'Admin_Room.html' : 'index.html';
-						}, 1000);
-					} else {
-						typeStatus("> ERROR: NO PROFILE DATA.", "#ff004c");
+
+						if (userSnap.exists()) {
+							// EXISTING USER
+							const data = userSnap.data();
+							const role = data.role || 'student';
+							const cp = data.checkpoint || 1;
+
+							typeStatus(`> CLEARANCE LEVEL: ${role.toUpperCase()}`, "#00ff41");
+							
+							setTimeout(() => {
+								if(cp < 4 && role !== 'admin') window.location.href = 'User_Registeration_Form.html';
+								else if(role === 'admin') window.location.href = 'Admin_Room.html';
+								else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
+								else window.location.href = 'Student_Room.html';
+							}, 1000);
+
+						} else {
+							// NEW RECRUIT (From Google Login usually)
+							// Defaults to Student if not specified
+							await setDoc(userRef, {
+								uid: user.uid,
+								email: user.email,
+								name: user.displayName || "Recruit",
+								role: 'student', 
+								wallet_balance: 0,
+								createdAt: serverTimestamp(),
+								checkpoint: 1
+							});
+							window.location.href = 'User_Registeration_Form.html';
+						}
+
+					} catch (err) {
+						console.error("ROUTING ERROR:", err);
+						typeStatus("> DATABASE ERROR: " + err.message, "#ff004c");
 					}
-				} catch (error) {
-					typeStatus("> ERROR: " + error.code.replace('auth/', '').toUpperCase(), "#ff004c");
 				}
-			});
 
-			// E. REGISTER HANDLER
-			$('#register-form').on('submit', async (e) => {
-				e.preventDefault();
-				const name = $('#reg-name').val();
-				const email = $('#reg-email').val();
-				const pass = $('#reg-pass').val();
-				const role = $('#reg-role').val();
+				// --- 3. EVENT LISTENERS ---
 
-				typeStatus("> ENCRYPTING DATA...", "#fff");
+				// A. LOGIN SUBMIT
+				document.getElementById('form-login').addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const btn = document.getElementById('btn-login');
+					const email = document.getElementById('log-email').value;
+					const pass = document.getElementById('log-pass').value;
 
-				try {
-					const cred = await createUserWithEmailAndPassword(auth, email, pass);
-					await setDoc(doc(db, 'artifacts', dbID, 'users', cred.user.uid), {
-						name: name,
-						email: email,
-						role: role,
-						joined: new Date().toISOString(),
-						status: 'active'
-					});
-
-					typeStatus("> ID CREATED. REDIRECTING...", "#00ff41");
-					setTimeout(() => {
-						if (role === 'student') window.location.href = 'Student_Room.html';
-						else if (role === 'freelancer') window.location.href = 'Freelancers_Room.html';
-						else window.location.href = 'index.html';
-					}, 1500);
-
-				} catch (error) {
-					console.error(error);
-					typeStatus("> ERROR: " + error.code, "#ff004c");
-				}
-			});
-
-			// F. GOOGLE LOGIN
-			$('#google-btn').on('click', async () => {
-				const provider = new GoogleAuthProvider();
-				try {
-					const result = await signInWithPopup(auth, provider);
-					const userRef = doc(db, 'artifacts', dbID, 'users', result.user.uid);
-					const docSnap = await getDoc(userRef);
-
-					if (!docSnap.exists()) {
-						await setDoc(userRef, {
-							name: result.user.displayName,
-							email: result.user.email,
-							role: 'student', 
-							joined: new Date().toISOString(),
-							status: 'active'
-						});
+					btn.innerText = "VERIFYING...";
+					try {
+						const cred = await signInWithEmailAndPassword(auth, email, pass);
+						await routeUser(cred.user);
+					} catch (err) {
+						btn.innerText = "AUTHENTICATE";
+						typeStatus("> ACCESS DENIED: " + err.code, "#ff004c");
 					}
-					window.location.href = 'Student_Room.html';
-				} catch (error) {
-					console.error(error);
-					typeStatus("> GOOGLE LINK FAILED.", "#ff004c");
-				}
-			});
-			
-			// --- THE ROUTER ---
-			const routeUser = async (user) => {
-				console.log("> ROUTING IDENTITY: " + user.uid);
-				
-				// Check if user exists in our Database
-				const userRef = doc(db, 'artifacts', DB_ID, COLL_USERS, user.uid);
-				const userSnap = await getDoc(userRef);
+				});
 
-				if (userSnap.exists()) {
-					// VETERAN USER -> Check Rank and Redirect
-					const data = userSnap.data();
-					const role = data.role;
-					console.log("> RANK CONFIRMED: " + role);
+				// B. REGISTER SUBMIT
+				document.getElementById('form-register').addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const btn = document.getElementById('btn-register');
+					const name = document.getElementById('reg-name').value;
+					const email = document.getElementById('reg-email').value;
+					const pass = document.getElementById('reg-pass').value;
+					const role = document.getElementById('reg-role').value; // Reads from your Card Grid
 
-					if (role === 'admin') window.location.href = "Admin_Room.html";
-					else if (role === 'freelancer') window.location.href = "Freelancers_Room.html";
-					else window.location.href = "Student_Room.html"; // Default for students
-				} else {
-					// NEW RECRUIT -> Create File
-					console.log("> NEW RECRUIT. ASSIGNING RANK: STUDENT...");
+					btn.innerText = "CREATING ID...";
 					
-					await setDoc(userRef, {
-						uid: user.uid,
-						email: user.email,
-						displayName: user.displayName || "Unknown Operative",
-						role: "student", // DEFAULT RANK
-						wallet_balance: 0.00,
-						joinedAt: serverTimestamp(),
-						is_banned: false
-					});
+					try {
+						// 1. Create Auth
+						const cred = await createUserWithEmailAndPassword(auth, email, pass);
+						await updateProfile(cred.user, { displayName: name });
 
-					window.location.href = "Student_Room.html";
-				}
-			};
-		</script>
-		
-		<script>
-			// 1. PASSWORD EYE TOGGLE
-			function togglePass(id, icon) {
-				console.log("Toggle activated for:", id); // Debug check
-				const input = document.getElementById(id);
-				
-				if (input.type === "password") {
-					input.type = "text";
-					icon.classList.remove('fa-eye');
-					icon.classList.add('fa-eye-slash');
-					icon.style.color = "#00e5ff"; // Visual feedback
-				} else {
-					input.type = "password";
-					icon.classList.remove('fa-eye-slash');
-					icon.classList.add('fa-eye');
-					icon.style.color = ""; // Reset color
-				}
-			}
-
-			// 2. SWITCH TABS (LOGIN / REGISTER)
-			function switchMode(mode) {
-				if(mode === 'register') {
-					document.getElementById('login-section').style.display = 'none';
-					document.getElementById('register-section').style.display = 'block';
-					updateStatus("> INITIATING RECRUITMENT PROTOCOL...", "#FFD700");
-				} else {
-					document.getElementById('register-section').style.display = 'none';
-					document.getElementById('login-section').style.display = 'block';
-					updateStatus("> RETURNING TO SECURE LOGIN...", "#00e5ff");
-				}
-			}
-
-			// Helper for the Status Text
-			function updateStatus(text, color) {
-				const errBox = document.getElementById('login-error');
-				if(errBox) {
-					errBox.style.display = 'block';
-					errBox.style.color = color || "#00e5ff";
-					errBox.style.borderColor = color || "#00e5ff";
-					errBox.innerText = text;
-				}
-			}
-		</script>
-		
-		<script type="module">
-			// 1. IMPORT FIREBASE ARSENAL
-			import { auth, db, dbID } from './assets/js/firebase-init.js';
-			import { 
-				signInWithEmailAndPassword, 
-				createUserWithEmailAndPassword,
-				GoogleAuthProvider, 
-				signInWithPopup,
-				updateProfile
-			} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-			import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-			import { attachHoverSounds } from './assets/js/sound-engine.js';
-
-			// 2. UI UTILITIES (Eye Toggle & Form Switcher)
-			window.togglePass = (id, icon) => {
-				const input = document.getElementById(id);
-				if (input.type === "password") {
-					input.type = "text";
-					icon.classList.remove('fa-eye');
-					icon.classList.add('fa-eye-slash');
-				} else {
-					input.type = "password";
-					icon.classList.remove('fa-eye-slash');
-					icon.classList.add('fa-eye');
-				}
-			};
-
-			window.switchMode = (mode) => {
-				if(mode === 'register') {
-					document.getElementById('login-section').style.display = 'none';
-					document.getElementById('register-section').style.display = 'block';
-					typeStatus("> INITIATING RECRUITMENT PROTOCOL...", "#FFD700");
-				} else {
-					document.getElementById('register-section').style.display = 'none';
-					document.getElementById('login-section').style.display = 'block';
-					typeStatus("> RETURNING TO SECURE LOGIN...", "#00e5ff");
-				}
-			};
-
-			function typeStatus(text, color = "#00e5ff") {
-				const errBox = document.getElementById('login-error');
-				if(errBox) {
-					errBox.style.display = 'block';
-					errBox.style.color = color;
-					errBox.style.borderColor = color;
-					errBox.innerText = text;
-				}
-				console.log(`[SYSTEM]: ${text}`);
-			}
-
-			// 3. THE "GOD MODE" ROUTER
-			async function routeUser(user) {
-				typeStatus("> VERIFYING BIOMETRICS...", "#FFD700");
-				
-				try {
-					const userRef = doc(db, 'artifacts', dbID, 'users', user.uid);
-					const userSnap = await getDoc(userRef);
-
-					// --- GOD MODE ACTIVATION ---
-					// If this is YOU, force the rank to ADMIN immediately.
-					if (user.email === "mhjerjawi836@gmail.com") {
-						typeStatus("> COMMANDER RECOGNIZED. OVERRIDING PROTOCOLS...", "#ff004c");
-						
-						await setDoc(userRef, {
-							name: "COMMANDER",
-							email: user.email,
-							role: 'admin', // <--- FORCE ADMIN
-							rank: 'GENERAL',
-							lastLogin: serverTimestamp(),
-							isOnline: true
-						}, { merge: true });
-
-						setTimeout(() => window.location.href = 'Admin_Room.html', 1000);
-						return;
-					}
-					// ---------------------------
-
-					if (userSnap.exists()) {
-						// EXISTING USER
-						const data = userSnap.data();
-						const role = data.role || 'student';
-						typeStatus(`> CLEARANCE LEVEL: ${role.toUpperCase()}`, "#00ff41");
-
-						// Route based on role
-						if(role === 'admin') window.location.href = 'Admin_Room.html';
-						else if(role === 'freelancer') window.location.href = 'Freelancers_Room.html';
-						else window.location.href = 'Student_Room.html';
-
-					} else {
-						// NEW USER (Google Login or Register) -> DEFAULT TO STUDENT
-						typeStatus("> NEW SIGNAL. REGISTERING...", "#0080FF");
-						await setDoc(userRef, {
-							name: user.displayName || user.email.split('@')[0],
-							email: user.email,
-							role: 'student',
+						// 2. Prepare DB Payload
+						let dossier = {
+							uid: cred.user.uid,
+							email: email,
+							name: name,
+							role: role,
+							wallet_balance: 0,
 							createdAt: serverTimestamp(),
-							balance: 0,
-							xp: 0
-						});
-						window.location.href = 'Student_Room.html';
+							checkpoint: 1
+						};
+
+						// Fast Track Mercenary Logic
+						if (role === 'freelancer') {
+							dossier.tier = 'MERCENARY';
+							dossier.status = 'ACTIVE';
+							dossier.clearance = 'PROBATION';
+							dossier.checkpoint = 4; // Skip Form
+						}
+
+						// 3. Save to DB
+						await setDoc(doc(db, `${DB_PATH}/users/${cred.user.uid}`), dossier);
+
+						// 4. Redirect
+						typeStatus("> IDENTITY CREATED.", "#00ff41");
+						setTimeout(() => {
+							window.location.href = 'User_Registeration_Form.html'; 
+						}, 1000);
+
+					} catch (err) {
+						btn.innerText = "TRY AGAIN";
+						typeStatus("> REGISTRATION FAILED: " + err.message, "#ff004c");
 					}
+				});
 
-				} catch (err) {
-					console.error("ROUTING ERROR:", err);
-					typeStatus("> DATABASE ERROR: " + err.message, "#ff004c");
-				}
-			}
-
-			// 4. EVENT LISTENERS
-			document.addEventListener('DOMContentLoaded', () => {
-				
-				// A. LOGIN FORM SUBMIT
-				const loginForm = document.getElementById('login-form');
-				if(loginForm) {
-					loginForm.addEventListener('submit', async (e) => {
-						e.preventDefault();
-						const email = document.getElementById('email').value;
-						const pass = document.getElementById('password').value;
-						typeStatus("> AUTHENTICATING...");
-						try {
-							const cred = await signInWithEmailAndPassword(auth, email, pass);
-							await routeUser(cred.user);
-						} catch (err) {
-							typeStatus("> ACCESS DENIED: " + err.code, "#ff004c");
-						}
-					});
-				}
-
-				// B. REGISTER FORM SUBMIT
-				const regForm = document.getElementById('register-form');
-				if(regForm) {
-					regForm.addEventListener('submit', async (e) => {
-						e.preventDefault();
-						const name = document.getElementById('reg-name').value;
-						const email = document.getElementById('reg-email').value;
-						const pass = document.getElementById('reg-password').value;
-						
-						typeStatus("> CREATING NEW IDENTITY...");
-						try {
-							const cred = await createUserWithEmailAndPassword(auth, email, pass);
-							// Update Auth Profile
-							await updateProfile(cred.user, { displayName: name });
-							// Route (which creates DB entry)
-							await routeUser(cred.user);
-						} catch (err) {
-							typeStatus("> REGISTRATION FAILED: " + err.message, "#ff004c");
-						}
-					});
-				}
-
-				// C. GOOGLE BUTTONS (BOTH LOGIN & REGISTER)
+				// C. GOOGLE HANDLER (Unified)
 				const handleGoogle = async () => {
 					const provider = new GoogleAuthProvider();
-					typeStatus("> CONTACTING GOOGLE...", "#FFD700");
+					typeStatus("> CONTACTING SATELLITE...", "#FFD700");
 					try {
 						const result = await signInWithPopup(auth, provider);
 						await routeUser(result.user);
 					} catch (err) {
-						console.error(err);
-						typeStatus("> GOOGLE LINK FAILED: " + err.code, "#ff004c");
+						typeStatus("> GOOGLE LINK FAILED: " + err.message, "#ff004c");
 					}
 				};
 
-				// Attach to Login Google Button
-				const btnGoogleLogin = document.getElementById('btn-google-login');
-				if(btnGoogleLogin) btnGoogleLogin.addEventListener('click', handleGoogle);
+				document.getElementById('btn-google-login')?.addEventListener('click', handleGoogle);
+				document.getElementById('btn-google-reg')?.addEventListener('click', handleGoogle);
 
-				// Attach to Register Google Button (if you added it)
-				const btnGoogleReg = document.getElementById('btn-google-reg');
-				if(btnGoogleReg) btnGoogleReg.addEventListener('click', handleGoogle);
-
-				// Init Sounds
-				try { attachHoverSounds('.btn-login, .mh-input, .btn-google'); } catch(e) {}
-			});
-		</script>
+			</script>
 	</body>
 </html>

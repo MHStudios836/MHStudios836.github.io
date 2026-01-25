@@ -1,0 +1,456 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | MERCENARY ENLISTMENT</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+	<script type="module" src="assets/js/auth-router.js"></script>
+
+    <style>
+        /* ================================================================
+           TITAN ORANGE THEME (MERCENARY CLASS)
+        ================================================================ */
+        :root {
+            --merc-orange: #ffae00;
+            --merc-orange-dim: rgba(255, 174, 0, 0.15);
+            --merc-dark: #050505;
+            --merc-panel: #0b0d10;
+            --merc-border: #333;
+            --merc-text: #e0e0e0;
+            --carbon-fiber: repeating-linear-gradient(
+                45deg,
+                rgba(0,0,0,0.1),
+                rgba(0,0,0,0.1) 10px,
+                rgba(0,0,0,0.2) 10px,
+                rgba(0,0,0,0.2) 20px
+            );
+        }
+
+        body {
+            background-color: var(--merc-dark);
+            color: var(--merc-text);
+            font-family: 'Uni Sans', sans-serif;
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            background-image: 
+                radial-gradient(circle at top right, rgba(255, 174, 0, 0.05) 0%, transparent 40%),
+                var(--carbon-fiber);
+        }
+
+        /* --- HEADER --- */
+        #merc-header {
+            padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--merc-orange);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .brand-title { 
+            font-size: 1.2em; letter-spacing: 2px; color: #fff; display: flex; align-items: center; gap: 15px; 
+        }
+        .brand-title img { height: 40px; }
+        .secure-badge {
+            font-size: 0.7em; color: var(--merc-orange); border: 1px solid var(--merc-orange);
+            padding: 5px 10px; border-radius: 4px; letter-spacing: 1px;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .enlistment-wrapper {
+            flex: 1;
+            max-width: 900px;
+            margin: 40px auto;
+            width: 95%;
+        }
+
+        /* --- PROGRESS BAR --- */
+        .progress-track {
+            display: flex; justify-content: space-between; margin-bottom: 40px; position: relative;
+        }
+        .progress-track::before {
+            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: #333; z-index: 0;
+        }
+        .step-node {
+            width: 40px; height: 40px; background: #111; border: 2px solid #333;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 1; transition: 0.3s;
+            font-weight: bold; color: #555;
+        }
+        .step-node.active {
+            border-color: var(--merc-orange); color: var(--merc-orange);
+            box-shadow: 0 0 15px var(--merc-orange-dim);
+        }
+        .step-node.complete {
+            background: var(--merc-orange); border-color: var(--merc-orange); color: #000;
+        }
+
+        /* --- FORMS --- */
+        .merc-panel {
+            background: var(--merc-panel);
+            border: 1px solid var(--merc-border);
+            border-left: 4px solid var(--merc-orange);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none; /* Hidden by default */
+            animation: slideIn 0.4s ease-out;
+        }
+        .merc-panel.active { display: block; }
+
+        h2.panel-title {
+            margin-top: 0; color: #fff; border-bottom: 1px solid #333; padding-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* INPUTS */
+        .titan-input-group { margin-bottom: 25px; }
+        .titan-label { display: block; margin-bottom: 8px; font-size: 0.8em; color: var(--merc-orange); letter-spacing: 1px; }
+        .titan-input {
+            width: 100%; padding: 12px; background: #000; border: 1px solid #333;
+            color: #fff; font-family: 'Courier New', monospace; outline: none; transition: 0.3s;
+        }
+        .titan-input:focus { border-color: var(--merc-orange); box-shadow: 0 0 10px var(--merc-orange-dim); }
+
+        /* SKILL TAGS */
+        .skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .skill-check { display: none; }
+        .skill-label {
+            background: #111; border: 1px solid #333; padding: 10px; text-align: center;
+            cursor: pointer; transition: 0.2s; font-size: 0.85em; color: #888;
+        }
+        .skill-check:checked + .skill-label {
+            background: var(--merc-orange); color: #000; border-color: var(--merc-orange); font-weight: bold;
+        }
+
+        /* CONTRACT CARDS */
+        .contract-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .contract-card {
+            background: #111; border: 1px solid #333; padding: 20px; cursor: pointer;
+            transition: 0.3s; position: relative; opacity: 0.6;
+        }
+        .contract-card:hover { opacity: 1; }
+        .contract-radio:checked + .contract-card {
+            border-color: var(--merc-orange); opacity: 1;
+            box-shadow: inset 0 0 20px var(--merc-orange-dim);
+        }
+        .contract-icon { font-size: 2em; margin-bottom: 10px; color: var(--merc-orange); }
+        .contract-radio { display: none; }
+
+        /* FILE UPLOAD */
+        .upload-zone {
+            border: 2px dashed #444; padding: 30px; text-align: center;
+            cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.3);
+        }
+        .upload-zone:hover { border-color: var(--merc-orange); background: rgba(255, 174, 0, 0.05); }
+
+        /* NAV BUTTONS */
+        .nav-row { display: flex; justify-content: space-between; margin-top: 30px; }
+        .btn-merc {
+            padding: 12px 30px; background: transparent; border: 1px solid var(--merc-orange);
+            color: var(--merc-orange); font-weight: bold; cursor: pointer; letter-spacing: 2px;
+            transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-merc:hover { background: var(--merc-orange); color: #000; }
+        .btn-merc.disabled { border-color: #444; color: #444; cursor: not-allowed; pointer-events: none; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* MOBILE OPTIMIZATION */
+        @media screen and (max-width: 768px) {
+            .contract-grid { grid-template-columns: 1fr; }
+            #merc-header { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="merc-header">
+        <div class="brand-title">
+            <img src="images/Logo_1.png" alt="MH">
+            <span>MH<span style="color:var(--merc-orange)">//</span>CONTRACTOR</span>
+        </div>
+        <div class="secure-badge"><i class="fas fa-lock"></i> ENCRYPTED UPLINK</div>
+    </header>
+
+    <div class="enlistment-wrapper">
+        
+        <div class="progress-track">
+            <div class="step-node active" id="node-1">1</div>
+            <div class="step-node" id="node-2">2</div>
+            <div class="step-node" id="node-3">3</div>
+            <div class="step-node" id="node-4">4</div>
+        </div>
+
+        <form id="enlistment-form">
+            
+            <div class="merc-panel active" id="step-1">
+                <h2 class="panel-title">IDENTITY VERIFICATION <i class="fas fa-fingerprint"></i></h2>
+                
+                <div class="titan-input-group">
+                    <label class="titan-label">FULL LEGAL NAME</label>
+                    <input type="text" id="merc-name" class="titan-input" placeholder="AS PER GOV ID" required>
+                </div>
+
+                <div class="titan-input-group">
+                    <label class="titan-label">CALL SIGN (USERNAME)</label>
+                    <input type="text" id="merc-handle" class="titan-input" placeholder="OPERATOR ALIAS" required>
+                </div>
+
+                <div class="titan-input-group">
+                    <label class="titan-label">CONTACT UPLINK (PHONE)</label>
+                    <input type="tel" id="merc-phone" class="titan-input" placeholder="+962 7X XXX XXXX" required>
+                </div>
+
+                <div class="titan-input-group">
+                    <label class="titan-label">BASE OF OPERATIONS (CITY)</label>
+                    <input type="text" id="merc-location" class="titan-input" placeholder="AMMAN, JORDAN" required>
+                </div>
+
+                <div class="nav-row" style="justify-content: flex-end;">
+                    <button type="button" class="btn-merc" onclick="nextStep(1)">PROCEED <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="merc-panel" id="step-2">
+                <h2 class="panel-title">COMBAT SKILLS <i class="fas fa-crosshairs"></i></h2>
+                <p style="font-size:0.8em; color:#888; margin-bottom:20px;">SELECT ALL APPLICABLE. FALSE CLAIMS WILL RESULT IN TERMINATION.</p>
+
+                <div class="skill-grid">
+                    <label><input type="checkbox" class="skill-check" value="programming"><div class="skill-label">PROGRAMMING</div></label>
+                    <label><input type="checkbox" class="skill-check" value="graphic_design"><div class="skill-label">GRAPHIC DESIGN</div></label>
+                    <label><input type="checkbox" class="skill-check" value="academic_writing"><div class="skill-label">ACADEMIC WRITING</div></label>
+                    <label><input type="checkbox" class="skill-check" value="3d_modeling"><div class="skill-label">3D MODELING</div></label>
+                    <label><input type="checkbox" class="skill-check" value="cybersecurity"><div class="skill-label">CYBERSECURITY</div></label>
+                    <label><input type="checkbox" class="skill-check" value="translation"><div class="skill-label">TRANSLATION</div></label>
+                    <label><input type="checkbox" class="skill-check" value="video_editing"><div class="skill-label">VIDEO EDITING</div></label>
+                    <label><input type="checkbox" class="skill-check" value="data_analysis"><div class="skill-label">DATA ANALYSIS</div></label>
+                </div>
+
+                <div class="titan-input-group" style="margin-top:20px;">
+                    <label class="titan-label">PORTFOLIO / GITHUB URL</label>
+                    <input type="url" id="merc-portfolio" class="titan-input" placeholder="HTTPS://" required>
+                </div>
+
+                <div class="nav-row">
+                    <button type="button" class="btn-merc" onclick="prevStep(2)"><i class="fas fa-chevron-left"></i> BACK</button>
+                    <button type="button" class="btn-merc" onclick="nextStep(2)">PROCEED <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="merc-panel" id="step-3">
+                <h2 class="panel-title">CLEARANCE DOCS <i class="fas fa-id-card"></i></h2>
+                
+                <div class="titan-input-group">
+                    <label class="titan-label">UPLOAD GOV ID / PASSPORT / LICENSE (IMG/PDF)</label>
+                    <input type="file" id="merc-id-file" class="titan-input" accept="image/*,application/pdf" hidden onchange="updateFileName(this)">
+                    <div class="upload-zone" onclick="document.getElementById('merc-id-file').click()">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:2em; color:#666;"></i>
+                        <p id="file-name-display" style="margin:10px 0 0 0; font-size:0.9em;">CLICK TO UPLOAD SECURE DOCUMENT</p>
+                    </div>
+                </div>
+
+                <div class="titan-input-group">
+                    <label class="titan-label">MOTIVATION (WHY MH STUDIOS?)</label>
+                    <textarea id="merc-motivation" class="titan-input" rows="4" placeholder="Brief us on your objectives..." required></textarea>
+                </div>
+
+                <div class="nav-row">
+                    <button type="button" class="btn-merc" onclick="prevStep(3)"><i class="fas fa-chevron-left"></i> BACK</button>
+                    <button type="button" class="btn-merc" onclick="nextStep(3)">PROCEED <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="merc-panel" id="step-4">
+                <h2 class="panel-title">CONTRACT TYPE <i class="fas fa-file-contract"></i></h2>
+
+                <div class="contract-grid">
+                    <label>
+                        <input type="radio" name="contract_tier" value="MERCENARY" class="contract-radio" checked>
+                        <div class="contract-card">
+                            <div class="contract-icon"><i class="fas fa-user-clock"></i></div>
+                            <h3 style="margin:0; color:#fff;">MERCENARY (TEMP)</h3>
+                            <p style="font-size:0.8em; color:#888;">Single Active Job. 20% Admin Tax. Standard Payout (48hr).</p>
+                        </div>
+                    </label>
+                    <label>
+                        <input type="radio" name="contract_tier" value="OPERATOR" class="contract-radio">
+                        <div class="contract-card">
+                            <div class="contract-icon"><i class="fas fa-user-shield"></i></div>
+                            <h3 style="margin:0; color:#fff;">OPERATOR (ELITE)</h3>
+                            <p style="font-size:0.8em; color:#888;">Multiple Jobs. 15% Admin Tax. Priority Payout. <strong>*REQUIRES INTERVIEW</strong></p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="titan-input-group" style="margin-top:30px;">
+                    <label class="titan-label">PAYOUT METHOD</label>
+                    <select id="merc-payment-method" class="titan-input">
+                        <option value="ZAIN_CASH">ZAIN CASH (JORDAN)</option>
+                        <option value="ORANGE_MONEY">ORANGE MONEY (JORDAN)</option>
+                        <option value="BANK_TRANSFER">BANK TRANSFER (IBAN)</option>
+                        <option value="PAYPAL">PAYPAL (GLOBAL)</option>
+                    </select>
+                </div>
+
+                <div class="titan-input-group">
+                    <label class="titan-label">ACCOUNT NUMBER / IBAN / WALLET ID</label>
+                    <input type="text" id="merc-payment-id" class="titan-input" placeholder="079..." required>
+                </div>
+
+                <div class="nav-row">
+                    <button type="button" class="btn-merc" onclick="prevStep(4)"><i class="fas fa-chevron-left"></i> BACK</button>
+                    <button type="submit" id="btn-submit-app" class="btn-merc" style="background:var(--merc-orange); color:#000;">
+                        <i class="fas fa-signature"></i> SIGN CONTRACT
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script type="module">
+        import { auth, db, storage, DB_PATH } from './assets/js/firebase-init.js';
+        import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        let currentUser = null;
+
+        // 1. AUTH CHECK
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                // Prefill Name/Email if available
+                if(user.displayName) document.getElementById('merc-name').value = user.displayName;
+            } else {
+                alert("SECURE CHANNEL: LOGIN REQUIRED.");
+                window.location.href = 'DoD_Login_Style.html';
+            }
+        });
+
+        // 2. UI NAVIGATION LOGIC
+        window.nextStep = (current) => {
+            // Validation Logic (Simplified)
+            if(!validateStep(current)) return;
+
+            document.getElementById(`step-${current}`).classList.remove('active');
+            document.getElementById(`step-${current+1}`).classList.add('active');
+            
+            document.getElementById(`node-${current}`).classList.add('complete');
+            document.getElementById(`node-${current+1}`).classList.add('active');
+        };
+
+        window.prevStep = (current) => {
+            document.getElementById(`step-${current}`).classList.remove('active');
+            document.getElementById(`step-${current-1}`).classList.add('active');
+            
+            document.getElementById(`node-${current}`).classList.remove('active');
+            document.getElementById(`node-${current-1}`).classList.remove('complete');
+        };
+
+        window.updateFileName = (input) => {
+            if(input.files.length > 0) {
+                document.getElementById('file-name-display').innerText = "SELECTED: " + input.files[0].name;
+                document.getElementById('file-name-display').style.color = "var(--merc-orange)";
+            }
+        };
+
+        function validateStep(step) {
+            // Basic check for empty required fields in the current step
+            const panel = document.getElementById(`step-${step}`);
+            const inputs = panel.querySelectorAll('input[required], textarea[required]');
+            let valid = true;
+            inputs.forEach(input => {
+                if(!input.value) {
+                    input.style.borderColor = "red";
+                    valid = false;
+                } else {
+                    input.style.borderColor = "#333";
+                }
+            });
+            if(!valid) alert("DATA INCOMPLETE: FILL ALL REQUIRED FIELDS.");
+            return valid;
+        }
+
+        // 3. SUBMISSION ENGINE
+        document.getElementById('enlistment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-app');
+            const originalText = btn.innerHTML;
+
+            // 1. Collect Skills
+            const skills = [];
+            document.querySelectorAll('.skill-check:checked').forEach(cb => skills.push(cb.value));
+            if(skills.length === 0) return alert("SKILLSET REQUIRED: SELECT AT LEAST ONE.");
+
+            // 2. Check File
+            const fileInput = document.getElementById('merc-id-file');
+            if(fileInput.files.length === 0) return alert("ID DOCUMENT MISSING.");
+
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ENCRYPTING...';
+            btn.disabled = true;
+
+            try {
+                // A. Upload ID Document to Secure Storage
+                const file = fileInput.files[0];
+                const storageRef = ref(storage, `confidential/users/${currentUser.uid}/ID_${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                const idUrl = await getDownloadURL(storageRef);
+
+                // B. Construct Dossier
+                const dossier = {
+                    // Identity
+                    legal_name: document.getElementById('merc-name').value,
+                    call_sign: document.getElementById('merc-handle').value,
+                    phone: document.getElementById('merc-phone').value,
+                    location: document.getElementById('merc-location').value,
+                    
+                    // Vetting
+                    skills: skills,
+                    portfolio_url: document.getElementById('merc-portfolio').value,
+                    motivation: document.getElementById('merc-motivation').value,
+                    id_document_url: idUrl,
+                    
+                    // Financials & Status
+                    contract_tier: document.querySelector('input[name="contract_tier"]:checked').value,
+                    payment_method: document.getElementById('merc-payment-method').value,
+                    payment_account: document.getElementById('merc-payment-id').value,
+                    
+					// ... inside dossier object ...
+
+					role: 'freelancer', 
+
+					// LOGIC: If they are applying for OPERATOR (Elite), flag for review but don't lock account if they are already active.
+					// If they are new/student, lock them with PENDING_INTEL.
+					status: (document.querySelector('input[name="contract_tier"]:checked').value === 'OPERATOR') ? 'REVIEW_PENDING' : 'PENDING_INTEL', 
+
+					clearance: 'PROBATION', // Give them basic access level so they aren't totally blind
+                    updatedAt: serverTimestamp(),
+                    checkpoint: 4 // Registration Done, Pending Approval
+                };
+
+                // C. Update Firestore
+                const userRef = doc(db, `${DB_PATH}/users/${currentUser.uid}`);
+                await updateDoc(userRef, dossier);
+
+                // D. Success Sequence
+                alert("ENLISTMENT RECEIVED. APPLICATION UNDER REVIEW BY HIGH COMMAND.");
+                // Redirect to a 'Pending' page or the Freelancer Room (which will block them if Pending)
+                window.location.href = 'Freelancers_Room.html';
+
+            } catch (err) {
+                console.error(err);
+                alert("TRANSMISSION FAILED: " + err.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+    </script>
+</body>
+</html>

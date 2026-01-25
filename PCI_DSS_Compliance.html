@@ -1,0 +1,280 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | SECURE PROTOCOLS (PCI-DSS)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* =========================================
+           THEME: TITAN SECURITY (derived from Payment Gateway)
+           ========================================= */
+        :root {
+            --mh-blue: #0080FF;
+            --mh-cyan: #00e5ff;
+            --mh-dark: #05070a;
+            --mh-glass: rgba(13, 17, 23, 0.9);
+            --mh-green: #00ff41;
+            --mh-alert: #ff004c;
+        }
+
+        body {
+            background-color: var(--mh-dark);
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+                url('images/circuit_bg.jpg'); /* Optional: Fallback to dark if image missing */
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        /* TITAN SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--mh-blue); 
+            border-radius: 4px; 
+            box-shadow: 0 0 10px var(--mh-blue); 
+        }
+
+        /* --- HEADER --- */
+        .security-header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(to bottom, #000, transparent);
+            border-bottom: 1px solid rgba(0, 128, 255, 0.2);
+        }
+        .security-header img { width: 80px; margin-bottom: 10px; }
+        .security-header h1 {
+            margin: 0;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 128, 255, 0.5);
+        }
+        .security-badge {
+            display: inline-block;
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--mh-green);
+            border: 1px solid var(--mh-green);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-top: 10px;
+            font-weight: bold;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); }
+        }
+
+        /* --- MAIN GRID --- */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+        }
+
+        .protocol-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* --- INTEL CARDS --- */
+        .intel-card {
+            background: var(--mh-glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .intel-card:hover {
+            border-color: var(--mh-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.1);
+        }
+        .intel-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--mh-blue);
+        }
+
+        .card-icon {
+            font-size: 2em;
+            color: var(--mh-cyan);
+            margin-bottom: 15px;
+        }
+        .card-title {
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .card-text {
+            color: #aaa;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        /* --- VISUAL DIAGRAM SECTION --- */
+        .diagram-box {
+            grid-column: 1 / -1; /* Spans full width */
+            background: rgba(0,0,0,0.6);
+            border: 1px dashed #444;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .flow-arrow { color: #555; margin: 0 15px; }
+
+        /* --- FOOTER CSS (IMPORTED) --- */
+        #tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; margin-top: auto; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+        .footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+        .footer-col ul { list-style: none; padding: 0; }
+        .footer-col li { margin-bottom: 12px; }
+        .footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+        .footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+        .social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+        .social-grid a { color: #555; transition: 0.3s; }
+        .social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+    </style>
+</head>
+<body>
+
+    <header class="security-header">
+        <a href="index.html"><img src="images/Logo_1.png" alt="MH STUDIOS"></a>
+        <h1>PCI-DSS COMPLIANCE</h1>
+        <div class="security-badge"><i class="fas fa-shield-alt"></i> SYSTEM SECURE: LEVEL 4</div>
+        <p style="color:#888; margin-top:10px; font-size:0.9em;">Payment Card Industry Data Security Standard Protocols</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="protocol-grid">
+            
+            <div class="intel-card">
+                <i class="fas fa-lock card-icon"></i>
+                <div class="card-title">AES-256 Encryption</div>
+                <div class="card-text">
+                    All financial data transmitted through MH STUDIOS is protected using <strong>TLS 1.2+ (Transport Layer Security)</strong> and military-grade AES-256 encryption. We utilize a secure handshake protocol to ensure no data is intercepted during transit.
+                </div>
+            </div>
+
+            <div class="intel-card" style="border-left-color: var(--mh-green);">
+                <i class="fas fa-fingerprint card-icon" style="color:var(--mh-green);"></i>
+                <div class="card-title">Data Tokenization</div>
+                <div class="card-text">
+                    <strong>We do not store your credit card numbers.</strong> Instead, we use a process called "Tokenization." We replace your sensitive data with a unique, randomized token. The actual data is held securely in the vaults of our payment processors (Stripe/PayPal).
+                </div>
+            </div>
+
+            <div class="intel-card" style="border-left-color: var(--mh-alert);">
+                <i class="fas fa-user-shield card-icon" style="color:var(--mh-alert);"></i>
+                <div class="card-title">Restricted Access</div>
+                <div class="card-text">
+                    Access to billing information is strictly limited to authorized personnel with Level 4 Security Clearance. Every access attempt is logged, monitored, and audited in real-time to prevent unauthorized internal breaches.
+                </div>
+            </div>
+
+            <div class="diagram-box">
+                <h3 style="color:#fff; margin-top:0;">SECURE TRANSACTION FLOW</h3>
+                <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; font-size:1.2em; color:#fff;">
+                    <div><i class="fas fa-user"></i><br><span style="font-size:0.6em; color:#888;">OPERATIVE</span></div>
+                    <i class="fas fa-long-arrow-alt-right flow-arrow"></i>
+                    <div><i class="fas fa-lock"></i><br><span style="font-size:0.6em; color:var(--mh-cyan);">SSL TUNNEL</span></div>
+                    <i class="fas fa-long-arrow-alt-right flow-arrow"></i>
+                    <div><i class="fas fa-server"></i><br><span style="font-size:0.6em; color:var(--mh-green);">PAYMENT VAULT</span></div>
+                </div>
+                <p style="color:#666; font-size:0.8em; margin-top:15px;">Your data skips our servers and goes straight to the Bank Vault.</p>
+            </div>
+
+            <div class="intel-card">
+                <i class="fas fa-bug card-icon"></i>
+                <div class="card-title">White Hat Protocol</div>
+                <div class="card-text">
+                    Identified a security vulnerability? We adhere to responsible disclosure protocols. Contact our Security Command immediately at <strong>security@mhstudios.net</strong>. We offer bounties for verified critical exploits.
+                </div>
+            </div>
+
+            <div class="intel-card">
+                <i class="fas fa-handshake card-icon"></i>
+                <div class="card-title">Authorized Gateways</div>
+                <div class="card-text">
+                    We partner exclusively with PCI Service Provider Level 1 certified gateways.
+                    <br><br>
+                    <i class="fab fa-cc-stripe" style="font-size:1.5em; margin-right:10px;"></i>
+                    <i class="fab fa-cc-paypal" style="font-size:1.5em; margin-right:10px;"></i>
+                    <i class="fab fa-cc-visa" style="font-size:1.5em;"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
+            <a href="index.html" style="color:var(--mh-blue); text-decoration:none; border:1px solid var(--mh-blue); padding:10px 20px; border-radius:4px; transition:0.3s;">
+                <i class="fas fa-chevron-left"></i> RETURN TO BASE
+            </a>
+        </div>
+
+    </div>
+
+    <footer id="tactical-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>MA STUDIOS™</h4>
+                <p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+                <p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="footer-col">
+                <h4>SECTORS</h4>
+                <ul>
+                    <li><a href="Products_Services_Room.html">The Armory</a></li>
+                    <li><a href="Packages.html">Service Packages</a></li>
+                    <li><a href="#guild-sector">The Guild</a></li>
+                    <li><a href="DoD_Login_Style.html">Operative Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>LEGAL PROTOCOLS</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Engagement</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                    <li><a href="PCI_DSS_Compliance.html">PCI-DSS Compliance</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>SECURE CHANNELS</h4>
+                <div class="social-grid">
+                    <a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
+                    <a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

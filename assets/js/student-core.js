@@ -1,258 +1,316 @@
-// assets/js/student-core.js
-// STATUS: FINAL // PROFILE SYNC ACTIVE
+/* assets/js/student-core.js */
+// STATUS: SYNCHRONIZED WITH SECURITY RULES
 
-import { auth, db, dbID, storage } from './firebase-init.js'; // Ensure storage is exported in init
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { auth, db, storage, DB_PATH } from './firebase-init.js'; 
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import { 
-    collection, addDoc, query, where, onSnapshot, serverTimestamp, doc, updateDoc 
+    collection, addDoc, serverTimestamp, doc, getDoc, updateDoc 
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
-import { startChatWith } from './chat-core.js'; 
-import { notify } from './notification-hub.js';
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
+// --- GLOBAL VARIABLES ---
 let currentUser = null;
 
-// 1. INITIALIZATION & AUTH LISTENER
+// 1. INITIALIZATION
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
         console.log("STUDENT COMMAND: ONLINE");
-        
-        // A. Load Real-Time Profile Stats (Money, Rank, Level)
         loadProfileData(user.uid);
-
-        // B. Load Missions
-        loadMyMissions(user.uid);
     } else {
-        window.location.href = 'DoD_Login_Style.html';
+        // If not logged in, kick them out
+        window.location.href = 'DoD_Login_Style.html'; 
     }
 });
 
-// 2. NEW FUNCTION: LOAD PROFILE DATA (The Fix for "Level 4")
-function loadProfileData(uid) {
-    // Listen to the specific user document in 'users' collection
-    const userRef = doc(db, 'artifacts', dbID, 'users', uid);
+// 2. MISSION CREATION LOGIC
+const deployBtn = document.getElementById('btn-deploy-mission');
 
-    onSnapshot(userRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-
-            // INJECT REAL DATA (Or Default to Zero if new)
-            $('#student-name').text(data.name || "OPERATIVE");
-            $('#student-id').text("ID: " + uid.substring(0,6).toUpperCase());
-            
-            // Stats
-            $('#student-rank').text(data.rank || "PRIVATE"); 
-            $('#student-level').text("LVL " + (data.level || 1)); 
-
-            // Money (Formatted)
-            const balance = data.balance || 0;
-            $('#student-balance').text("$" + balance.toLocaleString('en-US', {minimumFractionDigits: 2}));
-        } else {
-            console.log("Profile initializing...");
-        }
-    });
-}
-
-// 3. CREATE MISSION (BROADCAST)
-$('#btn-transmit').click(async (e) => {
-    e.preventDefault();
-    const btn = $(e.target);
-    const title = $('#req-title').val();
-    const budget = $('#req-budget').val();
-
-    if(!title || !budget) return notify("ERROR", "Missing Mission Intel", "error");
-
-    btn.text("ENCRYPTING...").prop('disabled', true);
-
-    try {
-        await addDoc(collection(db, 'artifacts', dbID, 'missions'), {
-            title: title,
-            budget: Number(budget),
-            deadline: $('#req-deadline').val(),
-            type: $('#req-type').val(),
-            description: $('#req-desc').val(),
-            status: 'OPEN',
-            ownerId: currentUser.uid,
-            ownerName: currentUser.displayName || "Unknown Client", // Stored for Admin
-            timestamp: serverTimestamp()
-        });
-
-        notify("SUCCESS", "Mission broadcast to Global Network.", "success");
-        $('#req-title').val(''); // Clear form
-        $('#req-budget').val('');
+if (deployBtn) {
+    deployBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
         
-    } catch (err) {
-        console.error(err);
-        notify("ERROR", "Transmission blocked.", "error");
-    }
-    btn.text("TRANSMIT REQUEST").prop('disabled', false);
-});
-
-// 4. LOAD MY MISSIONS
-function loadMyMissions(uid) {
-    const q = query(
-        collection(db, 'artifacts', dbID, 'missions'), 
-        where("ownerId", "==", uid)
-    );
-
-    onSnapshot(q, (snapshot) => {
-        const list = $('#my-mission-list');
-        list.empty();
-
-        if(snapshot.empty) {
-            list.html('<div style="padding:20px; text-align:center; color:#555;">NO ACTIVE OPERATIONS</div>');
+        // A. Form Validation
+        const title = document.getElementById('task-title').value;
+        const budget = document.getElementById('task-budget').value;
+        const desc = document.getElementById('task-desc').value;
+        
+        if (!title || !budget || !desc) {
+            alert("COMMAND ERROR: Title, Budget, and Description are required.");
             return;
         }
 
-        snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const id = docSnap.id;
-            
-            // Logic for Buttons (Pay, Chat, etc)
-            let actionBtn = '';
-            let mercDisplay = "PENDING ASSIGNMENT";
+        deployBtn.innerText = "UPLOADING ASSETS...";
+        deployBtn.disabled = true;
 
-            // Status: IN PROGRESS
-            if (data.status === 'IN_PROGRESS') {
-                const mercCode = data.freelancerId ? data.freelancerId.substring(0,5).toUpperCase() : "???";
-                mercDisplay = `<span style="color:var(--mh-gold);">ASSIGNED: OP-${mercCode}</span>`;
+        try {
+            // B. File Upload (Iterate through files)
+            const fileInput = document.getElementById('task-files');
+            let uploadedFiles = [];
+
+            if (fileInput.files.length > 0) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    // Path: mission_files/User_ID/File_Name
+                    const storageRef = ref(storage, `mission_files/${currentUser.uid}/${Date.now()}_${file.name}`);
+                    
+                    const snapshot = await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(snapshot.ref);
+                    uploadedFiles.push({ name: file.name, url: url });
+                }
+            }
+
+            // C. Database Entry
+            deployBtn.innerText = "TRANSMITTING TO HQ...";
+
+            // CRITICAL: Uses DB_PATH to match your Security Rules
+            const missionData = {
+                title: title,
+                type: document.getElementById('task-type').value,
+                budget: parseFloat(budget),
+                deadline: document.getElementById('task-deadline').value,
+                priority: document.getElementById('task-priority').value,
+                visibility: document.getElementById('task-visibility').value, // 'Global' or 'Private'
+                description: desc,
+                files: uploadedFiles,
                 
-                actionBtn = `
-                    <div style="display:flex; gap:5px; margin-top:10px;">
-                        <button class="btn-small" onclick="window.openComms('${data.freelancerId}')">
-                            <i class="fas fa-comment-medical"></i> CHAT
-                        </button>
-                    </div>
-                `;
-            }
-            // Status: REVIEW PENDING (File Uploaded)
-            else if (data.status === 'REVIEW_PENDING') {
-                mercDisplay = `<span style="color:var(--mh-cyan);">FILE UPLOADED</span>`;
-                actionBtn = `
-                    <div style="display:flex; gap:5px; margin-top:10px;">
-                        <a href="${data.fileUrl}" target="_blank" class="btn-small" style="border-color:var(--mh-cyan);">DOWNLOAD</a>
-                        <a href="Task_Checkout.html?id=${id}&title=${encodeURIComponent(data.title)}&price=${data.budget}&merc=${data.freelancerId}" 
-                           class="btn-small" style="background:var(--mh-green); border:none; color:#000;">
-                           PAY & CLOSE
-                        </a>
-                    </div>
-                `;
-            }
-            // Status: COMPLETED
-            else if (data.status === 'COMPLETED') {
-                mercDisplay = `<span style="color:var(--mh-green);">MISSION COMPLETE</span>`;
-                actionBtn = `<span style="color:#666; font-size:0.8em;">ARCHIVED</span>`;
-            }
+                // System Metadata
+                status: "OPEN", // This makes it visible to Freelancers
+                client_id: currentUser.uid,
+                client_email: currentUser.email,
+                created_at: serverTimestamp(),
+                chat_id: null // Will be generated when a Freelancer accepts
+            };
 
-            const card = `
-                <div class="mission-node">
-                    <div style="display:flex; justify-content:space-between;">
-                        <strong>${data.title}</strong>
-                        <span style="color:var(--mh-gold);">$${data.budget}</span>
-                    </div>
-                    <div style="font-size:0.8em; margin-top:5px; color:#aaa;">${mercDisplay}</div>
-                    ${actionBtn}
-                </div>
-            `;
-            list.append(card);
-        });
+            await addDoc(collection(db, `${DB_PATH}/missions`), missionData);
+
+            // D. Success
+            alert("MISSION CONFIRMED. DEPLOYMENT SUCCESSFUL.");
+            window.location.reload(); // Reload to clear form and show new status
+
+        } catch (error) {
+            console.error("DEPLOYMENT FAILED:", error);
+            alert("SYSTEM FAILURE: " + error.message);
+            deployBtn.innerText = "RETRY DEPLOY";
+            deployBtn.disabled = false;
+        }
     });
 }
 
-// 5. GLOBAL ACTIONS
-window.openComms = (mercId) => {
-    startChatWith(mercId);
-};
-
-// 6. LOGOUT
-$('#btn-logout').click(async () => {
-    await signOut(auth);
-    window.location.reload();
-});
-
-/* --- MISSION DEPLOYMENT LOGIC (INJECTED) --- */
-
-let selectedFiles = [];
-const fileInput = document.getElementById('task-files');
-const fileListDisplay = document.getElementById('file-list');
-
-// 1. Handle File Selection
-if(fileInput) {
-    fileInput.addEventListener('change', (e) => {
-        selectedFiles = Array.from(e.target.files);
-        fileListDisplay.innerHTML = selectedFiles.map(f => 
-            `<div><i class="fas fa-file-code"></i> ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)</div>`
-        ).join('');
-    });
-}
-
-// 2. Handle Deploy Button
-document.getElementById('btn-deploy-task')?.addEventListener('click', async () => {
-    const btn = document.getElementById('btn-deploy-task');
-    const title = document.getElementById('task-title').value;
-    const budget = document.getElementById('task-budget').value;
-    
-    if(!title || !budget) return notify("Mission Aborted", "Title and Budget are required.", "warn");
-
+// 3. PROFILE SYNC (Updated to include Images)
+async function loadProfileData(uid) {
     try {
-        btn.innerText = "UPLOADING ASSETS...";
-        btn.disabled = true;
-        document.getElementById('upload-progress-container').style.display = 'block';
+        const userRef = doc(db, `${DB_PATH}/users/${uid}`);
+        const snap = await getDoc(userRef);
 
-        const uploadedFiles = [];
-
-        // A. Upload Files to Storage
-        if (selectedFiles.length > 0) {
-            for (const file of selectedFiles) {
-                const storageRef = ref(storage, `missions/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
-                const uploadTask = uploadBytesResumable(storageRef, file);
-
-                await new Promise((resolve, reject) => {
-                    uploadTask.on('state_changed', 
-                        (snapshot) => {
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            document.getElementById('upload-progress-bar').style.width = progress + "%";
-                        }, 
-                        (error) => reject(error), 
-                        async () => {
-                            const url = await getDownloadURL(uploadTask.snapshot.ref);
-                            uploadedFiles.push({ name: file.name, url: url });
-                            resolve();
-                        }
-                    );
-                });
+        if (snap.exists()) {
+            const data = snap.data();
+            
+            // Text Data
+            if(document.getElementById('user-name-display')) 
+                document.getElementById('user-name-display').innerText = data.name || "Unknown Student";
+            if(document.getElementById('wallet-balance')) 
+                document.getElementById('wallet-balance').innerText = `$${data.wallet_balance || '0.00'}`;
+            
+            // --- NEW: Image Data ---
+            if (data.photoURL) {
+                syncProfileImages(data.photoURL);
             }
+			
+			if (data.package_tier) {
+				updateHeaderClearance(data.package_tier);
+			}
+        }
+    } catch (e) {
+        console.warn("Profile Sync Warning:", e);
+    }
+	
+	// Inside your existing loadProfileData function
+	if (data.package_tier) {
+		const badgeEl = document.getElementById('user-badge-display');
+		if (badgeEl) {
+			badgeEl.innerText = `${data.package_tier} OPERATIVE`;
+			// Add a gold glow if they are Gold Tier
+			if (data.package_tier === 'GOLD') badgeEl.style.color = 'var(--mh-gold)';
+		}
+	}
+}
+
+// --- 4. PROFILE IDENTITY MODULE (Added per Request) ---
+
+// A. The Synchronizer: Updates all avatar instances on screen
+function syncProfileImages(url) {
+    const mainAvatar = document.getElementById('user-avatar-img');
+    const miniAvatar = document.getElementById('mini-avatar');
+
+    // Update Main Sidebar Avatar
+    if (mainAvatar) mainAvatar.src = url;
+    
+    // Update Menu Overlay Avatar
+    if (miniAvatar) miniAvatar.src = url;
+}
+
+// B. The Listener: Watch for file selection
+const avatarInput = document.getElementById('avatar-upload');
+
+if (avatarInput) {
+    avatarInput.addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Security Check
+        if (!currentUser) {
+            alert("ACCESS DENIED: No Operative Signed In.");
+            return;
         }
 
-        // B. Save to Firestore
-        btn.innerText = "TRANSMITTING DATA...";
-        
-        await addDoc(collection(db, 'artifacts', dbID, 'missions'), {
-            title: title,
-            type: document.getElementById('task-type').value,
-            budget: parseFloat(budget),
-            deadline: document.getElementById('task-deadline').value,
-            priority: document.getElementById('task-priority').value,
-            visibility: document.getElementById('task-visibility').value,
-            description: document.getElementById('task-desc').value,
-            status: "OPEN",
-            createdBy: auth.currentUser.uid,
-            creatorName: auth.currentUser.displayName || "Anonymous",
-            createdAt: serverTimestamp(),
-            files: uploadedFiles, // The URLs we just got
-            likes: 0
+        try {
+            // Visual Feedback (Optional: dim image to show loading)
+            const mainAvatar = document.getElementById('user-avatar-img');
+            if(mainAvatar) mainAvatar.style.opacity = "0.5";
+
+            console.log("UPLOADING IDENTITY...");
+            
+            // 1. Upload to Firebase Storage
+            // Path: avatars/USER_ID/profile.jpg
+            const storageRef = ref(storage, `avatars/${currentUser.uid}/profile_pic`);
+            const snapshot = await uploadBytes(storageRef, file);
+            
+            // 2. Get the new secure URL
+            const photoURL = await getDownloadURL(snapshot.ref);
+
+            // 3. Update User Profile in Firestore
+            const userRef = doc(db, `${DB_PATH}/users/${currentUser.uid}`);
+            await updateDoc(userRef, {
+                photoURL: photoURL
+            });
+
+            // 4. Update Screens
+            syncProfileImages(photoURL);
+            alert("IDENTITY UPDATED SUCCESSFULLY.");
+
+        } catch (error) {
+            console.error("UPLOAD ERROR:", error);
+            alert("UPLOAD FAILED: " + error.message);
+        } finally {
+             // Reset opacity
+             const mainAvatar = document.getElementById('user-avatar-img');
+             if(mainAvatar) mainAvatar.style.opacity = "1";
+        }
+    });
+}
+
+// --- 5. DASHBOARD LOGIC (Tasks & Chat) ---
+
+// A. LOAD MISSIONS
+window.loadMissions = async function() {
+    const container = document.getElementById('mission-feed-container');
+    if(!container) return;
+
+    container.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> SCANNING...</div>';
+
+    try {
+        // Query: Get missions where client_id == Current User
+        // Note: You need a composite index in Firebase for this specific query sometimes
+        const q = query(collection(db, `${DB_PATH}/missions`), where("client_id", "==", currentUser.uid), orderBy("created_at", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            container.innerHTML = '<div style="text-align:center; color:#666; padding:20px;">NO ACTIVE MISSIONS FOUND.</div>';
+            return;
+        }
+
+        let html = '';
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const statusColor = data.status === 'Active' ? 'var(--mh-green)' : (data.status === 'Pending' ? 'orange' : '#666');
+            const statusClass = data.status === 'Active' ? 'status-active' : 'status-pending';
+
+            html += `
+            <div class="mission-card ${statusClass}" onclick="openMissionDetails('${doc.id}')">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <strong style="color:#fff;">${data.title}</strong>
+                    <span style="color:${statusColor}; font-size:0.8em; border:1px solid ${statusColor}; padding:2px 8px; border-radius:4px;">${data.status}</span>
+                </div>
+                <div style="font-size:0.8em; color:#888;">
+                    <i class="fas fa-calendar-alt"></i> Deadline: ${data.deadline || 'N/A'} &bull; 
+                    <i class="fas fa-coins"></i> Budget: $${data.budget || '0'}
+                </div>
+            </div>
+            `;
         });
+        container.innerHTML = html;
 
-        notify("Success", "Mission Broadcasted to Global Network.", "success");
-        btn.innerText = "DEPLOY MISSION";
-        btn.disabled = false;
-        // Optional: clear form logic here
+    } catch (error) {
+        console.error("Error loading missions:", error);
+        container.innerHTML = `<div style="color:red; text-align:center;">ERROR RETRIEVING DATA</div>`;
+    }
+}
 
+// B. CHAT LOGIC (Simplified)
+// 1. Send Message
+document.getElementById('btn-send-chat')?.addEventListener('click', async () => {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text || !currentChatID) return; // 'currentChatID' needs to be set when selecting a channel
+
+    try {
+        await addDoc(collection(db, `${DB_PATH}/chats/${currentChatID}/messages`), {
+            text: text,
+            senderId: currentUser.uid,
+            timestamp: serverTimestamp()
+        });
+        input.value = ''; // Clear input
     } catch (e) {
-        console.error(e);
-        notify("Error", "Transmission Failed: " + e.message, "error");
-        btn.innerText = "RETRY DEPLOY";
-        btn.disabled = false;
+        console.error("Send Error:", e);
     }
 });
+
+/**
+ * RECOGNITION PROTOCOL: HEADER BADGE
+ * Manifests the subscription tier beside the Logo.
+ */
+function updateHeaderClearance(tier) {
+    const badge = document.getElementById('clearance-badge');
+    const text = document.getElementById('tier-text');
+    const icon = document.getElementById('tier-icon');
+
+    if (!badge || !tier) return;
+
+    badge.style.display = "flex";
+    text.innerText = tier;
+
+    // Reset classes
+    badge.className = ""; 
+    
+    // Assign Identity
+    if (tier === "Elite") {
+        badge.classList.add('badge-elite');
+        icon.className = "fas fa-crown"; // Elite Icon
+    } else if (tier === "Commander") {
+        badge.classList.add('badge-commander');
+        icon.className = "fas fa-star"; // Commander Icon
+    } else if (tier === "Scout") {
+        badge.classList.add('badge-scout');
+        icon.className = "fas fa-bolt"; // Scout Icon
+    }
+}
+
+/* Add this to the bottom of assets/js/student-core.js */
+
+function enforceClearance(tier) {
+    // Select all elements that require ELITE status
+    const eliteElements = document.querySelectorAll('.restricted-elite');
+    
+    eliteElements.forEach(el => {
+        if (tier === "Elite") {
+            el.style.display = "block"; // or 'flex'
+        } else {
+            el.style.display = "none";
+        }
+    });
+}
+
+// Note: To make the Chat fully functional, you need a function that lists 
+// the user's active missions in the sidebar, and when clicked, 
+// sets 'currentChatID' and starts an 'onSnapshot' listener for messages.

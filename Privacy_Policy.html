@@ -1,0 +1,327 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | PRIVACY PROTOCOLS</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* =========================================
+           THEME: TITAN SECURITY V2
+           ========================================= */
+        :root {
+            --mh-blue: #0080FF;
+            --mh-cyan: #00e5ff;
+            --mh-dark: #05070a;
+            --mh-glass: rgba(16, 20, 30, 0.9);
+            --mh-border: rgba(0, 128, 255, 0.3);
+            --mh-text: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--mh-dark);
+            color: var(--mh-text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at top right, rgba(0, 128, 255, 0.1) 0%, transparent 40%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+            background-attachment: fixed;
+        }
+
+        /* --- TITAN SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020202; }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--mh-blue); 
+            border-radius: 4px; 
+            box-shadow: 0 0 10px var(--mh-blue);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+
+        /* --- HEADER --- */
+        .policy-header {
+            text-align: center;
+            padding: 50px 20px 30px;
+            border-bottom: 2px solid var(--mh-blue);
+            background: linear-gradient(to bottom, #000, rgba(0,0,0,0.5));
+            position: relative; /* Needed for absolute positioning of the lang button */
+        }
+        .policy-header img {
+            width: 80px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(0, 128, 255, 0.4));
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .policy-header h1 {
+            margin: 0;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 2em;
+            text-shadow: 0 0 20px rgba(0, 128, 255, 0.6);
+        }
+        .policy-header span {
+            color: var(--mh-cyan);
+            font-size: 0.8em;
+            font-family: monospace;
+            letter-spacing: 1px;
+            background: rgba(0, 229, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        /* --- LANGUAGE BUTTON (NEW) --- */
+        .lang-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--mh-blue);
+            color: var(--mh-blue);
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            z-index: 100;
+        }
+        .lang-btn:hover {
+            background: var(--mh-blue);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 128, 255, 0.5);
+        }
+
+        /* --- CONTENT CONTAINER --- */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            flex: 1; 
+            width: 90%;
+        }
+
+        /* --- POLICY SECTIONS --- */
+        .policy-section {
+            background: var(--mh-glass);
+            border: 1px solid var(--mh-border);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            transition: 0.3s;
+        }
+        .policy-section:hover {
+            border-color: var(--mh-cyan);
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.1);
+        }
+
+        /* Tactical Corner Markers */
+        .policy-section::before {
+            content: ''; position: absolute; top: -1px; left: -1px;
+            width: 20px; height: 20px;
+            border-top: 2px solid var(--mh-blue); border-left: 2px solid var(--mh-blue);
+            border-radius: 12px 0 0 0;
+        }
+        .policy-section::after {
+            content: ''; position: absolute; bottom: -1px; right: -1px;
+            width: 20px; height: 20px;
+            border-bottom: 2px solid var(--mh-blue); border-right: 2px solid var(--mh-blue);
+            border-radius: 0 0 12px 0;
+        }
+
+        .policy-section h3 {
+            color: #fff;
+            margin-top: 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .policy-section h3 i {
+            margin-right: 10px;
+            color: var(--mh-blue);
+        }
+        .policy-section p, .policy-section li {
+            color: #aaa;
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+        .policy-section ul { padding-left: 20px; }
+        .policy-section li { margin-bottom: 8px; }
+
+        /* --- RETURN BUTTON --- */
+        .return-btn-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .return-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border: 1px solid var(--mh-blue);
+            color: var(--mh-blue);
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0, 128, 255, 0.05);
+        }
+        .return-btn:hover {
+            background: var(--mh-blue);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.4);
+        }
+
+        /* --- FOOTER CSS --- */
+        #tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; margin-top: auto; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+        .footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+        .footer-col ul { list-style: none; padding: 0; }
+        .footer-col li { margin-bottom: 12px; }
+        .footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+        .footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+        .social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+        .social-grid a { color: #555; transition: 0.3s; }
+        .social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+    </style>
+</head>
+<body>
+
+    <header class="policy-header">
+        
+        <button id="lang-btn" class="lang-btn" onclick="switchLanguage()">
+            <i class="fas fa-globe"></i> 
+            <span id="lang-text">EN</span>
+        </button>
+
+        <a href="index.html"><img src="images/Logo_1.png" alt="MH STUDIOS"></a>
+        <h1>Privacy Protocols</h1>
+        <span>DATA CLASSIFICATION: CONFIDENTIAL</span>
+    </header>
+
+    <div class="container">
+        
+        <div class="policy-section">
+            <h3><i class="fas fa-database"></i> 1. INTEL COLLECTION (Data We Gather)</h3>
+            <p>To execute missions effectively, MH STUDIOS collects specific data points from Operatives:</p>
+            <ul>
+                <li><strong>Identity Data:</strong> Name, University affiliation, and Academic Major.</li>
+                <li><strong>Contact Data:</strong> Secure email addresses and phone numbers for mission alerts.</li>
+                <li><strong>Operational Data:</strong> Mission briefs, file attachments (PDF/ZIP), and chat logs.</li>
+                <li><strong>Technical Data:</strong> IP addresses and device types (for security auditing).</li>
+            </ul>
+        </div>
+
+        <div class="policy-section">
+            <h3><i class="fas fa-microchip"></i> 2. PROTOCOL USAGE (How We Use It)</h3>
+            <p>Your data is utilized strictly for the following operational parameters:</p>
+            <ul>
+                <li><strong>Mission Execution:</strong> Connecting students with freelancers to complete academic tasks.</li>
+                <li><strong>Communications:</strong> Sending real-time updates regarding mission status.</li>
+                <li><strong>System Integrity:</strong> Preventing unauthorized access and fraud detection.</li>
+            </ul>
+            <p><em>We do not sell Operative data to civilian marketing agencies.</em></p>
+        </div>
+
+        <div class="policy-section">
+            <h3><i class="fas fa-handshake"></i> 3. EXTERNAL ALLIANCES (Third Parties)</h3>
+            <p>We utilize trusted third-party infrastructure to maintain system uptime:</p>
+            <ul>
+                <li><strong>Firebase (Google):</strong> For secure database hosting and authentication.</li>
+                <li><strong>Stripe/PayPal:</strong> For processing financial logistics.</li>
+                <li><strong>GitHub Pages:</strong> For frontend deployment.</li>
+            </ul>
+        </div>
+
+        <div class="policy-section">
+            <h3><i class="fas fa-cookie-bite"></i> 4. DIGITAL TRACERS (Cookies)</h3>
+            <p>We use "Cookies" (small data beacons) to:</p>
+            <ul>
+                <li>Keep you logged in during a session.</li>
+                <li>Remember your dashboard preferences.</li>
+                <li>Analyze traffic patterns to optimize server load.</li>
+            </ul>
+            <p>You may disable tracers in your browser settings, but this may cause system instability.</p>
+        </div>
+
+        <div class="policy-section">
+            <h3><i class="fas fa-shield-alt"></i> 5. DEFENSE SYSTEMS (Security)</h3>
+            <p>We employ <strong>SSL Encryption</strong> and <strong>Level-4 Firewalls</strong> to protect your data. While no system is impenetrable, we adhere to industry-standard <a href="PCI_DSS_Compliance.html" style="color:var(--mh-cyan);">PCI-DSS Protocols</a> to minimize risk.</p>
+        </div>
+
+        <div class="return-btn-container">
+            <a href="index.html" class="return-btn"><i class="fas fa-chevron-left"></i> Return to Base</a>
+        </div>
+
+    </div>
+
+    <footer id="tactical-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>MA STUDIOS™</h4>
+                <p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+                <p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="footer-col">
+                <h4>SECTORS</h4>
+                <ul>
+                    <li><a href="Products_Services_Room.html">The Armory</a></li>
+                    <li><a href="Packages.html">Service Packages</a></li>
+                    <li><a href="#guild-sector">The Guild</a></li>
+                    <li><a href="DoD_Login_Style.html">Operative Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>LEGAL PROTOCOLS</h4>
+                <ul>
+                    <li><a href="Privacy_Policy.html">Privacy Policy</a></li>
+                    <li><a href="Terms_Conditions.html?mode=visitor">Terms of Engagement</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                    <li><a href="PCI_DSS_Compliance.html">PCI-DSS Compliance</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>SECURE CHANNELS</h4>
+                <div class="social-grid">
+                    <a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
+                    <a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function switchLanguage() {
+            // Placeholder for your future JSON logic
+            // Example:
+            // if (currentLang === 'EN') loadLanguage('AR');
+            // else loadLanguage('EN');
+            console.log("LANGUAGE SWITCH PROTOCOL INITIATED...");
+            alert("LANGUAGE MODULE: PENDING JSON INTEGRATION");
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | TERMS OF ENGAGEMENT</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* --- 1. CORE VARIABLES (TITAN THEME) --- */
+        :root {
+            --mh-blue: #0080FF;
+            --mh-cyan: #00e5ff;
+            --mh-dark: #05070a;
+            --mh-glass: rgba(16, 20, 30, 0.85);
+            --mh-border: rgba(0, 128, 255, 0.3);
+            --text-main: #eee;
+            --text-dim: #888;
+        }
+
+        body {
+            background-color: var(--mh-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(0, 128, 255, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        /* --- 2. CUSTOM SCROLLBAR (TITAN BLUE) --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020202; }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--mh-blue); 
+            border-radius: 4px; 
+            box-shadow: 0 0 10px var(--mh-blue);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--mh-cyan); }
+
+        /* --- 3. MAIN CONTAINER --- */
+        .legal-container {
+            max-width: 900px;
+            margin: 40px auto;
+            flex: 1; /* Pushes footer down */
+            width: 90%;
+        }
+
+        /* --- 4. HEADER SECTION --- */
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--mh-blue);
+            padding-bottom: 20px;
+            position: relative;
+        }
+        .header-section img {
+            width: 90px;
+            filter: drop-shadow(0 0 15px rgba(0, 128, 255, 0.4));
+            margin-bottom: 10px;
+        }
+        .header-section h2 {
+            margin: 0;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 1.8em;
+        }
+        .header-section span {
+            color: var(--mh-cyan);
+            font-size: 0.8em;
+            letter-spacing: 1px;
+        }
+
+        /* --- 5. THE SCROLLABLE CONTRACT BOX --- */
+        .contract-viewer {
+            background: var(--mh-glass);
+            border: 1px solid var(--mh-border);
+            border-radius: 8px;
+            height: 50vh; /* Takes up half screen height */
+            overflow-y: auto; /* Enables Scroll */
+            padding: 30px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace; /* Legal/Military font */
+            line-height: 1.6;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .contract-viewer h3 {
+            color: var(--mh-blue);
+            border-bottom: 1px dashed #444;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        .contract-viewer p { margin-bottom: 15px; }
+        .highlight { color: #fff; font-weight: bold; }
+
+        /* --- 6. ACTION AREA --- */
+        .action-area {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #222;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #fff;
+        }
+        .checkbox-wrapper input {
+            width: 20px; height: 20px; margin-right: 15px;
+            accent-color: var(--mh-blue);
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            background: #333; /* Disabled State */
+            color: #888;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            cursor: not-allowed;
+            transition: 0.3s;
+        }
+
+        /* Active State for Button */
+        .btn-confirm.active {
+            background: linear-gradient(135deg, var(--mh-blue), #0050a0);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.4);
+        }
+        .btn-confirm.active:hover { transform: scale(1.02); }
+
+        /* --- 7. FOOTER CSS (YOUR CODE) --- */
+        #tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; margin-top: auto; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
+        .footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-blue); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+        .footer-col ul { list-style: none; padding: 0; }
+        .footer-col li { margin-bottom: 12px; }
+        .footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
+        .footer-col a:hover { color: var(--mh-cyan); padding-left: 5px; text-shadow: 0 0 5px var(--mh-cyan); }
+        .social-grid { display: flex; gap: 20px; font-size: 1.5em; margin-top: 10px; }
+        .social-grid a { color: #555; transition: 0.3s; }
+        .social-grid a:hover { color: #fff; transform: translateY(-3px); }
+
+        /* Mobile Fix */
+        @media(max-width: 700px) {
+            .action-area { flex-direction: column; gap: 20px; text-align: center; }
+            .contract-viewer { height: 40vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="legal-container">
+        
+        <div class="header-section">
+            <img src="images/Logo_1.png" alt="MH Studios Logo">
+            <h2>Terms of Engagement</h2>
+            <span>CLASSIFIED PROTOCOL: READ BEFORE SIGNING</span>
+        </div>
+
+        <div class="contract-viewer">
+            <h3>1. MISSION PROTOCOLS (Scope of Service)</h3>
+            <p>MA STUDIOS provides academic and technical support services. By initiating a mission, the <span class="highlight">Operative (User)</span> agrees that all materials provided are for educational and research purposes only.</p>
+            
+            <h3>2. INTEL SECURITY (Privacy)</h3>
+            <p>All data shared within the "Student Room" is encrypted. We do not share Operative details with third-party entities unless required by law enforcement protocols.</p>
+
+            <h3>3. FINANCIAL LOGISTICS (Payment)</h3>
+            <p>Payments are processed via secure gateways. Refunds are only issued if the Mission fails to meet the specified parameters agreed upon in the initial briefing.</p>
+
+            <h3>4. CODE OF CONDUCT</h3>
+            <p>Any attempt to hack, reverse engineer, or disrupt the MH STUDIOS network will result in immediate termination of the Operative's account and a permanent ban.</p>
+
+            <h3>5. FINAL AUTHORIZATION</h3>
+            <p>By clicking "CONFIRM INDUCTION", you digitally sign this agreement and bind yourself to the rules of the Guild.</p>
+            
+            <br><br>
+            <p style="text-align: center; color: #666;">--- END OF DOCUMENT ---</p>
+        </div>
+
+		<div class="action-area">
+			
+			<div id="recruit-controls" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+				<label class="checkbox-wrapper">
+					<input type="checkbox" id="terms-check" onchange="toggleButton()">
+					<span>I have read and agree to the Terms & Protocols.</span>
+				</label>
+
+				<button id="btn-confirm" class="btn-confirm" onclick="finishInduction()" disabled>
+					CONFIRM INDUCTION <i class="fas fa-check-circle"></i>
+				</button>
+			</div>
+
+			<div id="visitor-controls" style="display:none; width:100%; text-align:center;">
+				<button onclick="window.history.back()" class="btn-confirm active" style="width:100%; max-width:300px;">
+					<i class="fas fa-undo-alt"></i> RETURN TO BASE
+				</button>
+			</div>
+
+		</div>
+
+    </div>
+
+    <footer id="tactical-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>MA STUDIOS™</h4>
+                <p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+                <p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="footer-col">
+                <h4>SECTORS</h4>
+                <ul>
+                    <li><a href="Products_Services_Room.html">The Armory</a></li>
+                    <li><a href="Packages.html">Service Packages</a></li>
+                    <li><a href="#guild-sector">The Guild</a></li>
+                    <li><a href="DoD_Login_Style.html">Operative Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>LEGAL PROTOCOLS</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Engagement</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                    <li><a href="#">PCI-DSS Compliance</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>SECURE CHANNELS</h4>
+                <div class="social-grid">
+                    <a href="https://discord.com/users/mhstudios836"><i class="fab fa-discord"></i></a>
+                    <a href="https://github.com/MHStudios836"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/mhstudios836/"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.instagram.com/mhstudios.836"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+	<script>
+		// 1. INITIALIZE: Check Mission Mode
+		window.onload = function() {
+			const urlParams = new URLSearchParams(window.location.search);
+			const mode = urlParams.get('mode');
+
+			if (mode === 'visitor') {
+				// HIDE Recruitment Tools
+				document.getElementById('recruit-controls').style.display = 'none';
+				// SHOW Visitor Tools
+				document.getElementById('visitor-controls').style.display = 'block';
+			}
+		};
+
+		// 2. RECRUIT LOGIC: Toggle Button State
+		function toggleButton() {
+			const checkBox = document.getElementById('terms-check');
+			const btn = document.getElementById('btn-confirm');
+			
+			if (checkBox.checked) {
+				btn.disabled = false;
+				btn.classList.add('active');
+			} else {
+				btn.disabled = true;
+				btn.classList.remove('active');
+			}
+		}
+
+		// 3. RECRUIT LOGIC: Final Redirect
+		function finishInduction() {
+			const btn = document.getElementById('btn-confirm');
+			btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AUTHENTICATING...';
+			
+			// Simulate processing
+			setTimeout(() => {
+				window.location.href = 'Student_Room.html';
+			}, 1500);
+		}
+	</script>
+
+</body>
+</html>

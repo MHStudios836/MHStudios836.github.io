@@ -1,0 +1,355 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH COMMAND | VETTING TERMINAL</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* TACTICAL VETTING THEME */
+        :root {
+            --vet-dark: #0b0d10;
+            --vet-panel: #151920;
+            --vet-green: #00ff41;
+            --vet-red: #ff004c;
+            --vet-gold: #ffd700;
+        }
+
+        body {
+            background-color: #000;
+            color: #ccc;
+            margin: 0;
+            font-family: 'Uni Sans', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        #command-header {
+            height: 60px;
+            background: #111;
+            border-bottom: 2px solid #333;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 30px;
+        }
+        .header-title { font-size: 1.2em; letter-spacing: 2px; color: #fff; }
+        .back-btn { color: #666; text-decoration: none; font-size: 0.8em; transition:0.3s; }
+        .back-btn:hover { color: #fff; }
+
+        /* SPLIT LAYOUT */
+        #vetting-deck {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* LEFT: RADAR LIST */
+        #radar-panel {
+            width: 350px;
+            background: var(--vet-dark);
+            border-right: 1px solid #333;
+            display: flex; flex-direction: column;
+        }
+        .radar-header {
+            padding: 20px; border-bottom: 1px solid #333;
+            font-size: 0.8em; color: #888; text-transform: uppercase;
+        }
+        #applicant-list {
+            flex: 1; overflow-y: auto; padding: 10px;
+        }
+        
+        /* Applicant Card */
+        .app-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            border-left: 3px solid #666;
+        }
+        .app-card:hover { background: rgba(255,255,255,0.08); }
+        .app-card.active { border-left-color: var(--vet-gold); background: rgba(255, 215, 0, 0.05); }
+        
+        .app-name { color: #fff; font-weight: bold; display: block; }
+        .app-status { font-size: 0.7em; color: var(--vet-gold); }
+
+        /* RIGHT: DOSSIER VIEW */
+        #dossier-panel {
+            flex: 1;
+            background: #000;
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+            background-image: radial-gradient(circle at center, #111 0%, #000 100%);
+        }
+
+        /* INTEL DATA */
+        .intel-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+            margin-bottom: 30px;
+        }
+        .intel-box {
+            background: var(--vet-panel); border: 1px solid #333;
+            padding: 20px; border-radius: 4px;
+        }
+        .intel-label { display: block; color: #666; font-size: 0.7em; margin-bottom: 5px; }
+        .intel-val { color: #fff; font-family: 'Courier New', monospace; font-size: 1.1em; }
+
+        .skill-tag { 
+            display: inline-block; background: #222; padding: 5px 10px; 
+            margin: 2px; font-size: 0.7em; border: 1px solid #444; color: #aaa; 
+        }
+
+        /* ACTIONS */
+        .action-bar {
+            display: flex; gap: 20px; border-top: 1px solid #333; padding-top: 30px; margin-top: 30px;
+        }
+        .cmd-btn {
+            flex: 1; padding: 15px; border: none; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+            opacity: 0.5; pointer-events: none; /* Disabled until selected */
+        }
+        .cmd-btn.ready { opacity: 1; pointer-events: all; }
+        
+        .btn-approve { background: rgba(0, 255, 65, 0.1); border: 1px solid var(--vet-green); color: var(--vet-green); }
+        .btn-approve:hover { background: var(--vet-green); color: #000; }
+        
+        .btn-reject { background: rgba(255, 0, 76, 0.1); border: 1px solid var(--vet-red); color: var(--vet-red); }
+        .btn-reject:hover { background: var(--vet-red); color: #fff; }
+
+        /* EMPTY STATE */
+        #empty-state {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <header id="command-header">
+        <div class="header-title">
+            <i class="fas fa-network-wired" style="color:var(--vet-gold)"></i> RECRUITMENT CENTER
+        </div>
+        <a href="Admin_Room.html" class="back-btn"><i class="fas fa-undo"></i> RETURN TO HQ</a>
+    </header>
+
+    <div id="vetting-deck">
+        
+        <aside id="radar-panel">
+            <div class="radar-header">INCOMING SIGNALS (PENDING)</div>
+            <div id="applicant-list">
+                <div style="padding:20px; text-align:center; color:#444;">SCANNING...</div>
+            </div>
+        </aside>
+
+        <main id="dossier-panel">
+            
+            <div id="empty-state">
+                <i class="fas fa-satellite-dish" style="font-size:3em; margin-bottom:10px;"></i>
+                <p>SELECT A SIGNAL TO DECODE</p>
+            </div>
+
+            <div id="intel-display" style="display:none;">
+                <h2 style="border-bottom:1px solid #333; padding-bottom:10px; color:#fff;">
+                    <i class="fas fa-file-contract"></i> OPERATIVE DOSSIER
+                </h2>
+
+                <div class="intel-grid">
+                    <div class="intel-box">
+                        <span class="intel-label">FULL NAME</span>
+                        <div class="intel-val" id="d-name">--</div>
+                    </div>
+                    <div class="intel-box">
+                        <span class="intel-label">CALL SIGN</span>
+                        <div class="intel-val" id="d-handle">--</div>
+                    </div>
+                    <div class="intel-box">
+                        <span class="intel-label">CONTACT UPLINK</span>
+                        <div class="intel-val" id="d-phone">--</div>
+                    </div>
+                    <div class="intel-box">
+                        <span class="intel-label">LOCATION</span>
+                        <div class="intel-val" id="d-loc">--</div>
+                    </div>
+                </div>
+
+                <div class="intel-box" style="margin-bottom:30px;">
+                    <span class="intel-label">SKILLSET</span>
+                    <div id="d-skills" style="margin-top:10px;">--</div>
+                </div>
+
+                <div class="intel-grid">
+                    <div class="intel-box">
+                        <span class="intel-label">MOTIVATION INTEL</span>
+                        <div class="intel-val" id="d-motivation" style="font-size:0.9em; line-height:1.4;">--</div>
+                    </div>
+                    <div class="intel-box">
+                        <span class="intel-label">VERIFICATION DOCUMENTS</span>
+                        <div style="margin-top:10px;">
+                            <a id="d-portfolio" href="#" target="_blank" style="display:block; color:var(--vet-gold); margin-bottom:10px;">
+                                <i class="fas fa-external-link-alt"></i> OPEN PORTFOLIO
+                            </a>
+                            <a id="d-id-doc" href="#" target="_blank" style="display:block; color:var(--vet-gold);">
+                                <i class="fas fa-id-card"></i> VIEW ID DOCUMENT
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="cmd-btn btn-reject ready" onclick="processApplication('REJECT')">
+                        <i class="fas fa-ban"></i> DENY ENTRY
+                    </button>
+                    <button class="cmd-btn btn-approve ready" onclick="processApplication('APPROVE')">
+                        <i class="fas fa-check-circle"></i> AUTHORIZE DEPLOYMENT
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module">
+        import { auth, db, DB_PATH } from './assets/js/firebase-init.js';
+        import { collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        let selectedUserId = null;
+        let applicantData = null;
+
+        // 1. AUTH GUARD
+        onAuthStateChanged(auth, (user) => {
+            if(!user) window.location.href = 'DoD_Login_Style.html';
+            // In a real app, check if user.email === 'your_admin_email'
+            initRadar();
+        });
+
+        // 2. SCANNER (Fetch Pending Users)
+        function initRadar() {
+            const q = query(
+                collection(db, `${DB_PATH}/users`),
+                where('role', '==', 'freelancer'),
+                where('status', 'in', ['PENDING_INTEL', 'REVIEW_PENDING']) // Get both types
+            );
+
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('applicant-list');
+                list.innerHTML = '';
+
+                if(snapshot.empty) {
+                    list.innerHTML = '<div style="padding:20px; text-align:center; color:#444;">NO ACTIVE SIGNALS</div>';
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const el = document.createElement('div');
+                    el.className = 'app-card';
+                    el.onclick = () => loadDossier(docSnap.id, data, el);
+                    
+                    let statusLabel = (data.status === 'REVIEW_PENDING') ? 'UPGRADE REQUEST' : 'NEW RECRUIT';
+                    
+                    el.innerHTML = `
+                        <span class="app-name">${data.legal_name || data.name}</span>
+                        <span class="app-status"><i class="fas fa-circle" style="font-size:0.5em;"></i> ${statusLabel}</span>
+                    `;
+                    list.appendChild(el);
+                });
+            });
+        }
+
+        // 3. DECODER (Show Details)
+        window.loadDossier = (uid, data, element) => {
+            selectedUserId = uid;
+            applicantData = data;
+
+            // Highlight Logic
+            document.querySelectorAll('.app-card').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+
+            // Show Panel
+            document.getElementById('empty-state').style.display = 'none';
+            document.getElementById('intel-display').style.display = 'block';
+
+            // Fill Data
+            document.getElementById('d-name').innerText = data.legal_name || data.name;
+            document.getElementById('d-handle').innerText = data.call_sign || "N/A";
+            document.getElementById('d-phone').innerText = data.phone || "N/A";
+            document.getElementById('d-loc').innerText = data.location || "N/A";
+            document.getElementById('d-motivation').innerText = data.motivation || "No motivation provided.";
+
+            // Skills
+            const skillContainer = document.getElementById('d-skills');
+            skillContainer.innerHTML = '';
+            if(data.skills) {
+                data.skills.forEach(s => {
+                    skillContainer.innerHTML += `<span class="skill-tag">${s.toUpperCase()}</span>`;
+                });
+            } else {
+                skillContainer.innerText = "No skills listed.";
+            }
+
+            // Links
+            document.getElementById('d-portfolio').href = data.portfolio_url || "#";
+            document.getElementById('d-id-doc').href = data.id_document_url || "#";
+            
+            // Disable ID button if no link
+            if(!data.id_document_url) {
+                document.getElementById('d-id-doc').style.opacity = "0.3";
+                document.getElementById('d-id-doc').style.pointerEvents = "none";
+                document.getElementById('d-id-doc').innerHTML += " (MISSING)";
+            } else {
+                document.getElementById('d-id-doc').style.opacity = "1";
+                document.getElementById('d-id-doc').style.pointerEvents = "all";
+            }
+        };
+
+        // 4. JUDGMENT (Approve/Reject)
+        window.processApplication = async (verdict) => {
+            if(!selectedUserId) return;
+            if(!confirm(`CONFIRM VERDICT: ${verdict}?`)) return;
+
+            const userRef = doc(db, `${DB_PATH}/users/${selectedUserId}`);
+
+            try {
+                if(verdict === 'APPROVE') {
+                    // Check contract tier
+                    const tier = applicantData.contract_tier || 'MERCENARY';
+                    
+                    await updateDoc(userRef, {
+                        status: 'ACTIVE',         // Unlocks the dashboard
+                        tier: tier,               // Sets their rank (Merc/Operator)
+                        clearance: 'T1',          // Security clearance
+                        approvedAt: serverTimestamp(),
+                        checkpoint: 5             // Fully cleared
+                    });
+                    alert("OPERATIVE ACTIVATED. WELCOME TO THE FIELD.");
+
+                } else {
+                    await updateDoc(userRef, {
+                        status: 'REJECTED',
+                        clearance: 'REVOKED',
+                        rejectedAt: serverTimestamp()
+                    });
+                    alert("APPLICATION TERMINATED.");
+                }
+
+                // Reset View
+                document.getElementById('empty-state').style.display = 'block';
+                document.getElementById('intel-display').style.display = 'none';
+                selectedUserId = null;
+
+            } catch(e) {
+                alert("SYSTEM ERROR: " + e.message);
+            }
+        };
+
+    </script>
+</body>
+</html>

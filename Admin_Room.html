@@ -88,9 +88,11 @@ permalink: /Admin_Room.html
             padding: 0 25px 30px 25px;
             border-bottom: 1px solid var(--mh-border);
             margin-bottom: 20px;
-            display: flex; align-items: center; gap: 15px;
+			display: flex; align-items: center; gap: 15px;
+			color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em;
         }
-        .admin-brand img { height: 45px; filter: drop-shadow(0 0 5px var(--mh-gold)); }
+        .admin-brand img { height: 35px; filter: drop-shadow(0 0 5px var(--mh-gold)); }
+		.admin-brand:hover { color: var(--mh-gold); text-shadow: 0 0 10px var(--mh-gold); }
         .admin-brand div { display: flex; flex-direction: column; }
         .admin-brand .t1 { font-weight: 900; color: #fff; font-size: 1.1em; letter-spacing: 1px; }
         .admin-brand .t2 { font-size: 0.6em; color: var(--mh-gold); letter-spacing: 3px; }
@@ -124,7 +126,8 @@ permalink: /Admin_Room.html
             border-top: 1px solid var(--mh-border);
             display: flex; align-items: center; gap: 10px;
         }
-        .um-avatar { width: 35px; height: 35px; background: #333; border-radius: 50%; border: 1px solid var(--mh-gold); }
+        .um-avatar img { width: 35px; height: 35px; background: #333; border-radius: 50%; border: 1px solid var(--mh-gold); filter: drop-shadow(0 0 5px var(--mh-gold)); }
+		.um-avatat:hover { color: var(--mh-gold); text-shadow: 0 0 10px var(--mh-gold); }
         .um-info { font-size: 0.8em; color: #fff; }
         .um-info span { display: block; font-size: 0.8em; color: var(--mh-red); }
 
@@ -259,6 +262,77 @@ permalink: /Admin_Room.html
         .ft-social { display: flex; gap: 15px; margin-top: 20px; }
         .ft-social a { width: 35px; height: 35px; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .ft-social a:hover { background: var(--mh-orange); color: #000; }
+		
+		/* --- TERMINAL CHAT UI --- */
+		.terminal-chat-wrap {
+			display: flex;
+			flex-direction: column;
+			height: 500px;
+			background: #050505 !important;
+			border: 1px solid var(--mh-blue) !important;
+			font-family: 'Courier New', monospace;
+		}
+
+		.terminal-body {
+			flex-grow: 1;
+			overflow-y: auto;
+			padding: 15px;
+			background: radial-gradient(circle, #0a1118 0%, #000 100%);
+			scroll-behavior: smooth;
+		}
+
+		.terminal-body::-webkit-scrollbar { width: 5px; }
+		.terminal-body::-webkit-scrollbar-thumb { background: var(--mh-blue); }
+
+		.terminal-input-area {
+			display: flex;
+			align-items: center;
+			background: #000;
+			padding: 10px;
+			border-top: 1px solid #222;
+		}
+
+		.prompt { color: var(--mh-green); margin-right: 10px; font-weight: bold; }
+
+		#terminal-input {
+			flex-grow: 1;
+			background: transparent;
+			border: none;
+			color: var(--mh-cyan);
+			font-family: inherit;
+			font-size: 0.9rem;
+		}
+
+		#terminal-input:focus { outline: none; }
+
+		/* Message Styles */
+		.msg-row { margin-bottom: 8px; line-height: 1.4; }
+		.msg-time { color: #555; font-size: 0.7rem; margin-right: 5px; }
+		.msg-sender { color: var(--mh-blue); font-weight: bold; }
+		.msg-text { color: #e0e0e0; }
+
+		/* Matrix Theme Class */
+		.matrix-mode { border-color: var(--mh-green) !important; }
+		.matrix-mode .msg-sender { color: var(--mh-green); }
+		.matrix-mode .prompt { color: #fff; }
+
+		.chat-profile-icon {
+			width: 25px;
+			height: 25px;
+			border-radius: 50%;
+			border: 1px solid var(--mh-cyan);
+			cursor: pointer;
+			margin-left: 10px;
+		}
+		
+		.switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+		.switch input { opacity: 0; width: 0; height: 0; }
+		.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; }
+		.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
+		input:checked + .slider { background-color: var(--mh-red); }
+		input:checked + .slider:before { transform: translateX(26px); }
+		.slider.round { border-radius: 34px; }
+		.slider.round:before { border-radius: 50%; }
 
         /* --- MOBILE OVERRIDES --- */
         @media screen and (max-width: 980px) {
@@ -276,13 +350,15 @@ permalink: /Admin_Room.html
 <body>
 
     <nav class="sidebar" id="admin-sidebar">
-        <div class="admin-brand">
-            <img src="images/Logo_1.png" alt="Admin Logo">
-            <div>
-                <span class="t1">MH WARLORD</span>
-                <span class="t2">COMMAND v5.5</span>
-            </div>
-        </div>
+        <a href="index.html">
+			<div class="admin-brand">
+				<img src="images/Logo_1.png" alt="Admin Logo">
+				<div>
+					<span class="t1">MH WARLORD</span>
+					<span class="t2">COMMAND v5.5</span>
+				</div>
+			</div>
+		</a>
 
         <div class="nav-group">
 			<div class="nav-item" onclick="switchPanel('panel-missions')">
@@ -301,6 +377,10 @@ permalink: /Admin_Room.html
             <div class="nav-item" onclick="switchPanel('panel-spy')">
                 <i class="fas fa-satellite-dish"></i> SIGNAL INTERCEPT
             </div>
+			
+			<div class="nav-item" onclick="switchPanel('panel-chat')">
+                <i class="fas fa-message"></i> CHATS
+            </div>
             
             <div class="nav-label">SYSTEM</div>
             <div class="nav-item" onclick="switchPanel('panel-console')">
@@ -312,10 +392,12 @@ permalink: /Admin_Room.html
         </div>
 
         <div class="user-mini">
-            <div class="um-avatar"></div> <div class="um-info">
-                SUPREME ADMIN
+			
+            <div class="um-avatar"><a href="index.html"><img src="images/Logo_1.png"></a></div> <div class="um-info">
+                Muhammad Hussam
                 <span><i class="fas fa-circle" style="font-size:0.6em;"></i> SECURE</span>
             </div>
+			
             <button id="admin-logout" class="btn-red" style="margin-left:auto; border:none;">
                 <i class="fas fa-power-off"></i>
             </button>
@@ -380,6 +462,22 @@ permalink: /Admin_Room.html
                     <span class="stat-label">SECURITY ALERTS</span>
                 </div>
             </div>
+			
+			<a href="Recruitment_Center.html" style="
+				display: flex; justify-content: space-between; align-items: center;
+				background: #000; border: 1px solid #333; color: #fff;
+				padding: 15px; margin-bottom: 10px; text-decoration: none;
+				border-left: 3px solid #ffae00; transition:0.3s;"
+				onmouseover="this.style.background='#111'" onmouseout="this.style.background='#000'">
+				
+				<span><i class="fas fa-users-cog"></i> PERSONNEL VETTING</span>
+				
+				<span id="vetting-badge" style="
+					background:var(--mh-red); color:#fff; font-size:0.7em; 
+					padding:2px 8px; border-radius:4px; display:none;">
+					0
+				</span>
+			</a>
 
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:25px;">
                 <div class="card">
@@ -391,7 +489,47 @@ permalink: /Admin_Room.html
                     <canvas id="chart-users" height="200"></canvas>
                 </div>
             </div>
+			
+			<div class="panel-container" style="border-top: 2px solid var(--mh-red);">
+				<div class="panel-header">
+					<h3><i class="fas fa-biohazard"></i> SYSTEM OPERATIONS</h3>
+				</div>
+				<div class="panel-body">
+					
+					<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#111; padding:15px; border-radius:4px;">
+						<div>
+							<strong style="color:var(--mh-red); letter-spacing:1px;">SYSTEM LOCKDOWN</strong>
+							<div style="font-size:0.7em; color:#666;">DISABLE ACCESS FOR ALL NON-ADMINS</div>
+						</div>
+						<label class="switch">
+							<input type="checkbox" id="defcon-toggle" onchange="toggleLockdown(this)">
+							<span class="slider round"></span>
+						</label>
+					</div>
+
+					<div style="background:#111; padding:15px; border-radius:4px;">
+						<strong style="color:var(--mh-gold); letter-spacing:1px;">GLOBAL BROADCAST</strong>
+						<div style="display:flex; gap:10px; margin-top:10px;">
+							<input type="text" id="broadcast-msg" class="titan-input" placeholder="ENTER SYSTEM ALERT MESSAGE..." style="flex:1;">
+							<select id="broadcast-level" class="titan-input" style="width:100px;">
+								<option value="normal">INFO</option>
+								<option value="warning">WARN</option>
+								<option value="critical">CRITICAL</option>
+							</select>
+							<button class="cmd-btn" onclick="fireBroadcast()" style="background:var(--mh-blue); width:auto; padding:0 20px;">
+								<i class="fas fa-bullhorn"></i>
+							</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			
+			
         </section>
+		
+		
+		
 
 
         <section id="panel-users" class="panel">
@@ -553,6 +691,30 @@ permalink: /Admin_Room.html
             </div>
         </section>
 
+		<section id="panel-chat" class="panel">
+		<div class="titan-panel terminal-chat-wrap">
+			<div class="panel-header">
+				<span><i class="fas fa-terminal"></i> SECURE_COMM_UPLINK v4.2</span>
+				<div class="terminal-controls">
+					<button onclick="toggleTheme()" title="Toggle Matrix Mode"><i class="fas fa-palette"></i></button>
+					<button onclick="triggerUpload()" title="Attach Packet"><i class="fas fa-paperclip"></i></button>
+					<img id="my-profile-icon" src="images/hacker.png" class="chat-profile-icon" onclick="openChatSettings()">
+				</div>
+			</div>
+			
+			<div id="terminal-chat-body" class="terminal-body">
+				<div class="sys-msg">> [SYSTEM] UPLINK ESTABLISHED. SCANNING CHANNELS...</div>
+			</div>
+
+			<div class="terminal-input-area">
+				<span class="prompt">ADMIN@TITAN:~$</span>
+				<input type="text" id="terminal-input" placeholder="Type message or command..." autocomplete="off">
+				<button id="send-btn" onclick="triggerSend()"><i class="fas fa-arrow-right"></i></button>
+			</div>
+			
+			<input type="file" id="chat-file-input" style="display:none;" onchange="handleFileSelect(event)">
+		</div>
+		</section>
 
         <section id="panel-spy" class="panel">
             <div style="display:flex; justify-content:space-between;">
@@ -608,13 +770,14 @@ permalink: /Admin_Room.html
         <section id="panel-console" class="panel">
             <h2>COMMAND TERMINAL</h2>
             <div class="card" style="padding:0;">
-                <div id="live-terminal">
-                    <div class="log-entry"><span class="log-time">[00:00:01]</span> SYSTEM BOOT SEQUENCE INITIATED...</div>
-                    <div class="log-entry"><span class="log-time">[00:00:02]</span> CONNECTING TO FIREBASE CORE...</div>
-                    <div class="log-entry"><span class="log-time">[00:00:03]</span> AUTHENTICATION: VERIFIED (SUPREME_ADMIN)</div>
-                    <div class="log-entry"><span class="log-time">[00:00:04]</span> MODULES LOADED: USERS, PRODUCTS, CHARTS.</div>
-                    <div class="log-entry"><span class="log-time">[00:00:05]</span> <span style="color:var(--mh-gold)">READY FOR COMMAND INPUT.</span></div>
-                </div>
+				<div class="titan-panel system-logs">
+					<div class="panel-header">
+						<span><i class="fas fa-shield-alt"></i> SYSTEM_LOGS</span>
+						<span class="pulse-text">LIVE</span>
+					</div>
+					<div id="real-time-logs" style="height: 200px; overflow-y: auto; padding: 10px;">
+						</div>
+				</div>
                 <div style="display:flex; border-top:1px solid #333;">
                     <span style="padding:10px; background:#111; color:#0f0;">root@mh-studios:~#</span>
                     <input type="text" style="flex:1; background:transparent; border:none; color:#fff; padding:10px; font-family:monospace;" placeholder="enter command...">
@@ -636,6 +799,7 @@ permalink: /Admin_Room.html
         </div>
     </div>
 	
+	<section>
 	    <footer id="merc-footer">
 			<div class="footer-cols">
 				<div>
@@ -678,7 +842,8 @@ permalink: /Admin_Room.html
 				&copy; 2026 MH Studios. All Rights Reserved. Clearance Level: Confidential.
 			</div>
 		</footer>
-
+	</section>
+	
     <script src="assets/js/jquery.min.js"></script>
 	
 	<script>
@@ -740,81 +905,92 @@ permalink: /Admin_Room.html
     </script>
 
 	<script type="module">
-        // 1. IMPORT ALL MODULES (Charts, Users, Products, Missions)
-        import { initDashboardCharts } from './assets/js/admin-charts.js';
-        import { initUserGrid } from './assets/js/admin-users.js';
-        import { initProducts, forgeNewProduct } from './assets/js/admin-products.js'; // Importing 'forge' to handle uploads
-        import { initMissionGrid } from './assets/js/admin-missions.js'; // <--- The Mission Control
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("WARLORD SYSTEM: INITIALIZING MODULES...");
+		// --- 1. IMPORT THE ENGINES ---
+		import { initDashboardCharts, initLiveMissionFeed, initSystemLogs } from './assets/js/admin-dashboard.js';
+		import { initChatSystem, triggerSend } from './assets/js/chat-core.js';
+		import { initUserGrid } from './assets/js/admin-users.js';
+		// CRITICAL: We import 'forgeNewProduct' so the form works
+		import { refreshInventory, forgeNewProduct } from './assets/js/admin-products.js';
 
-            // 2. INITIALIZE PANELS
-            setTimeout(() => initDashboardCharts(), 1000);
-            setTimeout(() => initUserGrid(), 1200);
-            setTimeout(() => initProducts(), 1400);
-            setTimeout(() => initMissionGrid(), 1600); // <--- Mission Grid
+		// --- 2. START THE SYSTEM ---
+		document.addEventListener('DOMContentLoaded', () => {
+			console.log(">> TITAN COMMAND: SYSTEM STARTUP");
+			
+			// A. Activate Dashboard & Data
+			initDashboardCharts();
+			initLiveMissionFeed();
+			initSystemLogs();
+			initUserGrid();
+			refreshInventory();
 
-            // 3. PRODUCT FORM LOGIC (The Foundry)
-            const prodForm = document.getElementById('add-product-form');
-            if(prodForm) {
-                prodForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    // GATHER DATA (Using the IDs from your HTML)
-                    const productData = {
-                        name: document.getElementById('prod-name').value,
-                        price: parseFloat(document.getElementById('prod-price').value),
-                        
-                        // MAPPING: We send 'branch' because the Armory filters by 'branch'
-                        branch: document.getElementById('prod-cat').value, 
-                        
-                        // MAPPING: We send 'imageUrl' because the Armory CSS uses 'imageUrl'
-                        // (This value is auto-filled by the new Upload Button logic!)
-                        imageUrl: document.getElementById('prod-img').value, 
-                        
-                        description: document.getElementById('prod-desc').value
-                    };
+			// B. Activate Chat System
+			initChatSystem();
+			const chatInput = document.getElementById('terminal-input');
+			if(chatInput) {
+				chatInput.addEventListener('keypress', (e) => {
+					if(e.key === 'Enter') triggerSend();
+				});
+			}
 
-                    // SEND TO MODULE (admin-products.js handles the Firestore save)
-                    const success = await forgeNewProduct(productData);
-                    
-                    if(success) {
-                        alert("ASSET FORGED & DEPLOYED TO ARMORY.");
-                        prodForm.reset();
-                        // Reset the progress bar visually if needed
-                        document.getElementById('upload-progress').style.width = '0%';
-                    } else {
-                        alert("FORGE ERROR. Check Console.");
-                    }
-                });
-            }
-        });
+			// C. ACTIVATE THE FOUNDRY (Product Upload Form)
+			// This is the part I missed in the previous version!
+			const prodForm = document.getElementById('add-product-form');
+			if(prodForm) {
+				prodForm.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					
+					// 1. Gather Data
+					const productData = {
+						name: document.getElementById('prod-name').value,
+						price: parseFloat(document.getElementById('prod-price').value),
+						branch: document.getElementById('prod-cat').value,
+						imageUrl: document.getElementById('prod-img').value,
+						description: document.getElementById('prod-desc').value
+					};
 
-        // 4. EXPOSE REFRESH FUNCTIONS TO WINDOW (For the buttons to work)
-        window.initMissionGrid = initMissionGrid;
-    </script>
-    <div id="system-status-hud">
-    <div class="status-dot"></div>
-    <span id="network-status">SYSTEM ONLINE</span>
-	</div>
-
-	<script>
-		// HUD Logic
-		const hudStatus = document.getElementById('network-status');
-		const hudDot = document.querySelector('.status-dot');
-		
-		window.addEventListener('offline', () => {
-			hudStatus.innerText = "CONNECTION LOST";
-			hudStatus.style.color = "#ff004c"; 
-			hudDot.style.backgroundColor = "#ff004c";
+					// 2. Send to Forge
+					const success = await forgeNewProduct(productData);
+					
+					// 3. Handle Result
+					if(success) {
+						alert("ASSET DEPLOYED TO ARMORY.");
+						prodForm.reset();
+						// Reset Progress Bar
+						const progBar = document.getElementById('upload-progress');
+						if(progBar) progBar.style.width = '0%';
+					} else {
+						alert("FORGE ERROR. CHECK CONSOLE.");
+					}
+				});
+			}
 		});
-		
-		window.addEventListener('online', () => {
-			hudStatus.innerText = "SYSTEM ONLINE";
-			hudStatus.style.color = "#00ff41"; 
-			hudDot.style.backgroundColor = "#00ff41";
-		});
+
+		// --- 3. TERMINAL FX OVERRIDE ---
+		// Makes the chat look like a Command Prompt
+		window.renderTerminalMessage = (data) => {
+			const body = document.getElementById('terminal-chat-body');
+			if(!body) return;
+
+			const row = document.createElement('div');
+			row.className = 'msg-row';
+			const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+			
+			// Admin messages are GOLD, others are CYAN
+			const color = (data.senderId === 'ADMIN_ID' || data.senderId === 'mhjerjawi836@gmail.com') ? '#FFD700' : '#00e5ff';
+
+			row.innerHTML = `
+				<span class="msg-time">[${time}]</span>
+				<span class="msg-sender" style="color: ${color};">${data.senderName}:</span>
+				<span class="msg-text">${data.text}</span>
+			`;
+			body.appendChild(row);
+			body.scrollTop = body.scrollHeight;
+		};
+
+		// --- 4. TOGGLE THEME ---
+		window.toggleTheme = () => {
+			document.querySelector('.terminal-chat-wrap').classList.toggle('matrix-mode');
+		};
 	</script>
     <script type="module" src="assets/js/admin-command-console.js"></script>
 

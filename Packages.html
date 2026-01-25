@@ -382,7 +382,7 @@ permalink: /Packages.html
 					<li><i class="fas fa-check"></i> Enterprise Licenses</li>
 					<li><i class="fas fa-check"></i> Early Access Artifacts</li>
 				</ul>
-				<a href="Payment_Gateway.html?id=pkg_elite" class="deploy-btn">Authorize</a>
+				<a href="Payment_Gateway.html?id=pkg_elite" class="deploy-btn" onclick="initiateSubscription('GOLD', 150)">Authorize</a>
 			</div>
 
 		</div>
@@ -467,6 +467,38 @@ permalink: /Packages.html
 				// Initial State for Animation
 				$('.package-panel').css({'opacity':'0', 'transform':'translateY(30px)'});
 			});
+		</script>
+		
+		<script type="module">
+			import { auth } from './assets/js/firebase-init.js';
+			import { upgradeSubscription } from './assets/js/finance-core.js';
+
+			window.initiateSubscription = async (tier, price) => {
+				const user = auth.currentUser;
+				if (!user) {
+					alert("ACCESS DENIED: Sign-in required for Promotion.");
+					window.location.href = 'DoD_Login_Style.html';
+					return;
+				}
+
+				if (confirm(`CONFIRM UPGRADE to ${tier} Tier for $${price}?`)) {
+					// UI Feedback
+					const btn = event.target;
+					const originalText = btn.innerText;
+					btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> AUTHORIZING...';
+					btn.disabled = true;
+
+					try {
+						await upgradeSubscription(user.uid, tier, price);
+						alert(`CONGRATULATIONS OPERATIVE. YOU ARE NOW ${tier} CLASS.`);
+						window.location.href = 'Student_Room.html';
+					} catch (err) {
+						alert("MISSION FAILED: " + (err === "INSUFFICIENT_CREDITS" ? "Insufficient Wallet Balance." : err));
+						btn.innerText = originalText;
+						btn.disabled = false;
+					}
+				}
+			};
 		</script>
 
 	</body>

@@ -646,28 +646,38 @@ permalink: /Product_Room.html
             $('.titan-modal').fadeOut(200);
         };
 
-        // 9. CHECKOUT SUBMISSION
-        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            try {
-                // In a real app, this connects to Stripe
-                // Here we log the order to Firestore
-                await addDoc(collection(db, 'artifacts', dbID, 'orders'), {
-                    itemId: currentProductId,
-                    itemName: productData.name,
-                    price: productData.price,
-                    buyerId: currentUser.uid,
-                    status: 'PAID',
-                    timestamp: serverTimestamp()
-                });
+		// 9. UPGRADED CHECKOUT LOGIC
+		document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			
+			// UI Feedback
+			const buyBtn = e.target.querySelector('button[type="submit"]');
+			buyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AUTHORIZING...';
+			buyBtn.disabled = true;
 
-                closeModals();
-                alert("PAYMENT SUCCESSFUL. ASSET TRANSFERRED TO YOUR INVENTORY.");
-            } catch(e) {
-                alert("PAYMENT GATEWAY ERROR: " + e.message);
-            }
-        });
+			try {
+				// We pull 'sellerUid' from the product data we loaded earlier
+				const sellerId = productData.sellerId || "ADMIN_ID"; 
+				
+				// EXECUTE THE FINANCIAL PROTOCOL
+				await purchaseArtifact(
+					currentUser.uid, 
+					currentProductId, 
+					productData.price, 
+					sellerId
+				);
+
+				closeModals();
+				alert("TRANSACTION COMPLETE: ASSET ADDED TO YOUR COLLECTION.");
+				window.location.reload(); 
+
+			} catch(err) {
+				console.error(err);
+				alert("TRANSACTION DECLINED: " + (err === "INSUFFICIENT_CREDITS" ? "Insufficient Credits in Wallet." : "Bank Error."));
+				buyBtn.innerHTML = 'CONFIRM ACQUISITION';
+				buyBtn.disabled = false;
+			}
+		});
         
         // 10. REPORT SUBMISSION
         window.submitReport = function() {
