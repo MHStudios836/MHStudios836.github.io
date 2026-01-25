@@ -1,0 +1,968 @@
+---
+permalink: /Portfolio_CV.html
+---
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH Studios™ | Tactical Business Resume</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+                <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+	<link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* ================================================================
+           THEME: TITAN PRIME v3 (HYBRID SYSTEM)
+        ================================================================ */
+        :root {
+            --merc-orange: #ffae00;
+            --merc-orange-glow: rgba(255, 174, 0, 0.4);
+            --merc-dark: #050505;
+            --merc-panel: #0b0d10;
+            --merc-border: #333;
+            --merc-text: #e0e0e0;
+            --tech-blue: #00e5ff;
+            --carbon-fiber: repeating-linear-gradient(
+                45deg,
+                rgba(0,0,0,0.1),
+                rgba(0,0,0,0.1) 10px,
+                rgba(0,0,0,0.2) 10px,
+                rgba(0,0,0,0.2) 20px
+            );
+			--mh-cyan: #00e5ff;
+			--mh-dark: #05070a;
+			--mh-panel: rgba(13, 17, 23, 0.95);
+			--mh-grid: rgba(0, 128, 255, 0.1);
+			--mh-text: #e0e0e0;
+			--mh-gold: #FFD700;
+        }
+
+        @font-face { font-family: 'Uni Sans'; src: local('Arial'); }
+
+        body {
+            background-color: var(--merc-dark);
+            color: var(--merc-text);
+             font-family: 'Uni Sans', sans-serif;
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at top center, rgba(0, 229, 255, 0.03) 0%, transparent 60%),
+                var(--carbon-fiber);
+            overflow-x: hidden;
+            display: flex; flex-direction: column;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+		
+		/* =========================================
+		   TITAN LOADING SEQUENCE
+		   ========================================= */
+		:root {
+			--merc-orange: #ffae00;
+			--merc-dark: #050505;
+		}
+
+		#titan-preloader {
+			position: fixed;
+			top: 0; left: 0;
+			width: 100%; height: 100%;
+			background-color: var(--merc-dark);
+			background-image: 
+				radial-gradient(circle at center, rgba(255, 174, 0, 0.05) 0%, transparent 70%),
+				repeating-linear-gradient(45deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 10px, rgba(20,20,20,0.5) 10px, rgba(20,20,20,0.5) 20px);
+			z-index: 99999; /* Always on top */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-family: 'Courier New', monospace;
+			transition: opacity 0.8s ease-out, visibility 0.8s;
+		}
+
+		/* FADE OUT CLASS */
+		#titan-preloader.loaded {
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+		}
+
+		.loader-content {
+			text-align: center;
+			position: relative;
+			width: 300px;
+		}
+
+		/* HEXAGON SPINNER */
+		.hex-spinner {
+			width: 80px; height: 80px;
+			margin: 0 auto 30px;
+			position: relative;
+			display: flex; justify-content: center; align-items: center;
+		}
+
+		.hex-spinner::before, .hex-spinner::after {
+			content: '';
+			position: absolute;
+			width: 100%; height: 100%;
+			border: 2px solid var(--merc-orange);
+			clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+			animation: spinHex 2s linear infinite;
+			box-shadow: 0 0 15px var(--merc-orange);
+		}
+
+		.hex-spinner::after {
+			width: 60%; height: 60%;
+			border-color: #fff;
+			animation: spinHexReverse 2s linear infinite;
+			box-shadow: none;
+		}
+
+		.hex-core {
+			width: 10px; height: 10px;
+			background: var(--merc-orange);
+			border-radius: 50%;
+			animation: pulse 1s infinite;
+		}
+
+		/* TEXT STYLES */
+		.system-title {
+			color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 10px;
+			font-size: 1.1em;
+		}
+
+		.status-text {
+			color: var(--merc-orange);
+			font-size: 0.8em;
+			margin-bottom: 5px;
+			text-align: left;
+			min-height: 1.2em;
+		}
+
+		.pct-text {
+			text-align: right;
+			color: #666; font-size: 0.7em; margin-top: 5px;
+		}
+
+		/* PROGRESS BAR */
+		.load-bar-container {
+			width: 100%;
+			height: 4px;
+			background: #222;
+			border: 1px solid #333;
+			overflow: hidden;
+		}
+
+		.load-bar-fill {
+			height: 100%;
+			width: 0%;
+			background: var(--merc-orange);
+			box-shadow: 0 0 10px var(--merc-orange);
+			transition: width 0.1s linear;
+		}
+
+		/* ANIMATIONS */
+		@keyframes spinHex { 100% { transform: rotate(360deg); } }
+		@keyframes spinHexReverse { 100% { transform: rotate(-360deg); } }
+		@keyframes pulse { 0% { opacity: 0.5; box-shadow: 0 0 0 rgba(255,174,0,0); } 50% { opacity: 1; box-shadow: 0 0 10px var(--merc-orange); } 100% { opacity: 0.5; box-shadow: 0 0 0 rgba(255,174,0,0); } }
+
+        /* --- HEADER --- */
+        #merc-header {
+            padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--merc-orange);
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+		/* --- LOGO REACTOR CORE --- */
+		.brand-title {
+			display: flex; 
+			align-items: center; 
+			gap: 15px;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		/* 1. TEXT GLOW ON HOVER (Targets the span inside) */
+		.brand-title:hover span { 
+			color: #fff !important; /* Flash white briefly */
+			text-shadow: 0 0 15px var(--merc-orange); /* Orange Glow */
+		}
+
+		/* 2. IMAGE BASE STATE */
+		.brand-title img {
+			transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s;
+			transform-origin: center;
+			filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+		}
+
+		/* 3. IMAGE ZOOM ON HOVER (Triggered when you hover ANY PART of .brand-title) */
+		.brand-title:hover img {
+			transform: scale(1.3); /* The Zoom */
+			filter: drop-shadow(0 0 10px rgba(255, 174, 0, 0.6)); /* Orange Shadow */
+		}
+
+		/* CLICK ANIMATION (Keep existing logic) */
+		.brand-title img.core-active {
+			animation: titanPulse 0.4s ease-out forwards;
+			filter: sepia(100%) hue-rotate(5deg) saturate(1000%) drop-shadow(0 0 25px var(--merc-orange));
+		}
+
+		@keyframes titanPulse {
+			0% { transform: scale(1.3); }
+			40% { transform: scale(0.9); }
+			60% { transform: scale(1.4); }
+			100% { transform: scale(1.3); }
+		}
+
+        .menu-toggle {
+            font-size: 1.5rem; color: var(--merc-orange); cursor: pointer;
+            border: 1px solid #333; padding: 5px 12px; border-radius: 4px;
+            transition: 0.3s;
+        }
+        .menu-toggle:hover { 
+            background: var(--merc-orange); color: #000; 
+            box-shadow: 0 0 15px var(--merc-orange-glow); 
+        }
+
+        /* --- NAVIGATION OVERLAY --- */
+        #nav-overlay {
+            position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
+            background: rgba(5, 7, 10, 0.98);
+            z-index: 999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 2px solid var(--merc-orange);
+        }
+        #nav-overlay.active { right: 0; }
+        
+        .nav-link {
+            font-size: 2rem; font-weight: bold; margin: 15px 0; color: #fff;
+            text-transform: uppercase; letter-spacing: 2px; position: relative; cursor: pointer;
+        }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
+            background: var(--merc-orange); transition: 0.3s;
+        }
+        .nav-link:hover { color: var(--merc-orange); }
+        .nav-link:hover::after { width: 100%; }
+
+        /* --- VIEWPORT SYSTEM --- */
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
+        
+        .page-view { display: none; animation: fadeIn 0.5s ease-out; }
+        .page-view.active { display: block; }
+        
+        /* FULL SCROLL MODE (Activated by "MAIN PAGE") */
+        body.full-mode .page-view { display: block !important; margin-bottom: 60px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- PANELS --- */
+        .merc-panel {
+            background: var(--merc-panel);
+            border: 1px solid var(--merc-border);
+            border-left: 4px solid var(--merc-orange);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .merc-panel::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scan { 0% {top:0; opacity:0;} 50% {opacity:1;} 100% {top:100%; opacity:0;} }
+
+        h2.panel-title {
+            margin-top: 0; color: #fff; border-bottom: 1px solid #333; padding-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.5em; letter-spacing: 1px;
+        }
+        h2.panel-title i { color: var(--merc-orange); }
+
+        /* --- CONTENT STYLES --- */
+        .hero-section { text-align: center; padding: 40px 20px 60px; }
+        .hero-name { 
+            font-size: 3.5em; color: #fff; margin: 0; letter-spacing: 4px; 
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        .hero-role { 
+            color: var(--merc-orange); font-family: monospace; font-size: 1.2em; margin-top: 15px; 
+            border: 1px solid var(--merc-orange); display: inline-block; padding: 5px 15px;
+            background: rgba(255, 174, 0, 0.05);
+        }
+        .status-badge { margin-top: 20px; font-size: 0.8em; color: var(--tech-blue); letter-spacing: 2px; }
+
+        /* BARS */
+        .lang-item { margin-bottom: 15px; }
+        .lang-meta { display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; color: #aaa; }
+        .bar-bg { background: #222; height: 6px; border-radius: 3px; overflow: hidden; border: 1px solid #333; }
+        .bar-fill { background: linear-gradient(90deg, var(--merc-orange), #ff6b00); height: 100%; width: 0; transition: 1.5s; }
+
+        /* TIMELINE */
+        .timeline-item {
+            border-left: 2px solid #333; padding-left: 25px; margin-bottom: 35px; position: relative;
+        }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px;
+            background: var(--merc-orange); border-radius: 50%; box-shadow: 0 0 10px var(--merc-orange);
+        }
+        .job-role { color: #fff; font-size: 1.2em; font-weight: bold; letter-spacing: 0.5px; }
+        .job-company { color: var(--tech-blue); font-size: 0.9em; font-weight: bold; margin-bottom: 5px; display: block; }
+        .job-date { color: #555; font-size: 0.75em; font-family: monospace; margin-bottom: 10px; display: block; text-transform: uppercase; }
+        .job-desc { font-size: 0.95em; line-height: 1.7; color: #ccc; }
+        .tech-tag {
+            display: inline-block; background: rgba(0, 229, 255, 0.05); 
+            color: var(--tech-blue); font-size: 0.7em; padding: 4px 10px; 
+            border-radius: 4px; margin: 2px; border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        /* SKILLS */
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .skill-box {
+            background: #111; border: 1px solid #333; padding: 15px; text-align: center;
+            font-size: 0.8em; font-weight: bold; color: #888; transition: 0.3s;
+        }
+        .skill-box:hover { border-color: var(--merc-orange); color: #fff; background: rgba(255,174,0,0.1); }
+
+        /* FOOTER */
+        footer {
+            text-align: center; padding: 60px 20px; border-top: 1px solid #333; background: #020202; margin-top: auto;
+        }
+        .social-btn {
+            display: inline-flex; width: 45px; height: 45px; border: 1px solid #333;
+            align-items: center; justify-content: center; margin: 0 10px;
+            color: #666; transition: 0.3s; border-radius: 50%; font-size: 1.2rem;
+        }
+        .social-btn:hover { color: var(--merc-orange); border-color: var(--merc-orange); transform: scale(1.1); box-shadow: 0 0 15px var(--merc-orange-glow); }
+        .btn-print {
+            background: transparent; border: 1px solid var(--merc-orange); color: var(--merc-orange);
+            padding: 10px 25px; margin-top: 30px; cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+        .btn-print:hover { background: var(--merc-orange); color: #000; }
+        .qr-placeholder { margin: 20px auto; width: 80px; height: 80px; background: #fff; padding: 5px; display: none; }
+		
+		/* 3D TILT EFFECT FOR SKILL BOXES */
+		.skills-grid {
+			perspective: 1000px; /* Essential for 3D */
+		}
+
+		.skill-box {
+			/* Keep existing styles, add these: */
+			transform-style: preserve-3d;
+			transition: transform 0.1s; /* Fast transition for movement */
+		}
+
+		.skill-box:hover {
+			/* We will handle the rotate via JS, but add a glow here */
+			box-shadow: 0 0 25px var(--merc-orange-glow);
+			z-index: 10;
+		}
+		
+		/* --- TACTICAL TERMINAL CSS --- */
+		.terminal-wrapper {
+			width: 100%;
+			max-width: 600px;
+			margin: 30px auto;
+			background: #000;
+			border: 1px solid #333;
+			border-radius: 6px;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+			font-family: 'Courier New', Courier, monospace;
+			text-align: left; /* Force left align inside centered containers */
+			overflow: hidden;
+		}
+
+		.terminal-header {
+			background: #1a1a1a;
+			padding: 10px 15px;
+			border-bottom: 1px solid #333;
+			display: flex;
+			align-items: center;
+		}
+
+		.term-dot {
+			width: 10px; height: 10px; border-radius: 50%; margin-right: 6px;
+		}
+		.term-dot.red { background: #ff5f56; }
+		.term-dot.yellow { background: #ffbd2e; }
+		.term-dot.green { background: #27c93f; }
+
+		.term-title {
+			color: #888; font-size: 0.8em; margin-left: 10px; letter-spacing: 1px;
+		}
+
+		.terminal-body {
+			padding: 20px;
+			background-image: 
+				linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+				linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(255, 0, 0, 0.02));
+			background-size: 100% 2px, 3px 100%;
+		}
+
+		.term-line { margin-bottom: 10px; font-size: 0.9em; }
+		.prompt { color: var(--merc-orange); font-weight: bold; margin-right: 10px; }
+		.cmd-text { color: #fff; }
+		.sys-response { color: #888; font-style: italic; }
+
+		.term-label {
+			display: block; color: var(--merc-orange); margin-top: 20px; 
+			margin-bottom: 10px; font-weight: bold;
+		}
+
+		.cursor {
+			animation: blink 1s infinite;
+		}
+		@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+		.term-input {
+			width: 100%;
+			height: 100px;
+			background: rgba(255, 174, 0, 0.05);
+			border: 1px solid #333;
+			color: #fff;
+			padding: 10px;
+			font-family: 'Courier New', monospace;
+			outline: none;
+			resize: vertical;
+			box-sizing: border-box; /* Fix padding issues */
+		}
+
+		.term-input:focus {
+			border-color: var(--merc-orange);
+			box-shadow: 0 0 10px rgba(255, 174, 0, 0.2);
+		}
+
+		.term-btn {
+			margin-top: 15px;
+			background: transparent;
+			border: 1px solid var(--merc-orange);
+			color: var(--merc-orange);
+			padding: 10px 20px;
+			font-family: 'Courier New', monospace;
+			font-weight: bold;
+			cursor: pointer;
+			transition: 0.3s;
+			width: 100%;
+		}
+
+		.term-btn:hover {
+			background: var(--merc-orange);
+			color: #000;
+		}
+
+        /* PRINT OVERRIDE */
+        @media print {
+            body { background-color: #050505 !important; color: #e0e0e0 !important; background-image: none !important; }
+            #merc-header, #nav-overlay, .btn-print, .social-btn { display: none !important; }
+            .page-view { display: block !important; opacity: 1 !important; margin-bottom: 50px; }
+            .container { margin: 0; width: 100%; max-width: 100%; }
+            .merc-panel { border: 1px solid #333 !important; background: #0b0d10 !important; box-shadow: none !important; break-inside: avoid; }
+            .qr-placeholder { display: block !important; }
+            h1, h2, h3 { color: #fff !important; }
+            .job-company, .tech-tag { color: #000 !important; font-weight: 900 !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="titan-preloader">
+		<div class="loader-content">
+			<div class="hex-spinner">
+				<div class="hex-core"></div>
+			</div>
+			
+			<div class="loader-data">
+				<div class="system-title">MH STUDIOS // <span style="color:var(--merc-orange)">TITAN_OS</span></div>
+				<div id="loader-status" class="status-text">> INITIALIZING HANDSHAKE...</div>
+				
+				<div class="load-bar-container">
+					<div id="load-bar" class="load-bar-fill"></div>
+				</div>
+				
+				<div class="pct-text" id="load-pct">0%</div>
+			</div>
+		</div>
+	</div>
+	
+	<header id="merc-header">
+		<a href="https://mhstudios836.github.io" class="brand-title">
+			<img src="images/Logo_2.png" alt="MH LOGO" style="height: 34px; width: 34px;">
+			<div style="display:flex; flex-direction:column; justify-content:center;">
+				<span style="color:var(--merc-orange); font-size: 1.2em; margin-bottom: 0px; font-family: 'Uni Sans', sans-serif; transition: 0.3s;">MH Studios<span style="font-size: 0.6em;">&trade;</span></span>
+				<div class="job-role" style="color: var(--tech-blue); font-size: 0.7em; font-weight: bold; margin-bottom: 5px; display: block; font-family: 'Uni Sans', sans-serif;">Business Resume Page <i class="fas fa-satellite-dish"></i></div>
+			</div>
+		</a>
+        <div class="menu-toggle" onclick="toggleNav()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <div id="nav-overlay">
+        <div style="position:absolute; top:20px; right:30px; font-size:2rem; cursor:pointer; color:#666;" onclick="toggleNav()">&times;</div>
+        
+        <div class="nav-link" onclick="switchPage('full')" style="color:var(--tech-blue)">FULL DOSSIER</div>
+        
+        <div style="width:50px; height:2px; background:#333; margin:20px 0;"></div>
+        
+        <div class="nav-link" onclick="switchPage('profile')">INTEL</div>
+        <div class="nav-link" onclick="switchPage('missions')">MISSIONS</div>
+        <div class="nav-link" onclick="switchPage('arsenal')">ARSENAL</div>
+        <div class="nav-link" onclick="switchPage('clearance')">CLEARANCE</div>
+    </div>
+
+    <div class="container">
+
+        <section id="view-profile" class="page-view active">
+            <div class="hero-section">
+                <h1 class="hero-name">Muhammad Hussam</h1>
+                <div class="hero-role">> SYSTEM ARCHITECT & FULL STACK OPERATIVE</div>
+                <div class="status-badge"><i class="fas fa-satellite-dish"></i> UPLINK SECURE // READY FOR DEPLOYMENT</div>
+				<button type="button" class="term-btn" onclick="switchPage('full')">
+				<i class="fas fa-list"></i> Expand CV
+				</button>
+            </div>
+			
+            <div class="merc-panel">
+                <h2 class="panel-title">COMMUNICATION PROTOCOLS <i class="fas fa-globe-americas"></i></h2>
+                <div class="lang-item">
+                    <div class="lang-meta"><span>ARABIC [NATIVE]</span><span>100%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div>
+                </div>
+                <div class="lang-item">
+                    <div class="lang-meta"><span>ENGLISH [PROFESSIONAL]</span><span>90%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div>
+                </div>
+                <div class="lang-item">
+                    <div class="lang-meta"><span>RUSSIAN [INTERMEDIATE]</span><span>50%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:50%"></div></div>
+                </div>
+                <div class="lang-item">
+                    <div class="lang-meta"><span>GERMAN [BASIC]</span><span>25%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:25%"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-missions" class="page-view">
+            <div class="merc-panel">
+                <h2 class="panel-title">TACTICAL DEPLOYMENTS <i class="fas fa-history"></i></h2>
+                <div class="timeline-item">
+                    <div class="job-role">LEAD SYSTEMS ARCHITECT</div>
+                    <div class="job-company">OPERATION: IRONCLAD LOGISTICS (PMS, KSA)</div>
+                    <span class="job-date">CONTRACT: 2021/05 - 2022/05</span>
+                    <div class="job-desc">
+                        Executed full-scale digital transformation for logistics sector.
+                        <br>• <strong>Warehouse Logic:</strong> Automated tracking reducing lost inventory by 40%.
+                        <br>• <strong>Security Protocols:</strong> RBAC systems for personnel management.
+                        <br>• <strong>Infrastructure:</strong> Network hardware optimization.
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="job-role">SENIOR FULL STACK ENGINEER</div>
+                    <div class="job-company">MH STUDIOS (REMOTE COMMAND)</div>
+                    <span class="job-date">ACTIVE DUTY: 2022 - PRESENT</span>
+                    <div class="job-desc">
+                        High-performance web applications and cloud infrastructure.
+                        <br>• <strong>Stack:</strong> Next.js, React, Node.js, Eleventy.
+                        <br>• <strong>Backend:</strong> Firebase Firestore, Security Rules, OAuth.
+                        <br>• <strong>DevOps:</strong> CI/CD via GitHub Actions.
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="job-role">SIMULATION & ENGINE LOGIC DEV</div>
+                    <div class="job-company">TACTICAL SIMULATION CONTRACTS</div>
+                    <span class="job-date">PROJECT BASED</span>
+                    <div class="job-desc">
+                        Custom scripting for military-grade simulation engines (Arma 3).
+                        <br>• <strong>SQF Scripting:</strong> Complex event-based logic.
+                        <br>• <strong>C++ Backend:</strong> Server logic optimization.
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="job-role">AI INTEGRATION & CREATIVE LEAD</div>
+                    <div class="job-company">DIGITAL FRONTIER OPS</div>
+                    <span class="job-date">ONGOING</span>
+                    <div class="job-desc">
+                        Leveraging LLMs and Creative Suites.
+                        <br>• <strong>Prompt Engineering:</strong> Gemini Pro & ChatGPT-4 workflows.
+                        <br>• <strong>Visual Ops:</strong> Adobe Suite (Ps, Ai, Pr, Ae).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-arsenal" class="page-view">
+            <div class="merc-panel">
+                <h2 class="panel-title">TECHNICAL ARSENAL <i class="fas fa-microchip"></i></h2>
+                <div class="skills-grid">
+                    <div class="skill-box">FULL STACK DEV</div>
+                    <div class="skill-box">CLOUD ARCHITECTURE</div>
+                    <div class="skill-box">DATABASE ENGINEERING</div>
+                    <div class="skill-box">GAME ENGINE LOGIC</div>
+                    <div class="skill-box">CYBERSECURITY OPS</div>
+                    <div class="skill-box">AI INTEGRATION</div>
+                    <div class="skill-box">SYSTEM ANALYSIS</div>
+                    <div class="skill-box">UI / UX DESIGN</div>
+                    <div class="skill-box">VIDEO EDITING</div>
+                    <div class="skill-box">SOUND ENGINEERING</div>
+                    <div class="skill-box">C# .NET FRAMEWORK</div>
+                    <div class="skill-box">PYTHON AUTOMATION</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-clearance" class="page-view">
+            <div class="merc-panel">
+                <h2 class="panel-title">ACADEMIC CLEARANCE <i class="fas fa-graduation-cap"></i></h2>
+                <div class="timeline-item">
+                    <div class="job-role">BACHELOR OF COMPUTER SCIENCE</div>
+                    <div class="job-company">MIDDLE EAST UNIVERSITY</div>
+                    <div class="job-desc">Focus: Software Engineering & Data Structures.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="job-role">INTEGRATED COMM. ENGINEERING</div>
+                    <div class="job-company">MY-COMMUNICATION.COM</div>
+                    <div class="job-desc">Specialized Certification: 5G Towers & Signal Processing.</div>
+                </div>
+            </div>
+        </section>
+		
+		<section>
+			<div class="terminal-wrapper" id="view-contact">
+				<div class="terminal-header">
+					<span class="term-dot red"></span>
+					<span class="term-dot yellow"></span>
+					<span class="term-dot green"></span>
+					<span class="term-title">SECURE UPLINK // MH_CONTACT.EXE</span>
+				</div>
+				
+				<div class="terminal-body">
+					<div class="term-line">
+						<span class="prompt">C:\GUEST\USERS></span> <span class="cmd-text">initiate_handshake</span>
+					</div>
+					<div class="term-line">
+						<span class="sys-response">> CONNECTION ESTABLISHED. SELECT PROTOCOL.</span>
+					</div>
+					
+					<form id="cmd-contact-form">
+						<label class="term-label">
+							> ENTER INTEL (YOUR MESSAGE):<span class="cursor">_</span>
+						</label>
+						
+						<textarea id="cmd-input" class="term-input" placeholder="Type your message here..." required></textarea>
+						
+						<div style="display:flex; gap:10px; margin-top:15px;">
+							<button type="button" class="term-btn" onclick="executeProtocol('WHATSAPP')">
+								<i class="fab fa-whatsapp"></i> ENCRYPTED CHAT (WA)
+							</button>
+							
+							<button type="button" class="term-btn" onclick="executeProtocol('GMAIL')">
+								<i class="fas fa-envelope"></i> SMTP RELAY (EMAIL)
+							</button>
+						</div>
+					</form>
+
+					<div id="term-status" style="display:none; color:var(--merc-orange); margin-top:10px; font-size:0.9em;">
+						> ENCRYPTING PACKET... <span id="upload-percent">0%</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+    </div>
+
+    <footer>
+        <div class="social-row">
+            <a href="https://www.facebook.com/mh.studios.836/" class="social-btn"><i class="fab fa-facebook"></i></a>
+			<a href="https://www.instagram.com/MHStudios.836" class="social-btn"><i class="fab fa-instagram"></i></a>
+			<a href="https://www.x.com/@MHStudios836" class="social-btn"><i class="fab fa-twitter"></i></a>
+			<a href="https://github.com/MHStudios836" class="social-btn"><i class="fab fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/mhstudios836/" class="social-btn"><i class="fab fa-linkedin"></i></a>
+            <a href="mailto:mhjerjawi836@gmail.com" class="social-btn"><i class="fas fa-envelope"></i></a>
+            <a href="https://mhstudios836.github.io" class="social-btn"><i class="fas fa-globe"></i></a>
+        </div>
+        
+        <div class="qr-placeholder">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://mhstudios836.github.io" alt="Scan Uplink">
+        </div>
+
+        <button class="btn-print" onclick="initPrintSequence()">
+            <i class="fas fa-download"></i> EXPORT DOSSIER (PDF)
+        </button>
+        
+        <p style="color:#444; font-size:0.8em; margin-top:20px;">
+            &copy; 2026 MH STUDIOS. CLASSIFIED INFORMATION.<br>AUTHORIZED EYES ONLY.
+        </p>
+    </footer>
+
+    <script>
+        function toggleNav() {
+            const nav = document.getElementById('nav-overlay');
+            const icon = document.querySelector('.menu-toggle i');
+            nav.classList.toggle('active');
+            
+            if(nav.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        function switchPage(mode) {
+            if(mode === 'full') {
+                // FULL SCROLL MODE
+                document.body.classList.add('full-mode');
+                // Remove active class to avoid conflict logic, CSS handles display
+                document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            } else {
+                // SINGLE PAGE MODE
+                document.body.classList.remove('full-mode');
+                document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+                document.getElementById('view-' + mode).classList.add('active');
+            }
+            toggleNav();
+            window.scrollTo(0,0);
+        }
+
+        function initPrintSequence() {
+            alert("TACTICAL PRINT TIP: Check 'Background Graphics' in print settings to capture Dark Mode.");
+            window.print();
+        }
+		
+		// TYPEWRITER PROTOCOL
+		document.addEventListener('DOMContentLoaded', () => {
+			const target = document.querySelector('.hero-role');
+			const text = target.innerText;
+			target.innerText = ''; // Clear it
+			
+			let i = 0;
+			function typeWriter() {
+				if (i < text.length) {
+					target.innerHTML += text.charAt(i);
+					i++;
+					setTimeout(typeWriter, 50); // Speed (ms)
+				} else {
+					// Blink cursor effect after typing
+					target.style.borderRight = "2px solid var(--merc-orange)";
+				}
+			}
+			
+			// Start after a slight delay
+			setTimeout(typeWriter, 500);
+		});
+		
+		// AUDIO SYSTEM
+		const hoverSound = new Audio('path/to/hover_beep.mp3'); // Replace with your file
+		const clickSound = new Audio('path/to/click_confirm.mp3'); // Replace with your file
+
+		// Lower volume so it's subtle
+		hoverSound.volume = 0.2;
+		clickSound.volume = 0.4;
+
+		function playHover() {
+			hoverSound.currentTime = 0; // Reset sound
+			hoverSound.play().catch(e => {}); // Catch error if user hasn't interacted yet
+		}
+
+		function playClick() {
+			clickSound.currentTime = 0;
+			clickSound.play().catch(e => {});
+		}
+
+		// Attach to all interactive elements
+		document.querySelectorAll('.nav-link, .social-btn, .btn-print, .menu-toggle').forEach(el => {
+			el.addEventListener('mouseenter', playHover);
+			el.addEventListener('click', playClick);
+		});
+		
+		// 3D TILT LOGIC
+		document.querySelectorAll('.skill-box').forEach(card => {
+			card.addEventListener('mousemove', (e) => {
+				const rect = card.getBoundingClientRect();
+				const x = e.clientX - rect.left;
+				const y = e.clientY - rect.top;
+				
+				// Calculate rotation based on mouse position
+				const xRotation = -((y - rect.height/2) / 10); // Rotate X axis
+				const yRotation = ((x - rect.width/2) / 10);  // Rotate Y axis
+				
+				card.style.transform = `perspective(500px) rotateX(${xRotation}deg) rotateY(${yRotation}deg) scale(1.1)`;
+			});
+
+			card.addEventListener('mouseleave', () => {
+				// Reset position
+				card.style.transform = 'perspective(500px) rotateX(0) rotateY(0) scale(1)';
+			});
+		});
+		
+		// SECRET KEY PROTOCOL
+		let secretCode = '';
+		document.addEventListener('keydown', (e) => {
+			secretCode += e.key;
+			if (secretCode.includes('admin')) {
+				alert("⚠️ SECURITY OVERRIDE DETECTED. WELCOME, COMMANDER.");
+				document.documentElement.style.setProperty('--merc-orange', '#00ff41'); // Turn everything GREEN (Hacker Mode)
+				document.documentElement.style.setProperty('--merc-orange-glow', 'rgba(0, 255, 65, 0.4)');
+				secretCode = ''; // Reset
+			}
+		});
+		
+		// TACTICAL CONTACT LOGIC
+		function executeProtocol(type) {
+			const input = document.getElementById('cmd-input');
+			const status = document.getElementById('term-status');
+			const percent = document.getElementById('upload-percent');
+			const buttons = document.querySelectorAll('.term-btn');
+			
+			const message = input.value;
+
+			if(!message) {
+				alert("ERROR: NO DATA PACKET DETECTED. PLEASE TYPE A MESSAGE.");
+				return;
+			}
+
+			// 1. Lock Interface
+			input.disabled = true;
+			buttons.forEach(btn => btn.disabled = true);
+			status.style.display = 'block';
+
+			// 2. Simulate Encryption Process
+			let p = 0;
+			const interval = setInterval(() => {
+				p += Math.floor(Math.random() * 25);
+				if(p > 100) p = 100;
+				percent.innerText = p + "%";
+
+				if(p === 100) {
+					clearInterval(interval);
+					
+					// 3. EXECUTE TRANSMISSION
+					if(type === 'WHATSAPP') {
+						status.innerHTML = "> ESTABLISHING SECURE LINE TO HQ...";
+						status.style.color = "#00ff41"; // Green
+						
+						// --- LOGIC: WHATSAPP API ---
+						// We strip the '+' for the API link, but keep the country code 962
+						const phone = "962797852640"; 
+						const encodedMsg = encodeURIComponent(message);
+						const waLink = `https://wa.me/${phone}?text=${encodedMsg}`;
+						
+						// Open in new tab
+						window.open(waLink, '_blank');
+
+					} else if (type === 'GMAIL') {
+						status.innerHTML = "> ROUTING TO SMTP SERVER...";
+						status.style.color = "#00e5ff"; // Blue
+						
+						// --- LOGIC: MAILTO ---
+						const email = "mhstudios.836@gmail.com";
+						const subject = "CLASSIFIED INTEL: New Project Inquiry";
+						const body = encodeURIComponent(message);
+						const mailLink = `mailto:${email}?subject=${subject}&body=${body}`;
+						
+						window.location.href = mailLink;
+					}
+
+					// 4. Reset System after 2 seconds
+					setTimeout(() => {
+						input.disabled = false;
+						input.value = ''; // Clear message
+						buttons.forEach(btn => btn.disabled = false);
+						status.style.display = 'none';
+						status.style.color = "var(--merc-orange)";
+						status.innerHTML = "> UPLOADING PACKET... <span id='upload-percent'>0%</span>";
+					}, 2000);
+				}
+			}, 100);
+		}
+		
+		/* TITAN LOADER LOGIC */
+		document.addEventListener("DOMContentLoaded", () => {
+			
+			const messages = [
+				"ESTABLISHING UPLINK...",
+				"VERIFYING BIOMETRICS...",
+				"DECRYPTING ASSETS...",
+				"CONFIGURING INTERFACE...",
+				"SYSTEM OPTIMIZED."
+			];
+
+			const bar = document.getElementById('load-bar');
+			const txt = document.getElementById('loader-status');
+			const pct = document.getElementById('load-pct');
+			const loader = document.getElementById('titan-preloader');
+
+			let progress = 0;
+			let msgIndex = 0;
+
+			// Simulate Loading Process
+			const interval = setInterval(() => {
+				// Random speed variance for realism
+				progress += Math.floor(Math.random() * 5) + 1; 
+
+				if (progress > 100) progress = 100;
+
+				// Update UI
+				bar.style.width = progress + "%";
+				pct.innerText = progress + "%";
+
+				// Cycle messages based on progress chunks
+				if (progress > 20 && progress < 40) txt.innerText = "> " + messages[1];
+				else if (progress > 40 && progress < 70) txt.innerText = "> " + messages[2];
+				else if (progress > 70 && progress < 90) txt.innerText = "> " + messages[3];
+				else if (progress >= 99) txt.innerText = "> " + messages[4];
+
+				// Finish
+				if (progress === 100) {
+					clearInterval(interval);
+					setTimeout(() => {
+						loader.classList.add('loaded'); // Trigger CSS Fade out
+					}, 500); // Slight pause at 100%
+				}
+			}, 50); // Speed of the loop (lower is faster)
+		});
+		
+		/* LOGO INTERACTION LOGIC */
+		document.addEventListener("DOMContentLoaded", () => {
+			const logo = document.querySelector('.brand-title img');
+			const link = document.querySelector('.brand-title');
+
+			if(logo && link) {
+				// Prevent default link jump immediately so we can see the effect
+				link.addEventListener('click', (e) => {
+					e.preventDefault(); 
+					
+					// 1. Trigger Visual Effect
+					logo.classList.add('core-active');
+
+					// 2. Play Sound (If Audio System exists)
+					if(typeof playClick === 'function') playClick();
+
+					// 3. Remove Effect & Navigate after 400ms
+					setTimeout(() => {
+						logo.classList.remove('core-active');
+						window.location.href = link.href; // Resume Navigation
+					}, 400);
+				});
+			}
+		});
+    </script>
+</body>
+
+</html>
+
+
+
