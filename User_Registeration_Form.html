@@ -1,3 +1,6 @@
+---
+permalink: /User_Registeration_Form.html
+---
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -221,174 +224,132 @@
     </div>
 
 	<script type="module">
-		import { auth, db, storage, DB_PATH } from './assets/js/firebase-init.js'; // ADDED STORAGE
-		import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-		import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js"; // ADDED IMPORTS
-		import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+		// 1. IMPORT FIREBASE LIBRARIES
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+		import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+		import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-		let currentRole = 'student';
-		let currentUid = null;
+		// 2. CONFIGURE YOUR SATELLITE (Replace with your actual Firebase Config keys)
+		const firebaseConfig = {
+			apiKey: "YOUR_API_KEY",
+			authDomain: "mhstudios-836.firebaseapp.com",
+			projectId: "mhstudios-836",
+			storageBucket: "mhstudios-836.appspot.com",
+			messagingSenderId: "YOUR_SENDER_ID",
+			appId: "YOUR_APP_ID"
+		};
 
-		// 1. INITIALIZE & DETECT ROLE
-		onAuthStateChanged(auth, async (user) => {
-			if (!user) { window.location.href = 'DoD_Login_Style.html'; return; }
-			currentUid = user.uid;
+		const app = initializeApp(firebaseConfig);
+		const auth = getAuth(app);
+		const db = getFirestore(app);
 
-			const userRef = doc(db, `${DB_PATH}/users/${user.uid}`);
-			const snap = await getDoc(userRef);
+		// GLOBAL VARIABLES
+		let currentUid = "";
+		let currentEmail = "";
+		let currentRole = "";
 
-			if (snap.exists()) {
-				const data = snap.data();
-				currentRole = data.role || 'student';
+		// 3. INITIALIZE: LISTEN FOR USER
+		onAuthStateChanged(auth, (user) => {
+			if (user) {
+				console.log("OPERATIVE IDENTIFIED:", user.email);
+				currentUid = user.uid;
+				currentEmail = user.email;
 				
-				// Pre-fill Name
-				if(data.name) {
-					const parts = data.name.split(' ');
-					document.getElementById('core-fname').value = parts[0] || '';
-					document.getElementById('core-lname').value = parts.slice(1).join(' ') || '';
-				}
-
-				adaptInterface(currentRole);
+				// Note: In a real app, we might fetch their existing partial role here
+				// For now, we wait for them to select the role in the form
+			} else {
+				// No user logged in? Kick them back to Login
+				window.location.href = "DoD_Login_Style.html";
 			}
 		});
 
-		// 2. UI ADAPTER
-		function adaptInterface(role) {
-			currentRole = role; // Update global var
-			const card = document.getElementById('main-card');
-			const title = document.getElementById('form-title');
-			const badge = document.getElementById('role-badge');
-			const btn = document.getElementById('btn-submit');
-			const switcher = document.getElementById('role-switch-btn');
+		// 4. UI LOGIC: TOGGLE FORMS
+		window.selectRole = function(role) {
+			currentRole = role;
+			
+			// Visual Selection Logic
+			document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+			document.getElementById(`card-${role}`).classList.add('active');
 
-			// Reset Sections
-			document.getElementById('section-student').classList.remove('active');
-			document.getElementById('section-merc').classList.remove('active');
-
-			if (role === 'freelancer') {
-				// MERC THEME
-				card.className = "dossier-card theme-merc";
-				title.innerHTML = '<span><i class="fas fa-crosshairs"></i> OPERATOR ENLISTMENT</span>';
-				badge.innerText = "MERC CLASS";
-				btn.innerText = "DEPLOY TO FIELD";
-				document.getElementById('section-merc').classList.add('active');
-				createSwitcher("Mistake? Switch to Student Enrollment");
-			} else {
-				// STUDENT THEME
-				card.className = "dossier-card theme-student";
-				title.innerHTML = '<span><i class="fas fa-graduation-cap"></i> STUDENT ENROLLMENT</span>';
-				badge.innerText = "ACADEMIC CLASS";
-				btn.innerText = "COMPLETE REGISTRATION";
-				document.getElementById('section-student').classList.add('active');
-				createSwitcher("Mistake? Switch to Mercenary Enlistment");
-			}
+			// Show Specific Form Fields
+			document.getElementById('student-fields').style.display = (role === 'student') ? 'block' : 'none';
+			document.getElementById('freelancer-fields').style.display = (role === 'freelancer') ? 'block' : 'none';
+			
+			// Show Submit Button
+			document.getElementById('action-area').style.display = 'block';
 		}
 
-		// Helper to create the switch button dynamically
-		function createSwitcher(text) {
-			let el = document.getElementById('sw-link');
-			if(!el) {
-				el = document.createElement('div');
-				el.id = 'sw-link';
-				el.className = 'switch-link';
-				el.onclick = toggleRole;
-				document.querySelector('#dossier-form').appendChild(el);
-			}
-			el.innerHTML = `<i class="fas fa-sync"></i> ${text}`;
-		}
-
-		// 3. TOGGLE ROLE FUNCTION
-		window.toggleRole = () => {
-			const newRole = (currentRole === 'student') ? 'freelancer' : 'student';
-			adaptInterface(newRole);
-		};
-
-		// 4. FILE UI UPDATE
-		window.updateFileLabel = (input) => {
-			if (input.files.length > 0) {
-				document.getElementById('file-label').innerText = "SECURE FILE LOADED: " + input.files[0].name;
-				document.querySelector('.upload-zone').classList.add('file-selected');
-			}
-		};
-
-		// 5. SUBMISSION LOGIC
-		document.getElementById('dossier-form').addEventListener('submit', async (e) => {
-			e.preventDefault();
-			const btn = document.getElementById('btn-submit');
-			const originalText = btn.innerText;
-			btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> ENCRYPTING DATA...';
+		// 5. THE PAYLOAD: SAVE DATA TO FIRESTORE
+		document.getElementById('btn-save-dossier').addEventListener('click', async () => {
+			const btn = document.getElementById('btn-save-dossier');
+			btn.innerText = "UPLOADING TO MAINFRAME...";
 			btn.disabled = true;
 
 			try {
-				// A. UPLOAD ID (If selected) 
-				let idUrl = "";
-				const fileInput = document.getElementById('id-file');
-				if (fileInput.files.length > 0) {
-					const file = fileInput.files[0];
-					const storageRef = ref(storage, `confidential/users/${currentUid}/ID_${Date.now()}`);
-					await uploadBytes(storageRef, file);
-					idUrl = await getDownloadURL(storageRef);
-				}
-
-				// B. CORE DATA
-				const fname = document.getElementById('core-fname').value;
-				const lname = document.getElementById('core-lname').value;
-				
-				const baseData = {
-					first_name: fname,
-					last_name: lname,
-					name: `${fname} ${lname}`,
-					phone: document.getElementById('core-phone').value,
-					age: document.getElementById('core-age').value,
-					location: document.getElementById('core-loc').value,
-					id_document_url: idUrl, // Save the URL
-					role: currentRole, // Ensure the role is updated if they switched
-					updatedAt: serverTimestamp(),
-					registration_complete: true,
-					wallet_balance: 0
+				// A. PREPARE THE "UNIFIED CORE" (Shared Data)
+				// This is the "JSON" you were worried about. The code builds it here.
+				let userProfile = {
+					uid: currentUid,
+					email: currentEmail,
+					role: currentRole.toUpperCase(), // "STUDENT" or "FREELANCER"
+					first_name: document.getElementById('inp-fname').value,
+					last_name: document.getElementById('inp-lname').value,
+					username: document.getElementById('inp-username').value,
+					phone: document.getElementById('inp-phone').value,
+					age: document.getElementById('inp-age').value,
+					location: document.getElementById('inp-location').value,
+					
+					// Default System Flags
+					is_banned: false,
+					is_online: true,
+					wallet_balance: 0.00,
+					created_at: serverTimestamp()
 				};
 
-				// C. ROLE SPECIFIC DATA
-				let redirectTarget = "";
-				
+				// B. INJECT SPECIFIC DATA (The DNA Split)
 				if (currentRole === 'student') {
-					baseData.checkpoint = 4; 
-					baseData.education = {
+					userProfile.education_profile = {
 						university: document.getElementById('std-uni').value,
 						major: document.getElementById('std-major').value,
-						level: document.getElementById('std-lvl').value
+						education_level: document.getElementById('std-lvl').value
 					};
-					redirectTarget = 'Terms_Conditions.html?mode=induction';
+					userProfile.missions_created = 0;
 				} 
 				else if (currentRole === 'freelancer') {
-					baseData.checkpoint = 4;
-					const contractId = "OPS-" + Math.floor(1000 + Math.random() * 9000);
+					// Generate a random Operator ID
+					const opID = "OPS-" + Math.floor(Math.random() * 9000 + 1000);
 					
-					baseData.operator_data = {
-						contract_id: contractId,
-						company: document.getElementById('ops-comp').value || "Freelance",
+					userProfile.operational_data = {
+						contract_id: opID,
+						company: document.getElementById('ops-comp').value || "FREELANCE",
+						specialty: document.getElementById('ops-skill').value,
 						education_level: document.getElementById('ops-lvl').value,
-						primary_skill: document.getElementById('ops-skill').value,
-						status: 'ACTIVE', 
-						ops_type: 'MERCENARY'
+						ops_type: "MERCENARY"
 					};
-					baseData.tier = 'MERCENARY'; // Ensure Tier is set
-					redirectTarget = 'Freelancers_Room.html';
+					userProfile.tier = "TIER_1";
+					userProfile.rating = 5.0;
 				}
 
-				// D. SAVE TO FIRESTORE
-				const userRef = doc(db, `${DB_PATH}/users/${currentUid}`);
-				await updateDoc(userRef, baseData);
+				// C. WRITE TO FIREBASE (The actual save)
+				// This writes to collection "users" -> document "UID"
+				await setDoc(doc(db, "users", currentUid), userProfile);
 
-				// E. REDIRECT
-				console.log("DOSSIER UPDATED.");
-				window.location.href = redirectTarget;
+				// D. SUCCESS & REDIRECT (The Consciousness Trigger)
+				console.log("DOSSIER UPLOADED.");
+				
+				if (currentRole === 'student') {
+					// Trigger the Induction Protocol we discussed
+					window.location.href = "Terms_Conditions.html?mode=induction";
+				} else {
+					// Freelancers might skip induction or go to a different onboarding
+					window.location.href = "Freelancers_Room.html";
+				}
 
-			} catch (err) {
-				console.error(err);
-				alert("SYSTEM ERROR: " + err.message);
-				btn.innerHTML = originalText;
+			} catch (error) {
+				console.error("UPLOAD FAILED:", error);
+				btn.innerText = "RETRY TRANSMISSION";
 				btn.disabled = false;
+				alert("ERROR: " + error.message);
 			}
 		});
 	</script>
