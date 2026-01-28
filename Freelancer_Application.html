@@ -1,3 +1,6 @@
+---
+permalink: /Freelancer_Application.html
+---
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -313,144 +316,103 @@
         </form>
     </div>
 
-    <script type="module">
-        import { auth, db, storage, DB_PATH } from './assets/js/firebase-init.js';
-        import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+	<script type="module">
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+		import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+		import { getFirestore, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        let currentUser = null;
+		// CONFIGURATION
+		const firebaseConfig = {
+			apiKey: "YOUR_API_KEY",
+			authDomain: "mhstudios-836.firebaseapp.com",
+			projectId: "mhstudios-836",
+			storageBucket: "mhstudios-836.appspot.com",
+			messagingSenderId: "YOUR_SENDER_ID",
+			appId: "YOUR_APP_ID"
+		};
 
-        // 1. AUTH CHECK
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                // Prefill Name/Email if available
-                if(user.displayName) document.getElementById('merc-name').value = user.displayName;
-            } else {
-                alert("SECURE CHANNEL: LOGIN REQUIRED.");
-                window.location.href = 'DoD_Login_Style.html';
-            }
-        });
+		const app = initializeApp(firebaseConfig);
+		const auth = getAuth(app);
+		const db = getFirestore(app);
+		
+		let currentUid = "";
 
-        // 2. UI NAVIGATION LOGIC
-        window.nextStep = (current) => {
-            // Validation Logic (Simplified)
-            if(!validateStep(current)) return;
+		// 1. AUTH CHECK
+		onAuthStateChanged(auth, (user) => {
+			if (user) {
+				currentUid = user.uid;
+				console.log("APPLICANT IDENTIFIED:", currentUid);
+			} else {
+				window.location.href = "DoD_Login_Style.html";
+			}
+		});
 
-            document.getElementById(`step-${current}`).classList.remove('active');
-            document.getElementById(`step-${current+1}`).classList.add('active');
-            
-            document.getElementById(`node-${current}`).classList.add('complete');
-            document.getElementById(`node-${current+1}`).classList.add('active');
-        };
+		// 2. SUBMISSION LOGIC
+		document.getElementById('btn-submit-app').addEventListener('click', async (e) => {
+			e.preventDefault();
+			const btn = document.getElementById('btn-submit-app');
+			btn.innerText = "TRANSMITTING ENCRYPTED DATA...";
+			btn.disabled = true;
 
-        window.prevStep = (current) => {
-            document.getElementById(`step-${current}`).classList.remove('active');
-            document.getElementById(`step-${current-1}`).classList.add('active');
-            
-            document.getElementById(`node-${current}`).classList.remove('active');
-            document.getElementById(`node-${current-1}`).classList.remove('complete');
-        };
+			try {
+				// A. DETERMINE TIER
+				// You need radio buttons in your HTML with name="contract_tier"
+				// Value="MERCENARY" (Standard) or "OPERATOR" (Elite)
+				const tierInput = document.querySelector('input[name="contract_tier"]:checked');
+				const selectedTier = tierInput ? tierInput.value : 'MERCENARY';
 
-        window.updateFileName = (input) => {
-            if(input.files.length > 0) {
-                document.getElementById('file-name-display').innerText = "SELECTED: " + input.files[0].name;
-                document.getElementById('file-name-display').style.color = "var(--merc-orange)";
-            }
-        };
+				// B. DETERMINE STATUS
+				// Mercenaries get instant access. Operators must be vetted.
+				let initialStatus = 'ACTIVE';
+				let clearanceLevel = 'T1';
+				
+				if (selectedTier === 'OPERATOR') {
+					initialStatus = 'REVIEW_PENDING'; // Locks them out until Admin approves
+					clearanceLevel = 'PROBATION';
+				}
 
-        function validateStep(step) {
-            // Basic check for empty required fields in the current step
-            const panel = document.getElementById(`step-${step}`);
-            const inputs = panel.querySelectorAll('input[required], textarea[required]');
-            let valid = true;
-            inputs.forEach(input => {
-                if(!input.value) {
-                    input.style.borderColor = "red";
-                    valid = false;
-                } else {
-                    input.style.borderColor = "#333";
-                }
-            });
-            if(!valid) alert("DATA INCOMPLETE: FILL ALL REQUIRED FIELDS.");
-            return valid;
-        }
+				// C. BUILD THE OPERATOR PROFILE
+				const dossier = {
+					first_name: document.getElementById('app-fname').value,
+					last_name: document.getElementById('app-lname').value,
+					phone: document.getElementById('app-phone').value,
+					
+					operational_data: {
+						codename: document.getElementById('app-codename').value,
+						specialty: document.getElementById('app-specialty').value,
+						years_experience: document.getElementById('app-years').value,
+						previous_affiliations: document.getElementById('app-affiliations').value,
+						payment_id: document.getElementById('app-payment').value
+					},
+					
+					tier: selectedTier,
+					status: initialStatus,
+					clearance: clearanceLevel,
+					checkpoint: 4, // Application Submitted
+					updated_at: serverTimestamp()
+				};
 
-        // 3. SUBMISSION ENGINE
-        document.getElementById('enlistment-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-submit-app');
-            const originalText = btn.innerHTML;
+				// D. UPDATE MAINFRAME
+				const userRef = doc(db, "users", currentUid);
+				await updateDoc(userRef, dossier);
 
-            // 1. Collect Skills
-            const skills = [];
-            document.querySelectorAll('.skill-check:checked').forEach(cb => skills.push(cb.value));
-            if(skills.length === 0) return alert("SKILLSET REQUIRED: SELECT AT LEAST ONE.");
+				// E. ROUTING
+				if (selectedTier === 'OPERATOR') {
+					alert("APPLICATION RECEIVED. STATUS: PENDING COMMAND APPROVAL.\n\nYou will be notified upon verification.");
+					// Redirect to a 'Standby' page or back to index
+					window.location.href = "index.html"; 
+				} else {
+					alert("WELCOME TO THE SYNDICATE, MERCENARY.");
+					window.location.href = "Freelancers_Room.html";
+				}
 
-            // 2. Check File
-            const fileInput = document.getElementById('merc-id-file');
-            if(fileInput.files.length === 0) return alert("ID DOCUMENT MISSING.");
-
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ENCRYPTING...';
-            btn.disabled = true;
-
-            try {
-                // A. Upload ID Document to Secure Storage
-                const file = fileInput.files[0];
-                const storageRef = ref(storage, `confidential/users/${currentUser.uid}/ID_${Date.now()}_${file.name}`);
-                await uploadBytes(storageRef, file);
-                const idUrl = await getDownloadURL(storageRef);
-
-                // B. Construct Dossier
-                const dossier = {
-                    // Identity
-                    legal_name: document.getElementById('merc-name').value,
-                    call_sign: document.getElementById('merc-handle').value,
-                    phone: document.getElementById('merc-phone').value,
-                    location: document.getElementById('merc-location').value,
-                    
-                    // Vetting
-                    skills: skills,
-                    portfolio_url: document.getElementById('merc-portfolio').value,
-                    motivation: document.getElementById('merc-motivation').value,
-                    id_document_url: idUrl,
-                    
-                    // Financials & Status
-                    contract_tier: document.querySelector('input[name="contract_tier"]:checked').value,
-                    payment_method: document.getElementById('merc-payment-method').value,
-                    payment_account: document.getElementById('merc-payment-id').value,
-                    
-					// ... inside dossier object ...
-
-					role: 'freelancer', 
-
-					// LOGIC: If they are applying for OPERATOR (Elite), flag for review but don't lock account if they are already active.
-					// If they are new/student, lock them with PENDING_INTEL.
-					status: (document.querySelector('input[name="contract_tier"]:checked').value === 'OPERATOR') ? 'REVIEW_PENDING' : 'PENDING_INTEL', 
-
-					clearance: 'PROBATION', // Give them basic access level so they aren't totally blind
-                    updatedAt: serverTimestamp(),
-                    checkpoint: 4 // Registration Done, Pending Approval
-                };
-
-                // C. Update Firestore
-                const userRef = doc(db, `${DB_PATH}/users/${currentUser.uid}`);
-                await updateDoc(userRef, dossier);
-
-                // D. Success Sequence
-                alert("ENLISTMENT RECEIVED. APPLICATION UNDER REVIEW BY HIGH COMMAND.");
-                // Redirect to a 'Pending' page or the Freelancer Room (which will block them if Pending)
-                window.location.href = 'Freelancers_Room.html';
-
-            } catch (err) {
-                console.error(err);
-                alert("TRANSMISSION FAILED: " + err.message);
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        });
-
-    </script>
+			} catch (error) {
+				console.error("TRANSMISSION ERROR:", error);
+				btn.innerText = "RETRY UPLOAD";
+				btn.disabled = false;
+				alert("ERROR: " + error.message);
+			}
+		});
+	</script>
 </body>
 </html>

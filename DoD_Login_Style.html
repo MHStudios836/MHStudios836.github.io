@@ -798,11 +798,15 @@ permalink: /DoD_Login_Style.html
 							dossier.checkpoint = 4; // Skip Form
 						}
 
-						await setDoc(userRef, dossier);
-						
-						typeStatus("> DOSSIER CREATED.", "#00ff41");
+						// CHANGE THE REDIRECT LOGIC HERE:
+						typeStatus("> DOSSIER CREATED. INITIATING ONBOARDING...", "#00ff41");
 						setTimeout(() => {
-							window.location.href = 'User_Registeration_Form.html';
+							if (selectedRole === 'student') {
+								window.location.href = 'User_Registeration_Form.html';
+							} else {
+								// FREELANCERS GO TO A DIFFERENT ROOM
+								window.location.href = 'Freelancer_Application.html';
+							}
 						}, 1000);
 					}
 

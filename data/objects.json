@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "project": "ArmedSync®"
+  },
+  "registry": {
+    "primary_weapons": [
+      {
+        "id": "w_m4_carbine",
+        "name": "M4 Carbine (FinalMesh)",
+        "slot_type": "primary",
+        "physics": {
+          "mass_kg": 3.4,
+          "ergonomics": 0.85
+        },
+        "ballistics": {
+          "caliber": "5.56x45mm",
+          "ap_value": 12
+        },
+        "fatigue_modifier": 0.12,
+        "assets": {
+          "model_path": "assets/arts/glb/FinalBaseMesh.glb", 
+          "icon_path": "assets/arts/placeholder/placeholder_icon.jpg"
+        }
+      }
+    ],
+    "uniforms": [],
+    "vests": [],
+    "headgear": [],
+    "backpacks": [],
+    "identities": []
+  }
+}

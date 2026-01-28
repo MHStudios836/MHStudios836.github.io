@@ -1,0 +1,2016 @@
+---
+permalink: /ArmedSync_Unified.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArmedSync® // TITAN LIVE ARMORY</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+	<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+	<script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+	<script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <style>
+        :root {
+            --mh-blue: #0080FF;       
+            --mh-cyan: #00e5ff;       
+            --mh-dark: #05070a;       
+            --mh-glass: rgba(5, 7, 10, 0.90); 
+            --mh-border: 1px solid rgba(0, 128, 255, 0.4);
+            --mh-glow: 0 0 20px rgba(0, 128, 255, 0.2);
+            --font-tech: 'Segoe UI', 'Courier New', monospace;
+        }
+
+        body { margin: 0; overflow: hidden; background-color: var(--mh-dark); color: #e0e0e0; font-family: var(--font-tech); }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 0; outline: none; }
+
+        /* LOADING OVERLAY */
+        #loader-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: var(--mh-cyan); font-family: 'Courier New'; font-weight: bold;
+            display: none; pointer-events: none; text-shadow: 0 0 10px var(--mh-blue);
+        }
+
+        /* LEFT SIDEBAR */
+        #titan-library {
+            position: absolute; top: 100px; left: 0; width: 380px; height: 600px;
+            background: var(--mh-glass); border: var(--mh-border); border-left: 3px solid var(--mh-blue);
+            box-shadow: var(--mh-glow); backdrop-filter: blur(15px); z-index: 100;
+            border-radius: 0 4px 4px 0; display: flex;
+            transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); 
+        }
+        #titan-library.open { transform: translateX(0); }
+
+        .library-handle {
+            position: absolute; top: 50%; right: -30px; width: 30px; height: 80px;
+            transform: translateY(-50%); background: var(--mh-blue);
+            clip-path: polygon(0 0, 100% 10%, 100% 90%, 0 100%);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #000; box-shadow: 5px 0 15px rgba(0, 128, 255, 0.5); transition: 0.3s;
+        }
+        .library-handle:hover { background: var(--mh-cyan); width: 35px; right: -35px; }
+
+        .library-tabs { width: 60px; border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
+        .tab-btn { width: 40px; height: 40px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: #555; cursor: pointer; border-radius: 4px; transition: 0.2s; font-size: 18px; }
+        .tab-btn.active { color: var(--mh-blue); background: rgba(0, 128, 255, 0.2); border-left: 2px solid var(--mh-blue); }
+        .library-content { flex: 1; padding: 20px; overflow-y: auto; }
+        .category-header { font-size: 12px; font-weight: 700; color: var(--mh-cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+        .item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        
+        .asset-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); padding: 10px; cursor: pointer; transition: 0.3s; position: relative; }
+        .asset-card:hover { border-color: var(--mh-blue); background: rgba(0,128,255,0.05); }
+        .asset-img { width: 100%; height: 80px; background: #0a0a0a; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #333; }
+        .asset-name { font-size: 12px; font-weight: bold; color: #ddd; }
+        .asset-stat { font-size: 10px; color: #888; }
+        .asset-equipper { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: #333; border-radius: 50%; }
+        .asset-card.equipped .asset-equipper { background: var(--mh-cyan); box-shadow: 0 0 8px var(--mh-cyan); }
+
+		/* =========================================
+           UI: TITAN HUD (TOP - HORIZONTAL TELEMETRY)
+           ========================================= */
+        #titan-sidebar {
+            position: absolute;
+            top: 20px; 
+            left: 50%;
+            transform: translateX(-50%); /* Centered horizontally */
+            width: 800px; /* Wider for horizontal layout */
+            height: auto;
+            
+            background: var(--mh-glass);
+            border: var(--mh-border);
+            border-top: 2px solid var(--mh-blue);
+            box-shadow: var(--mh-glow);
+            backdrop-filter: blur(15px);
+            z-index: 50;
+            border-radius: 4px;
+            
+            display: flex; /* Switch to horizontal */
+            align-items: center;
+            padding: 0 15px;
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        .sidebar-header { 
+            padding: 10px; 
+            border-bottom: none; 
+            border-right: 1px solid rgba(0, 128, 255, 0.3); 
+            margin-right: 15px;
+        }
+        
+        .header-title { font-size: 10px; white-space: nowrap; }
+
+        /* DATA MODULES - NOW HORIZONTAL */
+        .data-module { 
+            flex: 1; 
+            padding: 10px 20px; 
+            border-bottom: none; 
+            border-right: 1px solid rgba(255, 255, 255, 0.05); 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .data-row { margin-bottom: 0; gap: 15px; }
+        .stat-label { font-size: 9px; }
+        .stat-value { font-size: 20px; }
+        .stat-sub { font-size: 8px; text-align: left; }
+
+        .sidebar-footer { padding: 0 15px; }
+        .action-btn { width: 120px; padding: 5px 0; font-size: 10px; }
+
+        @keyframes slideInDown { 
+            from { opacity: 0; transform: translate(-50%, -20px); } 
+            to { opacity: 1; transform: translate(-50%, 0); } 
+        }
+		
+		/* =========================================
+           UI: TITAN COMMAND DECK (BOTTOM - HORIZONTAL)
+           ========================================= */
+        #titan-command-deck {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translate(-50%, 100%); /* Hidden by default */
+            width: 700px;
+            height: 80px;
+            background: var(--mh-glass);
+            border: var(--mh-border);
+            border-bottom: none;
+            box-shadow: 0 -5px 20px rgba(0, 128, 255, 0.2);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 20px;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        #titan-command-deck.open { transform: translate(-50%, 0); }
+
+        /* BOTTOM TOGGLE HANDLE */
+        .deck-handle {
+            position: absolute;
+            top: -25px; left: 50%;
+            transform: translateX(-50%);
+            width: 100px; height: 25px;
+            background: var(--mh-blue);
+            clip-path: polygon(15% 0, 85% 0, 100% 100%, 0 100%);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--mh-dark); font-size: 12px;
+            transition: 0.3s;
+        }
+        .deck-handle:hover { background: var(--mh-cyan); height: 30px; top: -30px; }
+
+        /* OPS BUTTONS */
+        .ops-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(0, 128, 255, 0.3);
+            color: #ccc;
+            padding: 10px 15px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 80px;
+            transition: 0.2s;
+        }
+
+        .ops-btn i { font-size: 16px; color: var(--mh-blue); }
+        .ops-btn:hover { background: rgba(0, 128, 255, 0.1); border-color: var(--mh-cyan); color: white; }
+        .ops-btn:hover i { color: var(--mh-cyan); }
+
+        /* WARNING COLOR FOR DELETE */
+        .ops-btn.danger:hover { border-color: #ff004c; background: rgba(255, 0, 76, 0.1); }
+        .ops-btn.danger i { color: #883344; }
+        .ops-btn.danger:hover i { color: #ff004c; }
+		
+/* =========================================
+           UI: TITAN CONFIGURATOR (RIGHT SIDEBAR)
+           ========================================= */
+        #titan-configurator {
+            position: absolute;
+            top: 100px; right: 0;
+            width: 320px; height: calc(100% - 220px);
+            background: var(--mh-glass);
+            border: var(--mh-border);
+            border-right: 3px solid var(--mh-blue);
+            box-shadow: var(--mh-glow);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            border-radius: 4px 0 0 4px;
+            display: flex; flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        #titan-configurator.open { transform: translateX(0); }
+
+        /* RIGHT HANDLE */
+        .config-handle {
+            position: absolute;
+            top: 50%; left: -30px;
+            width: 30px; height: 80px;
+            transform: translateY(-50%);
+            background: var(--mh-blue);
+            clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 90%);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #000;
+        }
+
+        .config-content { padding: 20px; overflow-y: auto; flex: 1; }
+        .config-group { margin-bottom: 25px; }
+        .config-label { font-size: 10px; color: var(--mh-cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
+        
+        /* INPUT STYLES */
+        .config-input {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(0, 128, 255, 0.2);
+            color: white; padding: 8px; font-family: var(--font-tech); font-size: 12px; margin-bottom: 10px;
+        }
+        
+        /* TOGGLE SWITCHES */
+        .addon-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .switch { width: 40px; height: 20px; background: #222; border-radius: 10px; position: relative; cursor: pointer; border: 1px solid #444; }
+        .switch.on { background: var(--mh-blue); }
+        .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: white; border-radius: 50%; transition: 0.2s; }
+        .switch.on::after { left: 22px; }
+		
+		/* SAVE NOTIFICATION TOAST */
+        #save-toast {
+            position: fixed;
+            bottom: 100px; right: 20px;
+            background: var(--mh-blue);
+            color: var(--mh-dark);
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 12px;
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+            display: none;
+            z-index: 1000;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+		
+		/* =========================================
+           UI: SCROLLABLE TACTICAL TABS
+           ========================================= */
+        .library-tabs { 
+            width: 60px; 
+            height: 100%; /* Fill the sidebar height */
+            border-right: 1px solid rgba(0, 128, 255, 0.2); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 10px 0;
+            
+            /* SCROLL LOGIC */
+            overflow-y: auto; 
+            overflow-x: hidden;
+            scrollbar-width: none; /* Hides scrollbar in Firefox */
+        }
+
+        /* HIDE SCROLLBAR FOR CHROME/SAFARI/EDGE BUT KEEP SCROLLING */
+        .library-tabs::-webkit-scrollbar {
+            display: none; 
+        }
+
+        .tab-btn { 
+            flex-shrink: 0; /* Prevents icons from squishing */
+            width: 40px; 
+            height: 40px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #555; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: 0.2s; 
+            font-size: 18px; 
+            border: 1px solid transparent;
+        }
+
+        .tab-btn:hover { 
+            color: var(--mh-cyan); 
+            background: rgba(0, 229, 255, 0.1); 
+        }
+
+        .tab-btn.active { 
+            color: var(--mh-blue); 
+            background: rgba(0, 128, 255, 0.2); 
+            border: 1px solid rgba(0, 128, 255, 0.4);
+            box-shadow: 0 0 10px rgba(0,128,255,0.2); 
+        }
+
+        /* SORTING PANEL */
+        .sort-container {
+            padding: 10px 15px;
+            background: rgba(0, 128, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 128, 255, 0.2);
+            margin-bottom: 10px;
+        }
+
+        .titan-select {
+            width: 100%;
+            background: var(--mh-dark);
+            border: 1px solid var(--mh-blue);
+            color: var(--mh-cyan);
+            font-family: var(--font-tech);
+            font-size: 11px;
+            padding: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+		
+		/* SEARCH BAR STYLES */
+        .search-container {
+            padding: 10px 15px;
+            background: rgba(0, 128, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 128, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .titan-search {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(0, 128, 255, 0.5);
+            color: white;
+            font-family: var(--font-tech);
+            font-size: 12px;
+            padding: 5px 0;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .titan-search:focus {
+            border-bottom-color: var(--mh-cyan);
+            box-shadow: 0 5px 15px -5px rgba(0, 229, 255, 0.3);
+        }
+
+        .search-icon { color: var(--mh-blue); font-size: 12px; }
+		
+		/* LOADOUT POPUP MODAL */
+        #loadout-popup {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 500px; max-height: 400px;
+            background: var(--mh-glass);
+            border: var(--mh-border);
+            border-top: 5px solid var(--mh-blue);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            border-radius: 8px;
+            padding: 20px;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #loadout-popup.active { display: flex; transform: translate(-50%, -50%) scale(1); }
+
+        .loadout-header { 
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; border-bottom: 1px solid rgba(0, 128, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .loadout-list { overflow-y: auto; flex: 1; }
+        
+        .loadout-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; background: rgba(255,255,255,0.03);
+            margin-bottom: 5px; border-left: 2px solid var(--mh-blue);
+        }
+
+        .loadout-item:hover { background: rgba(0, 128, 255, 0.1); }
+
+        .remove-btn {
+            background: rgba(255, 0, 76, 0.2);
+            border: 1px solid #ff004c;
+            color: #ff004c;
+            padding: 2px 8px;
+            font-size: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .remove-btn:hover { background: #ff004c; color: white; }
+
+        /* BLUR EFFECT FOR BACKGROUND */
+        #ui-blur-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 999; display: none;
+        }
+		
+		/* TEXTURE SWATCH STYLES */
+        .texture-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .swatch {
+            width: 100%;
+            padding-top: 100%; /* Square aspect ratio */
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .swatch:hover { border-color: var(--mh-cyan); transform: scale(1.1); z-index: 10; }
+        .swatch.active { border-color: var(--mh-blue); box-shadow: 0 0 10px var(--mh-blue); }
+
+        /* PRESET COLORS (You can replace these with images later) */
+        .swatch.green-camo { background: #2d3a24; }
+        .swatch.black-ops { background: #111111; }
+        .swatch.desert-tan { background: #a68d6a; }
+        .swatch.urban-grey { background: #4a4e52; }
+		
+		/* DYNAMIC CONFIG SLOTS */
+        .config-slot-btn {
+            width: 100%;
+            background: rgba(0, 128, 255, 0.05);
+            border: 1px solid rgba(0, 128, 255, 0.2);
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .config-slot-btn:hover {
+            background: rgba(0, 128, 255, 0.15);
+            border-color: var(--mh-cyan);
+        }
+
+        .slot-icon { width: 40px; height: 30px; background: #000; border: 1px solid #333; }
+        .slot-meta { display: flex; flex-direction: column; }
+        .slot-name { font-size: 11px; color: var(--mh-cyan); font-weight: bold; }
+        .slot-current { font-size: 10px; color: #888; }
+		
+		/* SUB-MENU ANIMATION SYSTEM */
+        .config-view-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .config-view {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Slide classes */
+        .view-main { transform: translateX(0); }
+        .view-sub { transform: translateX(100%); }
+        
+        .active-sub .view-main { transform: translateX(-100%); }
+        .active-sub .view-sub { transform: translateX(0); }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--mh-blue);
+            font-size: 10px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            padding: 5px;
+            border-bottom: 1px solid rgba(0, 128, 255, 0.2);
+        }
+        .back-btn:hover { color: var(--mh-cyan); }
+		
+		/* ASSET CARD STYLING */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .asset-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 128, 255, 0.1);
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 110px;
+        }
+
+        .asset-card:hover {
+            background: rgba(0, 128, 255, 0.1);
+            border-color: var(--mh-cyan);
+            transform: translateY(-2px);
+        }
+
+        .asset-card.equipped {
+            background: rgba(0, 128, 255, 0.2);
+            border: 1px solid var(--mh-blue);
+            box-shadow: 0 0 15px rgba(0, 128, 255, 0.2);
+        }
+
+        /* CARD ANATOMY */
+        .asset-img {
+            width: 100%; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 5px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .asset-img img { width: 100%; height: 100%; object-fit: contain; }
+
+        .asset-name { font-size: 10px; color: #ddd; text-align: center; line-height: 1.2; flex: 1; }
+        
+        .asset-meta {
+            width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 5px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 4px;
+        }
+
+        .asset-stat { font-size: 9px; color: var(--mh-cyan); }
+        
+        /* MODDER BADGE (Bottom Right) */
+        .mod-badge {
+            font-size: 8px;
+            background: #222;
+            color: #888;
+            padding: 1px 4px;
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
+		
+		/* CAMERA TELEMETRY UI */
+        .cam-telemetry-container {
+            position: absolute;
+            top: 15px;
+            right: 80px; /* Left of the Config button */
+            z-index: 100;
+        }
+
+        .cam-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 128, 255, 0.3);
+            color: var(--mh-cyan);
+            padding: 8px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .cam-btn:hover { background: rgba(0, 128, 255, 0.1); border-color: var(--mh-cyan); }
+
+        .cam-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: rgba(5, 7, 10, 0.95);
+            border: 1px solid var(--mh-blue);
+            padding: 10px;
+            margin-top: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .cam-dropdown.open { display: block; }
+
+        .cam-row {
+            display: flex; justify-content: space-between;
+            font-size: 10px; color: #aaa;
+            margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 2px;
+        }
+        .cam-val { color: var(--mh-cyan); font-family: monospace; }
+        
+        .cam-instruction { font-size: 9px; color: #666; margin-top: 8px; font-style: italic; }
+		
+		/* STANCE CONTROL BAR */
+        .stance-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px; /* Right side, near Configurator */
+            display: flex;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+            border: 1px solid rgba(0, 128, 255, 0.3);
+            border-radius: 4px;
+            z-index: 90;
+        }
+
+        .stance-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            color: #888;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .stance-btn:hover { background: rgba(0, 128, 255, 0.2); color: white; }
+        .stance-btn.active { background: var(--mh-blue); color: white; box-shadow: 0 0 10px var(--mh-blue); }
+		
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="save-toast">PROFILE SYNCHRONIZED</div>
+	
+	<div id="loader-overlay">ACCESSING ARMORY DATABASE...</div>
+	
+	<div class="cam-telemetry-container">
+        <div class="cam-btn" id="cam-toggle-btn">
+            <i class="fas fa-video"></i> 
+            <span>CAM: <span id="cam-live-coords">0, 0, 0</span></span>
+        </div>
+        <div class="cam-dropdown" id="cam-panel">
+            <div class="cam-row"><span>POS X:</span> <span class="cam-val" id="val-x">0.00</span></div>
+            <div class="cam-row"><span>POS Y:</span> <span class="cam-val" id="val-y">0.00</span></div>
+            <div class="cam-row"><span>POS Z:</span> <span class="cam-val" id="val-z">0.00</span></div>
+            <div class="cam-row"><span>FOV:</span> <span class="cam-val">75°</span></div>
+            <div class="cam-instruction">
+                CONTROLS:<br>
+                [W][A][S][D] - Pan Camera<br>
+                [L-CLICK] - Rotate<br>
+                [R-CLICK] - Pan<br>
+                [SCROLL] - Zoom
+            </div>
+        </div>
+    </div>
+
+	<aside id="titan-library">
+        <div class="library-tabs">
+            <div class="tab-btn active" title="Primary Weapon"><i class="iconify" data-icon="game-icons:assault-rifle"></i></div>
+            <div class="tab-btn" title="Launchers"><i class="fas fa-rocket"></i></div>
+            <div class="tab-btn" title="Secondary Weapon"><i class="fas fa-hand-gun"></i></div>
+            <div class="tab-btn" title="Uniform"><i class="fas fa-tshirt"></i></div>
+            <div class="tab-btn" title="Vest"><i class="fas fa-vest"></i></div>
+            <div class="tab-btn" title="Backpack"><i class="fas fa-backpack"></i></div>
+            <div class="tab-btn" title="Headgear"><i class="fas fa-hard-hat"></i></div>
+            <div class="tab-btn" title="Equipment"><i class="fas fa-glasses"></i></div>
+            <div class="tab-btn" title="NVG"><i class="fas fa-eye"></i></div>
+            <div class="tab-btn" title="Binoculars"><i class="fas fa-binoculars"></i></div>
+            <div class="tab-btn" title="Map"><i class="fas fa-map"></i></div>
+            <div class="tab-btn" title="GPS"><i class="fas fa-satellite-dish"></i></div>
+            <div class="tab-btn" title="Radio"><i class="fas fa-walkie-talkie"></i></div>
+            <div class="tab-btn" title="Compass"><i class="fas fa-compass"></i></div>
+            <div class="tab-btn" title="Watch"><i class="fas fa-clock"></i></div>
+            <div class="tab-btn" title="Face Color"><i class="fas fa-user-circle"></i></div>
+            <div class="tab-btn" title="Voice"><i class="fas fa-microphone"></i></div>
+            <div class="tab-btn" title="Badge"><i class="fas fa-shield-halved"></i></div>
+        </div>
+
+        <div class="library-content">
+			<div class="search-container">
+					<i class="fas fa-search search-icon"></i>
+					<input type="text" class="titan-search" id="asset-search" placeholder="SEARCH REGISTRY...">
+			</div>
+            <div class="sort-container">
+                <select class="titan-select" id="asset-sort">
+                    <option value="alpha">SORT ALPHABETICALLY</option>
+                    <option value="weight">SORT BY WEIGHT</option>
+                    <option value="power">SORT BY FIREPOWER</option>
+                    <option value="date">SORT BY MODIFICATION</option>
+                    <option value="mod">SORT BY MOD SOURCE</option>
+                </select>
+            </div>
+
+            <div class="category-header" id="current-cat-name">PRIMARY WEAPON</div>
+            <div class="item-grid" id="asset-grid"></div>
+        </div>
+
+        <div class="library-handle" id="library-toggle-btn"><i class="fas fa-chevron-right"></i></div>
+    </aside>
+
+	<aside id="titan-sidebar">
+        <div class="sidebar-header">
+            <span class="header-title">Live Telemetry</span>
+            <div class="header-deco"></div>
+        </div>
+
+        <div class="data-module">
+            <div class="data-row">
+                <span class="stat-label">Total Load</span>
+                <span class="stat-value status-ok" id="hud-weight">0.00</span>
+            </div>
+            <span class="stat-sub">UNIT: KG</span>
+        </div>
+
+        <div class="data-module">
+            <div class="data-row">
+                <span class="stat-label">Fatigue Drag</span>
+                <span class="stat-value status-ok" id="hud-fatigue">0.0%</span>
+            </div>
+            <span class="stat-sub">STAMINA PENALTY</span>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="action-btn">Export Profile</button>
+        </div>
+    </aside>
+	
+	<aside id="titan-command-deck">
+        <div class="deck-handle" id="deck-toggle-btn">
+            <i class="fas fa-chevron-up"></i>
+        </div>
+
+        <button class="ops-btn" id="save-profile-btn" title="Save Profile"><i class="fas fa-save"></i><span>Save</span></button>
+        <button class="ops-btn" title="Load Profile"><i class="fas fa-folder-open"></i><span>Load</span></button>
+        <button class="ops-btn" title="Export Data"><i class="fas fa-file-export"></i><span>Export</span></button>
+        <button class="ops-btn" title="Import Data"><i class="fas fa-file-import"></i><span>Import</span></button>
+        <button class="ops-btn" title="Edit Biometrics"><i class="fas fa-user-edit"></i><span>Edit</span></button>
+        <button class="ops-btn danger" title="Delete Profile"><i class="fas fa-trash-alt"></i><span>Delete</span></button>
+    </aside>
+	
+	<div class="stance-panel">
+        <div class="stance-btn active" id="pose-stand" title="Standing"><i class="fas fa-person"></i></div>
+        <div class="stance-btn" id="pose-crouch" title="Crouching"><i class="fas fa-person-arrow-down-to-line"></i></div>
+        <div class="stance-btn" id="pose-prone" title="Prone"><i class="fas fa-person-praying"></i></div>
+        <div class="stance-btn" id="pose-lean" title="Lean / Cover"><i class="fas fa-person-shelter"></i></div>
+    </div>
+	
+	<aside id="titan-configurator">
+			<div class="config-handle" id="config-toggle-btn"><i class="fas fa-cog"></i></div>
+			
+			<div class="config-group">
+                <span class="config-label"><i class="fas fa-sun"></i> LIGHTING STUDIO</span>
+                
+                <div class="cam-row" style="margin-top:10px;">
+                    <span>TIME</span>
+                    <span class="cam-val" id="val-time">12:00</span>
+                </div>
+                <input type="range" id="light-time" min="0" max="24" step="0.1" value="12" style="width:100%; accent-color: var(--mh-cyan);">
+
+                <div class="cam-row">
+                    <span>INTENSITY</span>
+                    <span class="cam-val" id="val-int">1.5</span>
+                </div>
+                <input type="range" id="light-intensity" min="0" max="3" step="0.1" value="1.5" style="width:100%; accent-color: var(--mh-blue);">
+                
+                <button class="config-slot-btn" id="btn-night-ops" style="margin-top:10px; justify-content:center;">
+                    <i class="fas fa-moon"></i> ENGAGE NIGHT OPS
+                </button>
+            </div>
+            
+            <hr style="border-color:rgba(255,255,255,0.1); margin: 15px 0;">
+			
+			<div class="config-content">
+				<div class="category-header" id="config-panel-title">CONFIGURATION</div>
+				
+				<div class="config-view-container" id="config-viewport">
+					<div class="config-view view-main" id="view-main">
+						<div id="dynamic-config-root"></div>
+					</div>
+
+					<div class="config-view view-sub" id="view-sub">
+						<div class="back-btn" id="sub-menu-back">
+							<i class="fas fa-arrow-left"></i> BACK TO CONFIG
+						</div>
+						<div class="category-header" id="sub-menu-title">SELECT OPTIC</div>
+						<div class="item-grid" id="sub-asset-grid">
+							</div>
+					</div>
+				</div>
+			</div>
+    </aside>
+	
+	<div id="ui-blur-overlay"></div>
+
+		<aside id="loadout-popup">
+			<div class="loadout-header">
+				<span class="header-title"><i class="fas fa-list-ul"></i> ACTIVE MANIFEST</span>
+				<i class="fas fa-times" id="close-loadout" style="cursor:pointer; color:var(--mh-alert);"></i>
+			</div>
+			<div class="loadout-list" id="active-loadout-list">
+				</div>
+			<div class="sidebar-footer" style="margin-top:15px; text-align:right;">
+				<span class="stat-sub">TOTAL MASS: <b id="popup-total-weight">0.00</b> KG</span>
+			</div>
+		</aside>
+
+	<script type="module">
+        import * as THREE from 'three'; 
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; // <--- NEW MODULE
+
+        class ArmedSyncEngine {
+			constructor() {
+                console.log("[ARMED_SYNC] Engine Constructing...");
+                
+                // --- SOCKET DEFINITIONS MUST LIVE HERE ---
+				// REPLACE THIS SECTION IN YOUR CONSTRUCTOR
+				this.sockets = {
+					"OPTICS": { boneName: "mixamorig:Head", offset: [0, 0.2, 0.1] }, 
+					"HEADGEAR": { boneName: "mixamorig:Head", offset: [0, 0.05, 0.02] },
+					"BACKPACK": { boneName: "mixamorig:Spine2", offset: [0, 0.1, -0.15] },
+					// "MUZZLE" is where the Gun attaches (The Right Hand)
+					"MUZZLE": { boneName: "mixamorig:RightHand", offset: [0, 0, 0] } 
+				};
+
+                // --- DATA & STATE ---
+                this.ontology = {
+                    registry: {
+                        primary_weapons: [
+                            {
+                                id: "w_m4_carbine",
+                                name: "M4 Carbine (Base)",
+                                slot_type: "primary",
+                                physics: { mass_kg: 3.4, ergonomics: 0.85 },
+                                fatigue_modifier: 0.12,
+                                assets: { model_path: "./assets/arts/glb/FinalBaseMesh.glb" }
+                            }
+                        ],
+                        uniforms: [], vests: [], backpacks: [], headgear: [], optics: [], nvgs: []
+                    }
+                };
+
+                this.currentLoadout = { totalWeight: 0, fatiguePenalty: 0, items: [] };
+                this.activeModel = null; 
+                this.activeAttachments = {}; 
+                this.pivot = new THREE.Group(); 
+                this.loader = new GLTFLoader(); 
+                this.controls = null;
+                this.scene = new THREE.Scene();
+				// NEW CODE (Replace with this):
+				this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+				// Move camera back (Z=4) and to chest height (Y=1.2)
+				this.camera.position.set(0, 1.2, 4);
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                // --- CRITICAL FIX: INITIALIZE INPUT STATE HERE ---
+                this.keys = { w: false, a: false, s: false, d: false }; // <--- ADD THIS LINE
+                this.init();
+             }// END OF CONSTRUCTOR
+
+            async init() {
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.shadowMap.enabled = true;
+                document.body.appendChild(this.renderer.domElement);
+				this.setupLoadoutManager();
+
+                // --- NEW: ORBIT CONTROLS ---
+                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true; // smooth sensation
+                this.controls.dampingFactor = 0.05;
+                this.controls.screenSpacePanning = false;
+                this.controls.minDistance = 1; // Closest zoom
+                this.controls.maxDistance = 10; // Furthest zoom
+                this.controls.target.set(0, 0, 0); // Focus on center
+
+                const gridHelper = new THREE.GridHelper(100, 100, 0x0080FF, 0x0d1b2a);
+                this.scene.add(gridHelper);
+                
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+                this.scene.add(ambientLight);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 3);
+                dirLight.position.set(5, 10, 7.5);
+                this.scene.add(dirLight);
+
+                this.scene.add(this.pivot);
+
+                // UI & Render
+                this.setupUI();
+                this.renderLibrary('primary_weapons'); 
+                
+                this.animate();
+                console.log("[ARMED_SYNC] System Online.");
+				
+				// NEW: Load the Soldier immediately
+                this.spawnOperator("./assets/arts/glb/FinalBaseMesh.glb");
+				
+				window.addEventListener('resize', () => this.onWindowResize());
+            }
+			
+			setupControls() {
+				// Initialize OrbitControls
+                // NOTE: If using CDN, ensure 'OrbitControls' is available globally or via THREE.OrbitControls
+                try {
+                    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+                } catch (e) {
+                    console.warn("OrbitControls not found on THREE namespace, trying global...");
+                    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                }
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.minDistance = 1;
+                this.controls.maxDistance = 15;
+                this.controls.target.set(0, 1.2, 0);
+
+                window.addEventListener('keydown', (e) => {
+                    if (e.key.toLowerCase() in this.keys) this.keys[e.key.toLowerCase()] = true;
+                });
+                window.addEventListener('keyup', (e) => {
+                    if (e.key.toLowerCase() in this.keys) this.keys[e.key.toLowerCase()] = false;
+                });
+            }
+
+			spawnOperator(url) {
+                // If you kept the name 'Soldier.glb', change the path below:
+                // url = "./assets/arts/glb/Soldier.glb"; 
+                
+                console.log("[BIOMETRICS] Deploying Standard Soldier...");
+                
+                this.loader.load(url, (gltf) => {
+                    this.activeModel = gltf.scene;
+
+                    // 1. FEET-ON-GROUND LOGIC
+                    const box = new THREE.Box3().setFromObject(this.activeModel);
+                    const size = box.getSize(new THREE.Vector3());
+                    const center = box.getCenter(new THREE.Vector3());
+
+                    const scaleFactor = 2 / size.y; // Adjusted scale for this specific model
+					// --- NEW SCALING LOGIC ---
+                    // Force Scale to 1.5x (Adjust this number if he is still too big/small)
+                    this.activeModel.scale.set(1.5, 1.5, 1.5);
+                    
+                    // Force Position to (0,0,0)
+                    this.activeModel.position.set(0, 0, 0);
+
+                    this.pivot.add(this.activeModel);
+                    
+                    // 2. ENGAGE TACTICAL POSE
+                    this.setTacticalPose();
+                    
+                    console.log("[BIOMETRICS] Soldier Deployed.");
+                });
+            }
+			
+			// CALL THIS INSIDE setupUI()
+            setupStanceLogic() {
+                console.log("[INPUT] Initializing Stance Controls...");
+                const poses = ['stand', 'crouch', 'prone', 'lean'];
+                
+                poses.forEach(pose => {
+                    const btn = document.getElementById(`pose-${pose}`);
+                    if (btn) {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Stop click from hitting other things
+                            console.log(`[INPUT] Stance Request: ${pose.toUpperCase()}`);
+                            
+                            // Visual Toggle
+                            poses.forEach(p => {
+                                const b = document.getElementById(`pose-${p}`);
+                                if(b) b.classList.remove('active');
+                            });
+                            btn.classList.add('active');
+                            
+                            // Execution
+                            this.setTacticalPose(pose);
+                        });
+                    } else {
+                        console.warn(`[UI] Missing button for pose: ${pose}`);
+                    }
+                });
+            }
+
+            // THE NEW UNIVERSAL POSER
+            setTacticalPose(stance = 'stand') {
+                if (!this.activeModel) return;
+
+                console.groupCollapsed(`[TACTICAL] Engaging Stance: ${stance.toUpperCase()}`);
+
+                // 1. GLOBAL RESET (The "Anti-Cripple" Protocol)
+                this.activeModel.traverse(node => {
+                    if (node.isBone) {
+                        node.rotation.set(0, 0, 0); // Clear angles
+                        
+                        // CRITICAL FIX: Reset Hips Position specifically
+                        // (Most bones don't move position, only Hips do)
+                        if (node.name.toLowerCase().includes('hips')) {
+                            node.position.set(0, 0, 0); // Reset height to default
+                            // Note: Depending on the model, default might be roughly Y=100 or Y=1.
+                            // The Soldier.glb usually has hips around Y=100cm in local space.
+                            // If he sinks into floor, we will adjust this value below.
+                        }
+                    }
+                });
+
+                // 2. HELPER: FUZZY FINDER
+                const getBone = (searchName) => {
+                    let result = null;
+                    const searchLower = searchName.toLowerCase();
+                    this.activeModel.traverse((node) => {
+                        if (result) return;
+                        if (node.isBone) {
+                            const name = node.name.toLowerCase();
+                            if (name.includes(searchLower)) result = node;
+                        }
+                    });
+                    return result;
+                };
+
+                const rot = (bone, x, y, z) => {
+                    if (bone) {
+                        bone.rotation.set(
+                            THREE.MathUtils.degToRad(x),
+                            THREE.MathUtils.degToRad(y),
+                            THREE.MathUtils.degToRad(z)
+                        );
+                    }
+                };
+
+                // 3. FETCH BONES
+                const hips = getBone("hips");
+                const spine = getBone("spine") || getBone("spine1");
+                const head = getBone("head");
+                
+                const rArm = getBone("rightarm");
+                const rFore = getBone("rightforearm");
+                const rHand = getBone("righthand");
+                
+                const lArm = getBone("leftarm");
+                const lFore = getBone("leftforearm");
+                const lHand = getBone("lefthand");
+
+                const rUpLeg = getBone("rightupleg");
+                const rLeg   = getBone("rightleg");
+                const lUpLeg = getBone("leftupleg");
+                const lLeg   = getBone("leftleg");
+
+                // 4. APPLY STANCES
+                if (stance === 'stand') {
+                    // Force Hips Upright
+                    if (hips) hips.rotation.set(0,0,0);
+                    // Note: If he sinks into the floor, change 0 to roughly 90 or 100 below:
+                    if (hips) hips.position.y = 0; 
+
+                    // Rifle Ready
+                    rot(rArm, 10, 40, -10);   rot(rFore, -10, 0, -110); rot(rHand, 0, -20, 0);    
+                    rot(lArm, 10, -20, 80);   rot(lFore, 0, 0, 90);
+                    rot(head, 0, -20, 0);     
+                }
+                
+                else if (stance === 'crouch') {
+                    // Lower Hips (Adjust this value if he floats or sinks too much)
+                    if (hips) hips.position.y = -40; 
+                    
+                    rot(rArm, 10, 40, -10); rot(rFore, -10, 0, -110);
+                    rot(lArm, 10, -20, 80); rot(lFore, 0, 0, 90);
+
+                    rot(rUpLeg, -100, 20, 0); rot(rLeg, 110, 0, 0); 
+                    rot(lUpLeg, -10, 0, 0);   rot(lLeg, 80, 0, 0);  
+                    rot(spine, 20, 0, 0);     
+                }
+                
+                else if (stance === 'prone') {
+                    // Drop to floor & Rotate Hips to lay down
+                    if (hips) {
+                        hips.position.y = -85;
+                        hips.rotation.x = THREE.MathUtils.degToRad(-90); // Lay flat
+                    }
+                    rot(head, -50, 0, 0); 
+                    rot(rArm, 40, -20, 0); rot(rFore, -90, 0, 0);
+                    rot(lArm, 40, 20, 0);  rot(lFore, -90, 0, 0);
+                    rot(rUpLeg, 0, 10, 0); rot(lUpLeg, 0, -10, 0);
+                }
+                
+                else if (stance === 'lean') {
+                     // Reset Hips
+                     if (hips) hips.rotation.set(0,0,0);
+                     if (hips) hips.position.y = 0;
+
+                     rot(spine, 0, 0, -30); // Lean Right
+                     rot(rArm, 10, 40, -10); rot(rFore, -10, 0, -110);
+                     rot(lArm, 10, -20, 80); rot(lFore, 0, 0, 90);
+                }
+
+                console.groupEnd();
+            }
+				
+                // --- STANCE CONFIGURATIONS ---
+                setTacticalPose(stance = 'stand') {
+                if (!this.activeModel) return;
+
+                console.groupCollapsed(`[TACTICAL] Engaging Stance: ${stance.toUpperCase()}`);
+
+                // 1. HELPER: SAFELY RESET ALL BONES
+                this.activeModel.traverse(node => {
+                    if (node.isBone) {
+                        // Reset to T-Pose / Bind Pose first to avoid additive twisting
+                        node.rotation.set(0, 0, 0); 
+                    }
+                });
+
+                // 2. HELPER: SMART BONE FINDER (Case-Insensitive)
+                const getBone = (searchName) => {
+                    let result = null;
+                    const searchLower = searchName.toLowerCase();
+                    this.activeModel.traverse((node) => {
+                        if (result) return;
+                        if (node.isBone) {
+                            const name = node.name.toLowerCase();
+                            // Matches "RightArm" inside "mixamorig:RightArm" or "MixamoRig:RightArm"
+                            if (name.includes(searchLower)) {
+                                result = node;
+                            }
+                        }
+                    });
+                    if (!result) console.warn(`Bone missing: ${searchName}`);
+                    else console.log(`Found: ${result.name}`);
+                    return result;
+                };
+
+                const rot = (bone, x, y, z) => {
+                    if (bone) {
+                        bone.rotation.set(
+                            THREE.MathUtils.degToRad(x),
+                            THREE.MathUtils.degToRad(y),
+                            THREE.MathUtils.degToRad(z)
+                        );
+                    }
+                };
+
+                // 3. FETCH CRITICAL BONES (Generic Names)
+                const hips = getBone("hips");
+                const spine = getBone("spine") || getBone("spine1");
+                const head = getBone("head");
+                
+                const rArm  = getBone("rightarm");
+                const rFore = getBone("rightforearm");
+                const rHand = getBone("righthand");
+                
+                const lArm  = getBone("leftarm");
+                const lFore = getBone("leftforearm");
+                const lHand = getBone("lefthand");
+
+                const rUpLeg = getBone("rightupleg");
+                const rLeg   = getBone("rightleg");
+                const lUpLeg = getBone("leftupleg");
+                const lLeg   = getBone("leftleg");
+
+                // 4. APPLY STANCES
+                if (stance === 'stand') {
+                    // Rifle Ready Stance
+                    rot(rArm, 10, 40, -10);   // Shoulder Adjust
+                    rot(rFore, -10, 0, -110); // Elbow Bend
+                    rot(rHand, 0, -20, 0);    // Wrist
+                    
+                    rot(lArm, 10, -20, 80);   
+                    rot(lFore, 0, 0, 90);
+                    
+                    rot(head, 0, -20, 0);     // Look at target
+                }
+                
+                else if (stance === 'crouch') {
+                    if (hips) hips.position.y = -60; // Drop Hips (Adjust value based on model scale!)
+                    
+                    // Rifle Hold (Same as Stand)
+                    rot(rArm, 10, 40, -10); rot(rFore, -10, 0, -110);
+                    rot(lArm, 10, -20, 80); rot(lFore, 0, 0, 90);
+
+                    // Combat Crouch
+                    rot(rUpLeg, -100, 20, 0); rot(rLeg, 110, 0, 0); // Knee on ground
+                    rot(lUpLeg, -10, 0, 0);   rot(lLeg, 80, 0, 0);  // Knee up
+                    rot(spine, 20, 0, 0);     // Lean into it
+                }
+
+                else if (stance === 'prone') {
+                    // Lay on floor
+                    if (hips) {
+                        hips.position.y = -85;
+                        hips.rotation.x = THREE.MathUtils.degToRad(-90);
+                    }
+                    
+                    rot(head, -50, 0, 0); // Look UP/Forward
+                    
+                    // Elbows out
+                    rot(rArm, 40, -20, 0); rot(rFore, -90, 0, 0);
+                    rot(lArm, 40, 20, 0);  rot(lFore, -90, 0, 0);
+                    
+                    // Legs straight
+                    rot(rUpLeg, 0, 10, 0);
+                    rot(lUpLeg, 0, -10, 0);
+                }
+
+                console.groupEnd();
+            }
+			
+			setupLights() {
+                // 1. AMBIENT LIGHT (The "Fill")
+                // WE USE 'this.ambient' SO WE CAN DIM IT LATER
+                this.ambient = new THREE.AmbientLight(0xffffff, 0.5);
+                this.scene.add(this.ambient);
+
+                // 2. SUN LIGHT (The "Key")
+                // WE USE 'this.sun' SO WE CAN ROTATE IT LATER
+                this.sun = new THREE.DirectionalLight(0xffffff, 1.5);
+                this.sun.position.set(5, 10, 7.5);
+                this.sun.castShadow = true; 
+                this.scene.add(this.sun);
+                
+                // 3. RIM LIGHT (Optional, stays constant)
+                const rim = new THREE.DirectionalLight(0x0080ff, 0.5);
+                rim.position.set(-5, 5, -5);
+                this.scene.add(rim);
+            }
+			
+			// CALL THIS INSIDE setupUI():  this.setupLightingControls();
+
+            setupLightingControls() {
+                const timeSlider = document.getElementById('light-time');
+                const intSlider = document.getElementById('light-intensity');
+                const nightBtn = document.getElementById('btn-night-ops');
+                
+                // DISPLAY ELEMENTS
+                const valTime = document.getElementById('val-time');
+                const valInt = document.getElementById('val-int');
+
+                if (timeSlider) {
+                    timeSlider.addEventListener('input', (e) => {
+                        const time = parseFloat(e.target.value);
+                        valTime.innerText = time.toFixed(1) + "H";
+                        
+                        // LOGIC: Rotate Sun based on "Time"
+                        // 12 = Top (90 deg), 0/24 = Bottom (-90 deg)
+                        // Map 0-24 range to Radians
+                        const angle = (time - 6) * (Math.PI / 12); 
+                        
+                        if (this.sun) {
+                            this.sun.position.x = Math.cos(angle) * 10;
+                            this.sun.position.y = Math.sin(angle) * 10;
+                            
+                            // COLOR SHIFT (Dawn/Dusk = Orange, Noon = White)
+                            if (time < 7 || time > 17) {
+                                this.sun.color.setHSL(0.05, 0.7, 0.5); // Orange
+                            } else {
+                                this.sun.color.setHSL(0.1, 0.1, 0.95); // White
+                            }
+                        }
+                    });
+                }
+
+                if (intSlider) {
+                    intSlider.addEventListener('input', (e) => {
+                        const val = parseFloat(e.target.value);
+                        valInt.innerText = val;
+                        if (this.sun) this.sun.intensity = val;
+                    });
+                }
+
+                if (nightBtn) {
+                    nightBtn.addEventListener('click', () => {
+                        console.log("[ENV] Night Ops Protocol Engaged");
+                        
+                        // 1. Kill the Sun (SAFE CHECK)
+                        if (this.sun) {
+                            this.sun.intensity = 0.1;
+                            intSlider.value = 0.1;
+                            valInt.innerText = "0.1";
+                        }
+
+                        // 2. Boost Ambient
+                        if (this.ambient) {
+                            this.ambient.color.setHex(0x001133); // Deep Navy
+                            this.ambient.intensity = 0.8;
+                        }
+
+                        // 3. Move Time to Midnight
+                        if (timeSlider) {
+                            timeSlider.value = 24;
+                            valTime.innerText = "24.0H";
+                            
+                            // CRITICAL FIX: ONLY MOVE SUN IF IT EXISTS
+                            if (this.sun) {
+                                this.sun.position.y = -10; 
+                            }
+                        }
+                    });
+                }
+            }
+			
+				attachToModel(slotName, assetUrl) {
+                console.log(`[ATTACHMENT] Parenting ${slotName}`);
+
+					// 1. Remove existing attachment in that slot
+					if (this.activeAttachments[slotName]) {
+						if (this.activeAttachments[slotName].parent) {
+							this.activeAttachments[slotName].parent.remove(this.activeAttachments[slotName]);
+						}
+						delete this.activeAttachments[slotName];
+					}
+
+					// 2. Load the Accessory
+					this.loader.load(assetUrl, (gltf) => {
+						const accessory = gltf.scene;
+						const socket = this.sockets[slotName];
+
+						if (!this.activeModel || !socket) {
+							console.warn("[ATTACHMENT] No active model or socket definition found.");
+							return;
+						}
+
+						// 3. FIND THE BONE / ANCHOR
+						let anchor = null;
+						this.activeModel.traverse((child) => {
+							if (child.isBone && child.name === socket.boneName) {
+								anchor = child;
+							}
+							// Fallback: Check for meshes named similarly if bones aren't named
+							else if (!anchor && child.name.includes(socket.boneName)) {
+								anchor = child;
+							}
+						});
+
+						// 4. ATTACH
+						if (anchor) {
+							anchor.add(accessory);
+							// Apply Offsets
+							accessory.position.set(...socket.offset);
+							this.activeAttachments[slotName] = accessory;
+							console.log(`[ATTACHMENT] Attached to ${anchor.name}`);
+						} else {
+							console.warn(`[ATTACHMENT] Bone '${socket.boneName}' not found on model.`);
+						}
+					});
+				}
+
+			setupUI() {
+                console.log("[UI] Connecting Titan Interface...");
+                
+                // 1. LEFT SIDEBAR TOGGLE
+                const libPanel = document.getElementById('titan-library');
+                const libBtn = document.getElementById('library-toggle-btn');
+                if (libBtn && libPanel) {
+                    libBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        libPanel.classList.toggle('open');
+                        const icon = libBtn.querySelector('i');
+                        if (libPanel.classList.contains('open')) {
+                            icon.className = 'fas fa-chevron-left';
+                        } else {
+                            icon.className = 'fas fa-chevron-right';
+                        }
+                    });
+                }
+
+                // 2. TACTICAL TABS & AUTO-SCROLL (18 CATEGORIES)
+                const navTabs = document.querySelectorAll('.tab-btn'); 
+                navTabs.forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        navTabs.forEach(t => t.classList.remove('active'));
+                        e.currentTarget.classList.add('active');
+                        
+                        // Auto-scroll the tab strip so the active icon is always visible
+                        e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                        const key = this.getCategoryKey(e.currentTarget.getAttribute('title'));
+                        if (key) this.renderLibrary(key);
+                    });
+                });
+
+                // 3. SEARCH & SORT SYSTEM
+                const searchInput = document.getElementById('asset-search');
+                const sortSelect = document.getElementById('asset-sort');
+                
+                const triggerRefresh = () => {
+                    const activeTabBtn = document.querySelector('.tab-btn.active');
+                    if (activeTabBtn) {
+                        const activeTab = activeTabBtn.getAttribute('title');
+                        this.renderLibrary(this.getCategoryKey(activeTab));
+                    }
+                };
+
+                if (searchInput) searchInput.addEventListener('input', triggerRefresh);
+                if (sortSelect) sortSelect.addEventListener('change', triggerRefresh);
+
+                // 4. BOTTOM COMMAND DECK TOGGLE
+                const deck = document.getElementById('titan-command-deck');
+                const deckBtn = document.getElementById('deck-toggle-btn');
+                if (deckBtn && deck) {
+                    deckBtn.addEventListener('click', () => {
+                        deck.classList.toggle('open');
+                        const icon = deckBtn.querySelector('i');
+                        if (deck.classList.contains('open')) {
+                            icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                        } else {
+                            icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                        }
+                    });
+                }
+
+                // 5. RIGHT CONFIGURATOR (EDITOR) TOGGLE
+                const configPanel = document.getElementById('titan-configurator');
+                const configBtn = document.getElementById('config-toggle-btn');
+                if (configBtn && configPanel) {
+                    configBtn.addEventListener('click', () => {
+                        configPanel.classList.toggle('open');
+                    });
+                }
+
+                // 6. REAL-TIME ROTATION CONTROL
+                const rotSlider = document.getElementById('cfg-rotation');
+                if (rotSlider) {
+                    rotSlider.addEventListener('input', (e) => {
+                        if (this.pivot) {
+                            // Convert degrees to radians for Three.js
+                            this.pivot.rotation.y = e.target.value * (Math.PI / 180);
+                        }
+                    });
+                }
+
+                // 7. DATA PERSISTENCE: SAVE LOGIC
+                const saveBtn = document.getElementById('save-profile-btn');
+                const nameInput = document.getElementById('cfg-name');
+                const callInput = document.getElementById('cfg-callsign');
+
+                if (saveBtn) {
+                    saveBtn.addEventListener('click', () => {
+                        const profileData = {
+                            name: nameInput ? nameInput.value : "",
+                            callsign: callInput ? callInput.value : "",
+                            timestamp: new Date().toLocaleString()
+                        };
+
+                        // Store in Browser LocalStorage
+                        localStorage.setItem('armedSync_activeProfile', JSON.stringify(profileData));
+
+                        // Visual Feedback on Button
+                        saveBtn.style.borderColor = 'var(--mh-cyan)';
+                        const btnText = saveBtn.querySelector('span');
+                        if (btnText) btnText.innerText = "SAVED!";
+                        
+                        // Show Titan Toast Notification
+                        const toast = document.getElementById('save-toast');
+                        if(toast) {
+                            toast.style.display = 'block';
+                            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+                        }
+
+                        setTimeout(() => {
+                            saveBtn.style.borderColor = '';
+                            if (btnText) btnText.innerText = "Save";
+                        }, 2000);
+
+                        console.log("[SYSTEM] Profile synchronized:", profileData);
+                    });
+                }
+
+                // 8. DATA PERSISTENCE: AUTO-LOAD ON STARTUP
+                const savedData = localStorage.getItem('armedSync_activeProfile');
+                if (savedData) {
+                    const parsed = JSON.parse(savedData);
+                    if(nameInput) nameInput.value = parsed.name || "";
+                    if(callInput) callInput.value = parsed.callsign || "";
+                    console.log("[SYSTEM] Previous session restored for:", parsed.name);
+                }
+
+                // 9. TELEMETRY / LOADOUT MANAGER
+                this.setupLoadoutManager();
+				
+				// --- TEXTURE SWITCHER LOGIC ---
+				const swatches = document.querySelectorAll('.swatches');
+				const textureGrid = document.getElementById('texture-switcher');
+				
+				if (textureGrid) {
+					textureGrid.addEventListener('click', (e) => {
+						const swatch = e.target.closest('.swatch');
+						if (!swatch) return;
+
+						// UI Update
+						textureGrid.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+						swatch.classList.add('active');
+
+						// Engine Update
+						const color = swatch.getAttribute('data-color');
+						this.applyTexture(color);
+					});
+				}
+				
+				// --- SUB-MENU BACK BUTTON ---
+				const backBtn = document.getElementById('sub-menu-back');
+				const viewport = document.getElementById('config-viewport');
+				if (backBtn) {
+					backBtn.onclick = () => viewport.classList.remove('active-sub');
+				}
+				
+				// CAMERA TOGGLE
+                const camBtn = document.getElementById('cam-toggle-btn');
+                const camPanel = document.getElementById('cam-panel');
+                if (camBtn && camPanel) {
+                    camBtn.addEventListener('click', () => {
+                        camPanel.classList.toggle('open');
+                    });
+                }
+				
+			this.setupStanceLogic();
+			this.setupLightingControls();
+            }
+
+			// --- UPDATED CATEGORY MAPPING ---
+            getCategoryKey(title) {
+                const map = {
+                    'Primary Weapon': 'primary_weapons', 'Launchers': 'launchers',
+                    'Secondary Weapon': 'sidearms', 'Uniform': 'uniforms',
+                    'Vest': 'vests', 'Backpack': 'backpacks',
+                    'Headgear': 'headgear', 'Equipment': 'accessories',
+                    'NVG': 'nvgs', 'Binoculars': 'optics',
+                    'Map': 'maps', 'GPS': 'terminals',
+                    'Radio': 'comms', 'Compass': 'navigation',
+                    'Watch': 'chronos', 'Face Color': 'identities',
+                    'Voice': 'vocals', 'Badge': 'emblems'
+                };
+                return map[title] || 'primary_weapons';
+            }
+			
+			// --- ADVANCED SORTING LOGIC ---
+            sortAssets(assets, criteria) {
+                return assets.sort((a, b) => {
+                    if (criteria === 'alpha') return a.name.localeCompare(b.name);
+                    if (criteria === 'weight') return a.physics.mass_kg - b.physics.mass_kg;
+                    if (criteria === 'power') return (b.ballistics?.ap_value || 0) - (a.ballistics?.ap_value || 0);
+                    if (criteria === 'date') return new Date(b.meta?.modified) - new Date(a.meta?.modified);
+                    if (criteria === 'mod') return a.meta?.source.localeCompare(b.meta?.source);
+                    return 0;
+                });
+            }
+
+			renderLibrary(categoryKey) {
+                const grid = document.getElementById('asset-grid');
+                if (!grid) return;
+                
+                // Clear existing cards
+                grid.innerHTML = '';
+                
+                // Fetch Items from Registry
+                const items = this.ontology.registry[categoryKey] || [];
+
+                // Empty State Handler
+                if (items.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; padding:30px; color:rgba(255,255,255,0.2);">
+                            <i class="fas fa-box-open" style="font-size:20px; margin-bottom:10px;"></i><br>
+                            NO ASSETS FOUND
+                        </div>`;
+                    return;
+                }
+
+                // Generate Cards
+                items.forEach(item => {
+                    // Check if item is currently in the loadout
+                    const isEquipped = this.currentLoadout.items.includes(item.id);
+                    
+                    const card = document.createElement('div');
+                    card.className = `asset-card ${isEquipped ? 'equipped' : ''}`;
+                    
+                    // Click to Equip
+                    card.onclick = () => this.equipItem(item, categoryKey);
+
+                    // IMAGE LOGIC: Use path if exists, otherwise a generic icon
+                    const imgSrc = item.assets?.icon_path 
+                        ? `<img src="${item.assets.icon_path}">` 
+                        : `<i class="fas fa-cube" style="color:#444; font-size:24px;"></i>`;
+
+                    // MODDER BADGE
+                    const modSource = item.meta?.source || "MH STD";
+
+                    card.innerHTML = `
+                        <div class="asset-img">${imgSrc}</div> 
+                        <div class="asset-name">${item.name}</div>
+                        <div class="asset-meta">
+                            <span class="asset-stat">${item.physics.mass_kg} KG</span>
+                            <span class="mod-badge">${modSource}</span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+			
+			equipItem(item, category) {
+                console.log(`[ARSENAL] Equipping: ${item.name}`);
+
+                // A. UPDATE LOADOUT STATE
+                if (!this.currentLoadout.items.includes(item.id)) {
+                    this.currentLoadout.items.push(item.id);
+                    this.currentLoadout.totalWeight += item.physics.mass_kg;
+                }
+
+                this.renderLibrary(category);
+                
+                // B. SPAWN ASSET
+                if (item.assets?.model_path) {
+                    
+                    // LOGIC CHANGE: Primary Weapons are now ATTACHMENTS to the Man
+                    if (['primary_weapons'].includes(category)) {
+                        // Use the MUZZLE socket (which maps to RightHand)
+                        // You might want to rename "MUZZLE" to "WEAPON_HAND" in your sockets later
+                        this.attachToModel("MUZZLE", item.assets.model_path);
+                    } 
+                    
+                    // Other attachments
+                    else {
+                        const socketMap = { 
+                            'optics': 'OPTICS', 
+                            'headgear': 'HEADGEAR', 
+                            'backpacks': 'BACKPACK'
+                        };
+                        const socketName = socketMap[category];
+                        if (socketName) {
+                            this.attachToModel(socketName, item.assets.model_path);
+                        }
+                    }
+                }
+
+                const weightHUD = document.getElementById('hud-weight');
+                if(weightHUD) weightHUD.innerText = this.currentLoadout.totalWeight.toFixed(2);
+            }
+
+            equipItem(item) {
+                this.currentLoadout.totalWeight += item.physics.mass_kg;
+                this.currentLoadout.fatiguePenalty += item.fatigue_modifier;
+                this.currentLoadout.items.push(item.id);
+                this.updateTelemetry();
+                
+                if (item.assets && item.assets.model_path) {
+                    this.spawnAsset(item.assets.model_path);
+                }
+            }
+
+            updateTelemetry() {
+                const w = document.getElementById('hud-weight');
+                const f = document.getElementById('hud-fatigue');
+                if (w) w.innerText = this.currentLoadout.totalWeight.toFixed(2);
+                if (f) f.innerText = (this.currentLoadout.fatiguePenalty * 100).toFixed(1) + "%";
+            }
+
+			animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                // 1. UPDATE CONTROLS
+                if (this.controls) this.controls.update();
+
+                // 2. TRUE FREE-FLY CAMERA (WASD)
+                if (this.keys) {
+                    const moveSpeed = 0.15; 
+                    
+                    // Get the direction the camera is facing
+                    const forward = new THREE.Vector3();
+                    this.camera.getWorldDirection(forward);
+                    forward.y = 0; // Lock movement to horizontal plane (don't fly into the sky)
+                    forward.normalize();
+
+                    const right = new THREE.Vector3();
+                    right.crossVectors(forward, this.camera.up).normalize();
+
+                    // FORWARD / BACK
+                    if (this.keys.w) {
+                        this.camera.position.addScaledVector(forward, moveSpeed);
+                        this.controls.target.addScaledVector(forward, moveSpeed);
+                    }
+                    if (this.keys.s) {
+                        this.camera.position.addScaledVector(forward, -moveSpeed);
+                        this.controls.target.addScaledVector(forward, -moveSpeed);
+                    }
+                    
+                    // STRAFE LEFT / RIGHT
+                    if (this.keys.a) {
+                        this.camera.position.addScaledVector(right, -moveSpeed);
+                        this.controls.target.addScaledVector(right, -moveSpeed);
+                    }
+                    if (this.keys.d) {
+                        this.camera.position.addScaledVector(right, moveSpeed);
+                        this.controls.target.addScaledVector(right, moveSpeed);
+                    }
+                    
+                    // UP / DOWN (Optional: Q/E Keys)
+                    // if (this.keys.q) { this.camera.position.y += moveSpeed; this.controls.target.y += moveSpeed; }
+                    // if (this.keys.e) { this.camera.position.y -= moveSpeed; this.controls.target.y -= moveSpeed; }
+                }
+
+                // 3. UI TELEMETRY
+                if (this.updateCamTelemetry) this.updateCamTelemetry();
+
+                this.renderer.render(this.scene, this.camera);
+            }
+			
+			// --- INJECTION START: PASTE THIS AFTER animate() AND BEFORE THE FINAL '}' ---
+
+            // FIX 1: THE MISSING RESIZE MANAGER
+            onWindowResize() {
+                if (!this.camera || !this.renderer) return;
+                
+                // 1. Update Camera Aspect Ratio
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                
+                // 2. Resize Renderer
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                
+                console.log("[DISPLAY] Viewport Resized");
+            }
+
+            // FIX 2: THE "WASD" LISTENER & DEBUGGER
+            // (Replace your existing setupControls with this smarter version)
+            setupControls() {
+                console.log("[INPUT] Initializing Control Systems...");
+
+                // Initialize OrbitControls
+                if (typeof THREE !== 'undefined' && THREE.OrbitControls) {
+                    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+                } else if (typeof OrbitControls !== 'undefined') {
+                    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                }
+
+                // Physics Settings
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.minDistance = 1;
+                this.controls.maxDistance = 20; // Increased Zoom Range
+                this.controls.target.set(0, 1.2, 0);
+
+                // KEYBOARD SENSORS (With Debugging)
+                // Ensure this.keys exists
+                if (!this.keys) this.keys = { w: false, a: false, s: false, d: false };
+
+                window.addEventListener('keydown', (e) => {
+                    const key = e.key.toLowerCase();
+                    if (key in this.keys) {
+                        this.keys[key] = true;
+                        // console.log(`[INPUT] Key Down: ${key}`); // Uncomment to test keys
+                    }
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    const key = e.key.toLowerCase();
+                    if (key in this.keys) {
+                        this.keys[key] = false;
+                    }
+                });
+            }
+            
+            // --- INJECTION END ---
+
+            updateCamTelemetry() {
+                const x = this.camera.position.x.toFixed(2);
+                const y = this.camera.position.y.toFixed(2);
+                const z = this.camera.position.z.toFixed(2);
+                
+                // Update Top Button
+                const live = document.getElementById('cam-live-coords');
+                if(live) live.innerText = `[${x}, ${y}, ${z}]`;
+
+                // Update Dropdown Rows
+                const vx = document.getElementById('val-x');
+                const vy = document.getElementById('val-y');
+                const vz = document.getElementById('val-z');
+                
+                if(vx) vx.innerText = x;
+                if(vy) vy.innerText = y;
+                if(vz) vz.innerText = z;
+            }
+			
+			// 1. ADD TO YOUR init() FUNCTION
+			setupLoadoutManager() {
+				const weightBar = document.getElementById('titan-sidebar'); // Click anywhere on HUD
+				const popup = document.getElementById('loadout-popup');
+				const overlay = document.getElementById('ui-blur-overlay');
+				const closeBtn = document.getElementById('close-loadout');
+
+				if (weightBar) { // <--- Safety Check added
+					weightBar.style.cursor = "pointer";
+					weightBar.onclick = () => {
+						this.refreshLoadoutUI();
+						if (popup) popup.classList.add('active');
+						if (overlay) overlay.style.display = 'block';
+					};
+				} else {
+					console.warn("[UI] Titan Sidebar (Weight Bar) not found in DOM.");
+				}
+
+				closeBtn.onclick = () => {
+					popup.classList.remove('active');
+					overlay.style.display = 'none';
+				};
+			}
+
+			// 2. REFRESH POPUP LIST
+			refreshLoadoutUI() {
+				const listContainer = document.getElementById('active-loadout-list');
+				const popupWeight = document.getElementById('popup-total-weight');
+				listContainer.innerHTML = '';
+				
+				this.currentLoadout.items.forEach((itemId, index) => {
+					// Find item details in ontology
+					let itemData = null;
+					Object.values(this.ontology.registry).forEach(cat => {
+						const found = cat.find(i => i.id === itemId);
+						if (found) itemData = found;
+					});
+
+					if (itemData) {
+						const div = document.createElement('div');
+						div.className = 'loadout-item';
+						div.innerHTML = `
+							<div>
+								<div style="font-size:11px; color:white;">${itemData.name}</div>
+								<div style="font-size:9px; color:var(--mh-blue);">${itemData.id}</div>
+							</div>
+							<div style="display:flex; align-items:center; gap:10px;">
+								<span style="font-size:10px;">${itemData.physics.mass_kg} KG</span>
+								<button class="remove-btn" onclick="window.ArmedSync.removeItem(${index})">REMOVE</button>
+							</div>
+						`;
+						listContainer.appendChild(div);
+					}
+				});
+				popupWeight.innerText = this.currentLoadout.totalWeight.toFixed(2);
+			}
+
+			// 3. REMOVAL LOGIC
+			removeItem(index) {
+				const itemId = this.currentLoadout.items[index];
+				
+				// Find item to subtract weight
+				let itemData = null;
+				Object.values(this.ontology.registry).forEach(cat => {
+					const found = cat.find(i => i.id === itemId);
+					if (found) itemData = found;
+				});
+
+				if (itemData) {
+					this.currentLoadout.totalWeight -= itemData.physics.mass_kg;
+					this.currentLoadout.fatiguePenalty -= itemData.fatigue_modifier;
+					this.currentLoadout.items.splice(index, 1);
+					
+					this.updateTelemetry();
+					this.refreshLoadoutUI();
+					
+					// If it's a 3D model, clear it
+					if (itemData.assets?.model_path && this.activeModel) {
+						this.pivot.remove(this.activeModel);
+						this.activeModel = null;
+					}
+					
+					// Refresh library to show unequipped status
+					const activeTab = document.querySelector('.tab-btn.active').getAttribute('title');
+					this.renderLibrary(this.getCategoryKey(activeTab));
+				}
+			}
+			
+			applyTexture(colorCode) {
+				if (!this.activeModel) return;
+
+				console.log(`[MATERIAL] Applying Pattern: ${colorCode}`);
+				
+				// Traverse the 3D model to find the "Mesh" parts (The body)
+				this.activeModel.traverse((child) => {
+					if (child.isMesh) {
+						// Create a new material or update existing
+						child.material.color.set(colorCode);
+						child.material.needsUpdate = true;
+					}
+				});
+			}
+			
+		updateConfigContext(category) {
+            const root = document.getElementById('dynamic-config-root');
+            const title = document.getElementById('config-panel-title');
+            if (!root || !title) return;
+
+            root.innerHTML = ''; // Clear current view
+
+            // SCENARIO 1: WEAPON MODS (Primary/Secondary/Launchers)
+            if (['primary_weapons', 'sidearms', 'launchers'].includes(category)) {
+                title.innerText = "WEAPON MODIFICATIONS";
+                const slots = [
+                    { name: "OPTICS", sub: "Scopes / Ironsights", icon: "fa-eye", registryKey: "optics" },
+                    { name: "RAIL", sub: "Lasers / Flashlights", icon: "fa-bolt", registryKey: "rails" },
+                    { name: "MUZZLE", sub: "Silencers / Suppressors", icon: "fa-wind", registryKey: "muzzles" },
+                    { name: "UNDERBARREL", sub: "Grips / Bipods", icon: "fa-hand-dots", registryKey: "grips" }
+                ];
+                this.renderSlots(slots, root);
+            } 
+            // SCENARIO 2: CONTAINER CONTENTS (Uniform/Vest/Backpack)
+            else if (['uniforms', 'vests', 'backpacks'].includes(category)) {
+                title.innerText = "STORAGE MANAGEMENT";
+                const slots = [
+                    { name: "MUNITIONS", sub: "Magazines / Ammo", icon: "fa-box", registryKey: "mags" },
+                    { name: "GRENADES", sub: "Frag / Smoke / Stun", icon: "fa-burst", registryKey: "grenades" },
+                    { name: "EXPLOSIVES", sub: "Satchels / Mines", icon: "fa-bomb", registryKey: "explosives" },
+                    { name: "MEDIC/TOOLS", sub: "FAKs / Toolkit", icon: "fa-medkit", registryKey: "items" }
+                ];
+                this.renderSlots(slots, root);
+            }
+            // SCENARIO 3: DEFAULT (Biometrics)
+            else {
+                title.innerText = "OBJECT BIOMETRICS";
+                root.innerHTML = `
+                    <div class="config-group">
+                        <span class="config-label">Biometric ID</span>
+                        <input type="text" class="config-input" placeholder="Operator Name" id="cfg-name">
+                        <input type="text" class="config-input" placeholder="Unit / Callsign" id="cfg-callsign">
+                    </div>
+                `;
+            }
+        } // <--- THIS WAS THE MISSING BRACKET (Line 1277 Fix)
+
+        renderSlots(slots, container) {
+            slots.forEach(slot => {
+                const btn = document.createElement('div');
+                btn.className = 'config-slot-btn';
+                btn.innerHTML = `
+                    <div class="slot-icon"><i class="fas ${slot.icon}" style="padding:8px; color:#444;"></i></div>
+                    <div class="slot-meta">
+                        <span class="slot-name">${slot.name}</span>
+                        <span class="slot-current">${slot.sub}</span>
+                    </div>
+                `;
+                // TRIGGER SUB-MENU
+                btn.onclick = () => this.openSubMenu(slot.name, slot.registryKey);
+                container.appendChild(btn);
+            });
+        }
+
+        openSubMenu(title, registryKey) {
+            const viewport = document.getElementById('config-viewport');
+            const subGrid = document.getElementById('sub-asset-grid');
+            document.getElementById('sub-menu-title').innerText = `SELECT ${title}`;
+            
+            viewport.classList.add('active-sub');
+            subGrid.innerHTML = '';
+
+            // FETCH SUB-ASSETS (e.g., all Optics from objects.json)
+            const assets = this.ontology.registry[registryKey] || [];
+            
+            assets.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'asset-card';
+                card.style.fontSize = '9px';
+                card.onclick = () => {
+                    if (item.assets?.model_path) {
+                        // Title corresponds to the Slot Name (e.g., "OPTICS")
+                        this.attachToModel(title, item.assets.model_path);
+                    }
+                    viewport.classList.remove('active-sub'); 
+                };
+                card.innerHTML = `
+                    <div class="asset-img"><img src="${item.assets?.icon_path || ''}" style="width:30px;"></div>
+                    <div class="asset-name">${item.name}</div>
+                    <div class="asset-stat">${item.physics.mass_kg} KG</div>
+                `;
+                subGrid.appendChild(card);
+            });
+        }
+        
+        }
+
+			window.onload = () => {
+				window.ArmedSync = new ArmedSyncEngine();
+			};
+		
+		
+    </script>
+</body>
+</html>

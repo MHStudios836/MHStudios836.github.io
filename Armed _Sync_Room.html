@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArmedSync® // TITAN Configurator</title>
+    
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+    
+    <style>
+        /* =========================================
+           THEME: TITAN V5.2 (CYBER-NAVY)
+           ========================================= */
+        :root {
+            --mh-blue: #0080FF;       
+            --mh-cyan: #00e5ff;       
+            --mh-dark: #05070a;       
+            --mh-glass: rgba(5, 7, 10, 0.85); 
+            --mh-border: 1px solid rgba(0, 128, 255, 0.4);
+            --mh-glow: 0 0 15px rgba(0, 128, 255, 0.15);
+            --mh-alert: #ff004c;
+            --font-tech: 'Segoe UI', 'Courier New', monospace;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--mh-dark);
+            color: #e0e0e0;
+            font-family: var(--font-tech);
+        }
+
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 0; }
+
+        /* =========================================
+           UI: TITAN LIBRARY (LEFT - STEALTH DRAWER)
+           ========================================= */
+        #titan-library {
+            position: absolute;
+            top: 100px; 
+            left: 0; 
+            width: 380px; 
+            height: 600px;
+            background: var(--mh-glass);
+            border: var(--mh-border);
+            border-left: 2px solid var(--mh-blue);
+            box-shadow: var(--mh-glow);
+            backdrop-filter: blur(12px);
+            z-index: 20; 
+            border-radius: 0 4px 4px 0; 
+            display: flex;
+            
+            /* STEALTH MECHANIC */
+            transform: translateX(-100%); 
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); 
+        }
+
+        #titan-library.open { transform: translateX(0); }
+
+        /* THE TOGGLE HANDLE */
+        .library-handle {
+            position: absolute;
+            top: 50%; 
+            right: -25px; 
+            width: 25px;
+            height: 80px;
+            transform: translateY(-50%);
+            background: var(--mh-blue); 
+            clip-path: polygon(0 0, 100% 10%, 100% 90%, 0 100%); 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mh-dark);
+            font-size: 14px;
+            box-shadow: 4px 0 15px rgba(0, 128, 255, 0.4);
+            transition: 0.3s;
+        }
+
+        .library-handle:hover { background: var(--mh-cyan); width: 30px; right: -30px; }
+
+        /* TABS & CONTENT */
+        .library-tabs { width: 60px; border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
+        .tab-btn { width: 40px; height: 40px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: #555; cursor: pointer; border-radius: 4px; transition: 0.2s; font-size: 18px; }
+        .tab-btn:hover { color: var(--mh-cyan); background: rgba(0, 229, 255, 0.1); }
+        .tab-btn.active { color: var(--mh-blue); background: rgba(0, 128, 255, 0.2); box-shadow: 0 0 10px rgba(0,128,255,0.2); border-left: 2px solid var(--mh-blue); }
+        
+        .library-content { flex: 1; padding: 20px; overflow-y: auto; }
+        .library-content::-webkit-scrollbar { width: 4px; }
+        .library-content::-webkit-scrollbar-thumb { background: var(--mh-blue); }
+        
+        .category-header { font-size: 12px; font-weight: 700; color: var(--mh-cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+
+        /* ITEM GRID */
+        .item-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .asset-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); padding: 10px; cursor: pointer; transition: 0.3s; position: relative; }
+        .asset-card:hover { border-color: var(--mh-blue); background: rgba(0,128,255,0.05); }
+        .asset-img { width: 100%; height: 80px; background: #0a0a0a; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #333; }
+        .asset-name { font-size: 12px; font-weight: bold; color: #ddd; }
+        .asset-stat { font-size: 10px; color: #888; }
+        .asset-equipper { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: #333; border-radius: 50%; }
+        .asset-card.equipped .asset-equipper { background: var(--mh-cyan); box-shadow: 0 0 8px var(--mh-cyan); }
+
+        /* =========================================
+           UI: TITAN SIDEBAR (RIGHT - TELEMETRY)
+           ========================================= */
+        #titan-sidebar {
+            position: absolute;
+            top: 100px; right: 20px; width: 280px;
+            background: var(--mh-glass);
+            border: var(--mh-border);
+            border-right: 2px solid var(--mh-blue);
+            box-shadow: var(--mh-glow);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+            border-radius: 4px;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .sidebar-header { background: rgba(0, 128, 255, 0.1); padding: 12px 20px; border-bottom: 1px solid rgba(0, 128, 255, 0.3); display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: var(--mh-cyan); text-transform: uppercase; }
+        .header-deco { width: 8px; height: 8px; background: var(--mh-blue); box-shadow: 0 0 8px var(--mh-blue); border-radius: 50%; }
+        
+        .data-module { padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .data-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+        .stat-label { font-size: 11px; color: #8899a6; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 24px; font-weight: 600; font-family: 'Courier New', monospace; text-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
+        .stat-sub { font-size: 10px; color: #555; display: block; text-align: right; }
+        .status-ok { color: var(--mh-cyan); }
+        .status-warn { color: #FFD700; }
+        .status-crit { color: var(--mh-alert); }
+        .sidebar-footer { padding: 15px; text-align: center; }
+        .action-btn { background: transparent; border: 1px solid var(--mh-blue); color: var(--mh-blue); padding: 8px 0; width: 100%; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .action-btn:hover { background: var(--mh-blue); color: white; box-shadow: 0 0 15px var(--mh-blue); }
+
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+
+    </style>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+</head>
+<body>
+
+    <aside id="titan-library">
+        <div class="library-tabs">
+            <div class="tab-btn active" title="Primary Weapon"><i class="fas fa-crosshairs"></i></div>
+            <div class="tab-btn" title="Uniforms"><i class="fas fa-tshirt"></i></div>
+            <div class="tab-btn" title="Vests/Armor"><i class="fas fa-shield-alt"></i></div>
+            <div class="tab-btn" title="Headgear"><i class="fas fa-hard-hat"></i></div>
+            <div class="tab-btn" title="Backpacks"><i class="fas fa-hiking"></i></div>
+            <div class="tab-btn" title="Face ID"><i class="fas fa-user-circle"></i></div>
+        </div>
+
+        <div class="library-content">
+            <div class="category-header">Primary Weapons</div>
+            <div class="item-grid" id="asset-grid"></div>
+        </div>
+
+        <div class="library-handle" id="library-toggle-btn">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </aside>
+
+    <aside id="titan-sidebar">
+        <div class="sidebar-header">
+            <span class="header-title">Live Telemetry</span>
+            <div class="header-deco"></div>
+        </div>
+
+        <div class="data-module">
+            <div class="data-row">
+                <span class="stat-label">Total Load</span>
+                <span class="stat-value status-ok" id="hud-weight">0.00</span>
+            </div>
+            <span class="stat-sub">UNIT: KILOGRAMS (KG)</span>
+        </div>
+
+        <div class="data-module">
+            <div class="data-row">
+                <span class="stat-label">Fatigue Drag</span>
+                <span class="stat-value status-ok" id="hud-fatigue">0.0%</span>
+            </div>
+            <span class="stat-sub">STAMINA REGEN PENALTY</span>
+        </div>
+
+        <div class="data-module">
+            <div class="data-row">
+                <span class="stat-label">Ballistics</span>
+                <span class="stat-value" style="color:white; font-size: 16px;">PENDING</span>
+            </div>
+            <span class="stat-sub">ARMOR PIERCING VALUE</span>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="action-btn">Export Profile</button>
+        </div>
+    </aside>
+
+    <script type="module" src="assets/js/armed-sync-engine.js"></script>
+
+</body>
+</html>
