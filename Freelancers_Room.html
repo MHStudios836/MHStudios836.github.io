@@ -148,6 +148,47 @@ permalink: /Freelancers_Room.html
             background-image: url('images/user_placeholder.png'); background-size: cover;
             box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 2;
         }
+		
+		/* RANK UNLOCK ANIMATION */
+		@keyframes unlockPulse {
+			0% { transform: scale(0.95); opacity: 0; box-shadow: 0 0 0 rgba(255, 174, 0, 0); }
+			70% { transform: scale(1.02); opacity: 1; box-shadow: 0 0 20px rgba(255, 174, 0, 0.5); }
+			100% { transform: scale(1); opacity: 1; box-shadow: 0 0 10px rgba(255, 174, 0, 0.2); }
+		}
+		
+		.animate-unlock {
+			display: block !important;
+			animation: unlockPulse 1.2s ease-out forwards;
+			border: 1px solid var(--mh-orange);
+		}
+
+		/* HUD TOAST NOTIFICATIONS */
+		#hud-toast-container {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			z-index: 9999;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+		
+		.hud-toast {
+			background: rgba(5, 7, 10, 0.95);
+			border-left: 4px solid var(--mh-orange);
+			color: #fff;
+			padding: 15px 25px;
+			border-radius: 4px;
+			font-family: 'Courier New', monospace;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+			opacity: 0;
+			transform: translateX(50px);
+			animation: toastSlideIn 0.3s forwards;
+		}
+
+		@keyframes toastSlideIn {
+			to { opacity: 1; transform: translateX(0); }
+		}
         
         .profile-details { padding: 50px 20px 20px 20px; }
         .pd-name { font-size: 1.4em; font-weight: bold; color: #fff; display: block; margin-bottom: 5px; }
@@ -189,6 +230,90 @@ permalink: /Freelancers_Room.html
             background: var(--mh-danger); color: #fff; font-size: 0.7em; 
             padding: 2px 6px; border-radius: 10px; margin-left: auto;
         }
+		
+		/* NOTIFICATION BADGE */
+		.badge-count {
+			position: absolute;
+			top: -5px;
+			right: -5px;
+			background: var(--mh-danger, #ff4444);
+			color: white;
+			font-size: 0.6em;
+			font-weight: bold;
+			padding: 2px 5px;
+			border-radius: 50%;
+			border: 1px solid #000;
+			box-shadow: 0 0 5px var(--mh-danger, #ff4444);
+			animation: pulseRed 2s infinite;
+		}
+
+		/* DROPDOWN PANEL */
+		.notif-panel {
+			display: none; /* Toggled via JS */
+			position: absolute;
+			top: 50px;
+			right: -10px; /* Aligns with right edge of bell */
+			width: 300px;
+			background: rgba(5, 7, 10, 0.95);
+			border: 1px solid var(--mh-orange);
+			border-top: 3px solid var(--mh-orange);
+			border-radius: 4px;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+			z-index: 1000;
+			backdrop-filter: blur(10px);
+		}
+
+		.notif-panel.active {
+			display: block;
+			animation: slideDown 0.2s ease-out;
+		}
+
+		/* HEADER & FOOTER */
+		.notif-header {
+			padding: 10px 15px;
+			background: rgba(255, 174, 0, 0.1);
+			border-bottom: 1px solid #333;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.nh-title { color: var(--mh-orange); font-weight: bold; font-size: 0.8em; }
+		.nh-date { color: #666; font-size: 0.6em; }
+
+		.notif-footer {
+			padding: 8px;
+			text-align: center;
+			background: #111;
+			color: #888;
+			font-size: 0.7em;
+			cursor: pointer;
+			border-top: 1px solid #333;
+		}
+		.notif-footer:hover { background: #222; color: #fff; }
+
+		/* ITEMS */
+		.notif-body { max-height: 300px; overflow-y: auto; }
+		.notif-item {
+			display: flex;
+			align-items: flex-start;
+			padding: 12px 15px;
+			border-bottom: 1px solid rgba(255,255,255,0.05);
+			color: #ccc;
+			text-decoration: none;
+			transition: 0.2s;
+			font-size: 0.85em;
+			gap: 12px;
+		}
+		.notif-item:hover { background: rgba(255, 174, 0, 0.05); border-left: 2px solid var(--mh-orange); }
+
+		/* ICON TYPES */
+		.notif-item i { margin-top: 3px; }
+		.type-system i { color: #00d2ff; }   /* Blue Gear */
+		.type-broadcast i { color: #ffae00; } /* Orange Satellite */
+		.type-chat i { color: #00ff88; }      /* Green Message */
+
+		.ni-title { display: block; font-weight: bold; margin-bottom: 2px; }
+		.ni-msg { display: block; font-size: 0.9em; color: #888; }
 
         /* --- 6. CONTENT PANELS --- */
         .content-area { min-height: 80vh; position: relative; }
@@ -352,6 +477,128 @@ permalink: /Freelancers_Room.html
         .ft-social { display: flex; gap: 15px; margin-top: 20px; }
         .ft-social a { width: 35px; height: 35px; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .ft-social a:hover { background: var(--mh-orange); color: #000; }
+		
+		/* assets/css/task-card.css */
+
+		/* --- THE CARD CONTAINER --- */
+		.titan-task-card {
+			background: #0e1217; /* Upwork Dark Mode bg */
+			border: 1px solid #2b303b;
+			border-radius: 8px;
+			padding: 20px;
+			margin-bottom: 20px;
+			position: relative;
+			transition: all 0.2s ease;
+			font-family: 'Segoe UI', sans-serif;
+			color: #e0e0e0;
+		}
+
+		.titan-task-card:hover {
+			border-color: var(--mh-blue);
+			background: #13171d;
+		}
+
+		/* --- 1. HEADER (Date & Socials) --- */
+		.ttc-header {
+			display: flex;
+			justify-content: space-between;
+			font-size: 0.85em;
+			color: #888;
+			margin-bottom: 10px;
+		}
+
+		.ttc-socials i {
+			margin-left: 15px;
+			cursor: pointer;
+			transition: color 0.2s;
+		}
+		.ttc-socials i:hover { color: #fff; }
+		.ttc-socials i.liked { color: #ff004c; }
+
+		/* --- 2. TITLE & PRIORITY --- */
+		.ttc-title-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+		}
+		.ttc-title {
+			font-size: 1.3em;
+			font-weight: 600;
+			color: #fff;
+			margin: 0;
+			flex: 1;
+		}
+		.ttc-title:hover { text-decoration: underline; cursor: pointer; color: var(--mh-blue); }
+
+		.ttc-priority {
+			font-size: 0.75em;
+			padding: 4px 10px;
+			border-radius: 12px;
+			font-weight: bold;
+			text-transform: uppercase;
+			white-space: nowrap;
+			margin-left: 10px;
+		}
+		/* Priority Colors */
+		.p-critical { background: rgba(255, 0, 76, 0.2); color: #ff004c; border: 1px solid #ff004c; }
+		.p-high     { background: rgba(255, 174, 0, 0.2); color: #ffae00; border: 1px solid #ffae00; }
+		.p-inter    { background: rgba(0, 229, 255, 0.2); color: #00e5ff; border: 1px solid #00e5ff; }
+		.p-low      { background: rgba(0, 255, 65, 0.2);  color: #00ff41; border: 1px solid #00ff41; }
+
+		/* --- 3. META DATA (Budget, etc) --- */
+		.ttc-meta-row {
+			font-size: 0.9em;
+			color: #aaa;
+			margin: 8px 0 15px 0;
+		}
+		.ttc-meta-item { margin-right: 15px; }
+
+		/* --- 4. DESCRIPTION --- */
+		.ttc-desc {
+			font-size: 0.95em;
+			line-height: 1.5;
+			color: #ccc;
+			margin-bottom: 15px;
+		}
+
+		/* --- 5. TAGS --- */
+		.ttc-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+		.ttc-tag {
+			background: #2b303b;
+			color: #aaa;
+			padding: 4px 12px;
+			border-radius: 20px;
+			font-size: 0.8em;
+			text-decoration: none;
+		}
+		.ttc-tag:hover { background: #3a4150; color: #fff; }
+
+		/* --- 6. FOOTER (Rating, Location, Proposals) --- */
+		.ttc-footer {
+			border-top: 1px solid #2b303b;
+			padding-top: 15px;
+			display: flex;
+			align-items: center;
+			font-size: 0.85em;
+			color: #888;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+
+		.verified-badge { color: #00e5ff; }
+		.rating-stars { color: #ffae00; }
+
+		/* --- HIDDEN PANELS (Comment/Share) --- */
+		.ttc-panel {
+			display: none; /* Hidden by default */
+			background: #1a1f26;
+			padding: 10px;
+			margin-top: 10px;
+			border-radius: 4px;
+			border-left: 2px solid var(--mh-blue);
+		}
+		.ttc-input { width: 70%; background: #000; border: 1px solid #333; color: #fff; padding: 5px; }
+		.ttc-btn-mini { background: var(--mh-blue); color: #fff; border: none; padding: 5px 10px; cursor: pointer; }
 
         /* --- 14. MOBILE RESPONSIVE MATRIX --- */
         @media screen and (max-width: 980px) {
@@ -393,7 +640,41 @@ permalink: /Freelancers_Room.html
             .chat-container.mobile-active .chat-list { display: none; }
             .chat-container.mobile-active .chat-view { display: flex; }
             .mobile-back-btn { display: block; margin-right: 15px; }
-            
+			
+			/* ESCROW BADGES */
+			.badge-escrow {
+				background: rgba(0, 255, 65, 0.1); /* Hacker Green Background */
+				border: 1px solid #00ff41;        /* Bright Green Border */
+				color: #00ff41;
+				padding: 4px 8px;
+				border-radius: 4px;
+				font-size: 0.75em;
+				font-weight: bold;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+				animation: pulseGreen 3s infinite;
+			}
+
+			.badge-audit {
+				background: rgba(255, 174, 0, 0.1);
+				border: 1px solid var(--mh-orange);
+				color: var(--mh-orange);
+				padding: 4px 8px;
+				border-radius: 4px;
+				font-size: 0.75em;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			@keyframes pulseGreen {
+				0% { box-shadow: 0 0 5px rgba(0, 255, 65, 0.2); }
+				50% { box-shadow: 0 0 15px rgba(0, 255, 65, 0.5); }
+				100% { box-shadow: 0 0 5px rgba(0, 255, 65, 0.2); }
+			}
+						
             /* Footer */
             .footer-cols { grid-template-columns: 1fr; text-align: center; }
             .ft-social { justify-content: center; }
@@ -417,9 +698,31 @@ permalink: /Freelancers_Room.html
                 <span>SYSTEM ONLINE</span>
             </div>
 
-            <div class="icon-btn" title="Alerts">
-                <i class="far fa-bell"></i>
-            </div>
+            <div class="notification-wrapper" style="position: relative; display: inline-block;">
+				
+				<div class="icon-btn" id="btn-alerts" title="Alerts" >
+					<i class="far fa-bell"></i>
+					<span id="notif-badge" class="badge-count" style="display: none;">0</span>
+				</div>
+
+				<div id="notification-dropdown" class="notif-panel">
+					
+					<div class="notif-header">
+						<span class="nh-title">WHAT'S NEW <i class="far fa-newspaper"></i></span>
+						<span class="nh-date" id="notif-last-update">Updating...</span>
+					</div>
+
+					<div class="notif-body" id="notif-list">
+						<div style="padding: 20px; text-align: center; color: #666; font-size: 0.8em;">
+							NO NEW INTEL
+						</div>
+					</div>
+
+					<div class="notif-footer" id="btn-mark-read">
+						<i class="fas fa-check-double"></i> MARK ALL READ
+					</div>
+				</div>
+			</div>
             
             <div class="icon-btn" id="menu-trigger">
                 <i class="fas fa-bars"></i>
@@ -429,44 +732,95 @@ permalink: /Freelancers_Room.html
 	
 <div class="titan-panel" style="margin: 20px; min-height: 95vh; padding: 20px;">
 
-    <nav id="menu-overlay">
-        <div class="mo-header">
-            <div class="mo-close" id="menu-close"><i class="fas fa-times"></i></div>
-        </div>
-        <div class="mo-content">
-            <a href="#" class="mo-link nav-link" data-tab="panel-market">MARKETPLACE</a>
-            <a href="#" class="mo-link nav-link" data-tab="panel-active">MY OPERATIONS</a>
-            <a href="Broadcast_Station.html" class="mo-link">GLOBAL INTEL</a>
-            <a href="Product_Room.html" class="mo-link">ARMORY</a>
-            <a href="#" class="mo-link" style="color:var(--mh-danger);" id="menu-logout">DISCONNECT</a>
-        </div>
-    </nav>
+	<nav id="menu-overlay">
+		<div class="mo-header">
+			<div class="mo-close" id="menu-close"><i class="fas fa-times"></i></div>
+		</div>
+		
+		<div class="mo-profile-box" style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px;">
+			
+			<div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 2px solid var(--mh-orange); position: relative; cursor: pointer;" title="Change Profile Photo">
+				<img src="images/default_merc.png" style="width: 100%; height: 100%; object-fit: cover;">
+				
+				<div style="position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 2px 0;">
+					<i class="fas fa-camera"></i>
+				</div>
+			</div>
+
+			<button onclick="window.location.href='Edit_Profile_Form.html'" style="background: transparent; border: 1px solid #444; color: #ccc; padding: 6px 16px; font-size: 0.8rem; border-radius: 20px; cursor: pointer; transition: 0.3s;">
+				<i class="fas fa-user-edit"></i> Edit Profile
+			</button>
+		</div>
+
+		<div class="mo-content">
+			
+			<a href="#" class="mo-link nav-link" data-tab="panel-market" style="display: flex; justify-content: space-between; align-items: center;">
+				MARKETPLACE
+				<span class="nav-badge" id="badge-market" style="background: var(--mh-orange); color: #000; font-size: 0.7em; padding: 2px 8px; border-radius: 10px; font-weight: bold; display: none;">+3</span>
+			</a>
+
+			<a href="#" class="mo-link nav-link" data-tab="panel-active" style="display: flex; justify-content: space-between; align-items: center;">
+				MY OPERATIONS
+				<span class="nav-badge" id="badge-ops" style="background: var(--mh-danger); color: #fff; font-size: 0.7em; padding: 2px 8px; border-radius: 10px; font-weight: bold; display: none;">!</span>
+			</a>
+
+			<a href="Broadcast_Station.html" class="mo-link">GLOBAL INTEL</a>
+			
+			<a href="Product_Room.html" class="mo-link">ARMORY</a>
+			
+			<a href="#" class="mo-link" style="color:var(--mh-danger); margin-top: 20px;" id="menu-logout">
+				<i class="fas fa-power-off"></i> DISCONNECT
+			</a>
+		</div>
+	</nav>
 
     <div class="layout-grid">
         
         <aside>
             <div class="profile-card">
-                <div class="profile-banner"></div>
-                <div class="profile-avatar-container"></div> <div class="profile-details">
-                    <span class="pd-name" id="merc-name">Loading...</span>
-                    <span class="pd-rank">TIER 1 CONTRACTOR</span>
-                    
-                    <div class="stat-grid">
-                        <div class="stat-item">
-                            <span class="stat-val">98%</span>
-                            <span class="stat-lbl">SUCCESS</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-val" style="color:var(--mh-gold);">4.9</span>
-                            <span class="stat-lbl">RATING</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-val">142</span>
-                            <span class="stat-lbl">JOBS</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+				<div class="profile-banner"></div>
+				
+				<div class="profile-avatar-container" title="Click to Change Profile Picture">
+					<img src="images/default_merc.png" alt="Mercenary Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+					
+					<div style="position:absolute; bottom:0; right:0; background:var(--mh-orange); color:#000; padding:2px 6px; border-radius:50%; font-size:12px;">
+						<i class="fas fa-camera"></i>
+					</div>
+				</div>
+
+				<div class="profile-details">
+					
+					<span class="pd-name" id="merc-name">Loading...</span>
+
+					<button onclick="window.location.href='Edit_Profile_Form.html'" class="btn-sm" style="background:transparent; border:1px solid #444; color:#888; margin-bottom:10px; font-size: 0.7em; cursor:pointer;">
+						<i class="fas fa-cog"></i> EDIT PROFILE
+					</button>
+
+					<div id="operator-upgrade-container" style="display: none; margin-top: 15px; margin-bottom: 15px; text-align: center;">
+						<a href="Freelancer_Application.html?mode=upgrade" class="btn-glow-gold" style="display: block; padding: 10px; border: 1px solid var(--mh-orange); color: var(--mh-orange); text-decoration: none; font-weight: bold; background: rgba(255, 174, 0, 0.1);">
+							<i class="fas fa-medal"></i> APPLY FOR OPERATOR
+						</a>
+						<small style="color: #666; font-size: 0.7em; letter-spacing: 1px;">ELITE STATUS AVAILABLE</small>
+					</div>
+
+					<span class="pd-rank">TIER 1 CONTRACTOR</span>
+					
+					<div class="stat-grid">
+						<div class="stat-item">
+							<span class="stat-val">98%</span>
+							<span class="stat-lbl">SUCCESS</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-val" style="color:var(--mh-orange);">4.9</span>
+							<span class="stat-lbl">RATING</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-val">142</span>
+							<span class="stat-lbl">JOBS</span>
+						</div>
+					</div>
+				</div>
+			</div>
 
             <nav class="nav-menu">
                 <div class="nav-item active" onclick="switchTab('panel-market')">
@@ -493,10 +847,10 @@ permalink: /Freelancers_Room.html
 
         <main class="content-area">
 
-            <section id="market-list-area" class="panel active">
+            <section id="panel-market" class="panel">
                 <div class="panel-header">
                     <div class="ph-title">
-                        <h2>CONTRACT MARKET</h2>
+                        <h2>JOB MARKET</h2>
                         <span>Available Opportunities</span>
                     </div>
                     <button class="btn btn-outline"><i class="fas fa-sync"></i> REFRESH</button>
@@ -575,7 +929,7 @@ permalink: /Freelancers_Room.html
             </section>
 
 
-            <section id="active-list-area" class="panel">
+            <section id="panel-active" class="panel">
                 <div class="panel-header">
                     <div class="ph-title">
                         <h2>ACTIVE OPERATIONS</h2>
@@ -583,50 +937,12 @@ permalink: /Freelancers_Room.html
                     </div>
                 </div>
 
-                <div class="merc-card active">
-                    <div class="mc-header">
-                        <span class="mc-id">#MSN-8821-OPTIMIZE</span>
-                        <span class="mc-status" style="color:var(--mh-orange); border-color:var(--mh-orange);">IN PROGRESS</span>
-                    </div>
-                    <div class="mc-body">
-                        <h3>Java Algorithm Optimization</h3>
-                        <div class="mc-tags">
-                            <span class="tag">JAVA</span>
-                            <span class="tag">ALGORITHMS</span>
-                        </div>
-                        
-                        <div style="width:100%; height:6px; background:#333; border-radius:3px; margin-bottom:15px; overflow:hidden;">
-                            <div style="width:75%; height:100%; background:var(--mh-orange); box-shadow:0 0 10px var(--mh-orange);"></div>
-                        </div>
-
-                        <div class="mc-grid">
-                            <div class="mc-data"><label>REWARD</label><span style="color:var(--mh-gold);">$150.00</span></div>
-                            <div class="mc-data"><label>CLIENT</label><span>Student_User_99</span></div>
-                            <div class="mc-data"><label>TIME LEFT</label><span style="color:var(--mh-orange);">4h 30m</span></div>
-                            <div class="mc-data"><label>PROGRESS</label><span>75%</span></div>
-                        </div>
-
-                        <div class="mc-actions">
-                            <button class="btn btn-outline" onclick="switchTab('panel-chat')"><i class="fas fa-comment-dots"></i> COMMS</button>
-                            <button class="btn btn-outline"><i class="fas fa-cloud-upload-alt"></i> UPLOAD DRAFT</button>
-                            <button class="btn btn-primary"><i class="fas fa-flag-checkered"></i> MARK COMPLETE</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="merc-card completed">
-                    <div class="mc-header">
-                        <span class="mc-id">#MSN-7741-TRANS</span>
-                        <span class="mc-status">PENDING REVIEW</span>
-                    </div>
-                    <div class="mc-body">
-                        <h3 style="color:#aaa;">Technical Manual Translation (EN -> AR)</h3>
-                        <p>Waiting for client approval to release funds.</p>
-                        <div class="mc-actions">
-                            <button class="btn btn-outline" disabled>WAITING FOR CLIENT...</button>
-                        </div>
-                    </div>
-                </div>
+                <div id="active-ops-grid" class="ops-grid-container" style="display: flex; flex-direction: column; gap: 20px;">
+					<div style="text-align:center; padding:40px; color:#666;">
+						 <i class="fas fa-satellite-dish" style="font-size:2em; margin-bottom:10px;"></i><br>
+						 SCANNING FOR ACTIVE CONTRACTS...
+					</div>
+				</div>
             </section>
 
 
@@ -906,10 +1222,13 @@ permalink: /Freelancers_Room.html
     </script>
 
 	<script type="module">
-		import { initFreelancerSystem } from './assets/js/freelancer-logic.js';
+		import { initFreelancerSystem, initConnectedSystem } from './assets/js/freelancer-logic.js';
+		
+		import { initHUDSync } from './assets/js/hud-sync.js';
 		import { initChatSystem } from './assets/js/chat-core.js';
 		import { auth } from './assets/js/firebase-init.js';
 		import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+		
 
 		document.addEventListener('DOMContentLoaded', () => {
 			onAuthStateChanged(auth, (user) => {
@@ -919,11 +1238,14 @@ permalink: /Freelancers_Room.html
 					// Initialize Systems
 					initFreelancerSystem();
 					initChatSystem();
+					initConnectedSystem(user.uid);
 				} else {
 					window.location.href = 'DoD_Login_Style.html';
 				}
 			});
 		});
+		
+		initHUDSync();
 	</script>
 	
 	<div id="system-status-hud">

@@ -23,4 +23,7 @@ export const storage = getStorage(app);
 // === THE INDUSTRIAL STANDARD CONSTANT ===
 // This variable ensures ALL your pages talk to the exact same folder defined in your Rules.
 // "artifacts" is the Collection, "MH_Studios_Project" is the Document.
-export const DB_PATH = "artifacts/MH_Studios_Project";
+// === THE INDUSTRIAL STANDARD CONSTANT ===
+// This is the variable everyone must use.
+export const dbID = "mh_database_v1";
+export const DB_PATH = 'artifacts/mhstudios-836';

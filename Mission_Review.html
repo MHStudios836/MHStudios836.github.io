@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | MISSION DEBRIEF</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <script type="module" src="assets/js/auth-router.js"></script>
+
+    <style>
+        body { background: #05070a; color: #ccc; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Uni Sans', sans-serif; }
+        
+        .review-card {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid #333;
+            border-top: 3px solid var(--mh-blue, #0080ff);
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .rc-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .rc-title { font-size: 1.5em; color: #fff; letter-spacing: 2px; }
+        .rc-subtitle { color: var(--mh-blue, #0080ff); font-size: 0.9em; text-transform: uppercase; }
+
+        /* ASSET PREVIEW */
+        .asset-box {
+            background: rgba(0, 128, 255, 0.05);
+            border: 1px solid var(--mh-blue, #0080ff);
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .ab-icon { font-size: 3em; color: #fff; margin-bottom: 10px; }
+        .ab-name { font-family: monospace; color: #ddd; display: block; margin-bottom: 15px; }
+
+        .btn-download {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 8px 20px;
+            text-decoration: none;
+            font-size: 0.8em;
+            transition: 0.3s;
+        }
+        .btn-download:hover { background: #fff; color: #000; }
+
+        /* ACTION BUTTONS */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .btn-approve {
+            background: #00ff41; /* Green */
+            color: #000;
+            border: none;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: 0.3s;
+        }
+        .btn-approve:hover { box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); transform: translateY(-2px); }
+
+        .btn-revision {
+            background: #ff4444; /* Red */
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+        .btn-revision:hover { opacity: 1; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
+
+        /* INFO GRID */
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #888; font-size: 0.9em; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .info-val { color: #fff; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+    <div class="review-card">
+        <div class="rc-header">
+            <div class="rc-title">MISSION DEBRIEF</div>
+            <div class="rc-subtitle" id="mission-id-display">OP-LOADING...</div>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <div class="info-row">
+                <span>CONTRACTOR</span>
+                <span class="info-val" id="merc-name">Loading...</span>
+            </div>
+            <div class="info-row">
+                <span>STATUS</span>
+                <span class="info-val" id="mission-status" style="color:var(--mh-blue)">CHECKING...</span>
+            </div>
+            <div class="info-row">
+                <span>ESCROW LOCKED</span>
+                <span class="info-val" id="mission-price">$...</span>
+            </div>
+        </div>
+
+        <div id="payload-container" style="display:none;">
+            <div class="asset-box">
+                <i class="fas fa-file-archive ab-icon"></i>
+                <span class="ab-name" id="file-name">mission_assets.zip</span>
+                <a href="#" id="download-link" class="btn-download" target="_blank">
+                    <i class="fas fa-download"></i> INSPECT PAYLOAD
+                </a>
+            </div>
+
+            <div class="action-grid">
+                <button class="btn-revision" onclick="requestRevision()">
+                    <i class="fas fa-undo"></i> REJECT / REVISE
+                </button>
+                <button class="btn-approve" id="btn-approve">
+                    <i class="fas fa-check-double"></i> APPROVE & RELEASE FUNDS
+                </button>
+            </div>
+        </div>
+
+        <div id="waiting-message" style="text-align:center; padding:30px; color:#666; display:none;">
+            <i class="fas fa-satellite fa-spin" style="font-size:2em; margin-bottom:15px;"></i><br>
+            AWAITING CONTRACTOR DELIVERY...
+        </div>
+        
+        <div style="text-align:center; margin-top:20px;">
+            <a href="Student_Room.html" style="color:#666; text-decoration:none; font-size:0.8em;">RETURN TO COMMAND</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, auth } from './assets/js/firebase-init.js';
+        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { processMissionPayout } from './assets/js/transaction-siphon.js'; // The Money Engine
+
+        const params = new URLSearchParams(window.location.search);
+        const missionId = params.get('id');
+
+        // 1. LOAD MISSION DATA
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) window.location.href = 'DoD_Login_Style.html';
+            
+            const docSnap = await getDoc(doc(db, `artifacts/mhstudios-836/missions/${missionId}`));
+            
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                
+                // Render Details
+                document.getElementById('mission-id-display').innerText = `OP-${missionId.substring(0,6).toUpperCase()}`;
+                document.getElementById('merc-name').innerText = data.freelancerName || "Unknown Operative";
+                document.getElementById('mission-price').innerText = `$${data.price}`;
+                document.getElementById('mission-status').innerText = data.status;
+
+                // LOGIC: Is it delivered?
+                if (data.status === 'DELIVERED') {
+                    document.getElementById('payload-container').style.display = 'block';
+                    document.getElementById('file-name').innerText = data.deliverableName || "Unknown File";
+                    document.getElementById('download-link').href = data.deliverableUrl;
+                } else if (data.status === 'COMPLETED') {
+                     document.querySelector('.review-card').innerHTML = `<h2 style="text-align:center; color:#00ff41;">MISSION CLOSED</h2><p style="text-align:center;">Funds Released.</p><div style="text-align:center;"><a href="Student_Room.html" style="color:#fff;">Back</a></div>`;
+                } else {
+                    document.getElementById('waiting-message').style.display = 'block';
+                }
+            }
+        });
+
+        // 2. APPROVE BUTTON (THE MONEY TRIGGER)
+        document.getElementById('btn-approve').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-approve');
+            
+            if(!confirm("CONFIRM AUTHORIZATION:\n\nThis will release funds from Escrow directly to the Freelancer. This action cannot be undone.")) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> PROCESSING TRANSFER...';
+
+            try {
+                // CALL THE CLOUD FUNCTION (The Banker)
+                await processMissionPayout(missionId);
+
+                // UI Success
+                alert("TRANSFER COMPLETE.\n\nFunds Released: 100%\nMercenary Paid.\nAdmin Tax Collected.");
+                window.location.href = 'Student_Room.html';
+            } catch (error) {
+                console.error(error);
+                alert("BANKING ERROR: " + error.message);
+                btn.disabled = false;
+                btn.innerHTML = "RETRY AUTHORIZATION";
+            }
+        });
+
+        // 3. REVISION LOGIC (Simple Status Revert)
+        window.requestRevision = async () => {
+            const reason = prompt("State reason for revision request:");
+            if(!reason) return;
+
+            await updateDoc(doc(db, `artifacts/mhstudios-836/missions/${missionId}`), {
+                status: 'IN_PROGRESS', // Send it back to active
+                revision_requested: true,
+                revision_reason: reason
+            });
+            alert("ORDER UPDATED. Contractor notified for revision.");
+            location.reload();
+        };
+    </script>
+</body>
+</html>

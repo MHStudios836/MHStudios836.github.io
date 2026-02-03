@@ -1,51 +1,72 @@
 /* assets/js/payment-handler.js */
-import { auth, db, dbID } from './firebase-init.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { auth } from './firebase-init.js';
+import { executeStorePurchase } from './finance-core.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-$(document).ready(() => {
-    // 1. LOAD URL PARAMS
-    const urlParams = new URLSearchParams(window.location.search);
-    const itemId = urlParams.get('id');
-    const itemName = urlParams.get('name');
-    const itemPrice = urlParams.get('price');
+// DOM ELEMENTS
+const btnPay = document.getElementById('execute-btn');
+const statusText = document.getElementById('payment-status'); // Ensure you have a div/p with this ID
 
-    if(itemId) {
-        $('#item-name').text(itemName || "Unknown Artifact");
-        $('#total-price').text("$" + itemPrice);
-    } else {
-        console.warn("No Item ID found in URL.");
+// 1. LOAD DATA FROM URL (The Handshake)
+const urlParams = new URLSearchParams(window.location.search);
+const itemData = {
+    id: urlParams.get('id'),
+    name: urlParams.get('name'),
+    price: parseFloat(urlParams.get('price')) || 0
+};
+
+// 2. RENDER RECEIPT
+if (itemData.id) {
+    document.getElementById('item-name').innerText = itemData.name || "Unknown Asset";
+    document.getElementById('total-price').innerText = `$${itemData.price.toFixed(2)}`;
+} else {
+    alert("INVALID ACCESS: No Order ID Detected.");
+    window.location.href = 'Products_Services_Room.html';
+}
+
+// 3. PAYMENT TRIGGER
+btnPay.addEventListener('click', async (e) => {
+    e.preventDefault();
+    
+    // Auth Check
+    const user = auth.currentUser;
+    if (!user) {
+        alert("IDENTITY REQUIRED. PLEASE LOG IN.");
+        return;
     }
 
-    // 2. EXECUTE PAYMENT
-    $('#execute-btn').on('click', async function(e) {
-        e.preventDefault();
-        const btn = $(this);
-        
-        if(!auth.currentUser) return alert("LOGIN REQUIRED");
+    // UI Feedback
+    btnPay.disabled = true;
+    btnPay.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> SECURING FUNDS...';
+    if(statusText) statusText.innerText = "CONTACTING BANKING MAINFRAME...";
 
-        btn.prop('disabled', true).text("PROCESSING...");
+    try {
+        // CALL THE ENGINE
+        await executeStorePurchase(user.uid, itemData);
 
-        try {
-            // A. Create Order Record
-            // THIS TRIGGER IS WHAT WAKES UP THE CLOUD FUNCTION 'processOrder'
-            await addDoc(collection(db, 'artifacts', dbID, 'orders'), {
-                buyerId: auth.currentUser.uid,
-                itemId: itemId,
-                itemName: itemName,
-                price: parseFloat(itemPrice),
-                timestamp: serverTimestamp(),
-                status: 'PENDING' // The Cloud Function will change this to COMPLETED or FAILED
-            });
-
-            // B. Success Message (UI Only)
-            // We assume success here, but the real logic happens in the background
-            alert("ORDER PLACED. VERIFYING FUNDS & TRANSFERRING ASSET...");
-            window.location.href = 'Products_Services_Room.html';
-
-        } catch (error) {
-            console.error(error);
-            alert("CONNECTION ERROR: " + error.message);
-            btn.prop('disabled', false).text("CONFIRM PAYMENT");
+        // SUCCESS SEQUENCE
+        if(statusText) {
+            statusText.innerText = "TRANSACTION CLEARED. UPDATING LEDGER...";
+            statusText.style.color = "#00ff41";
         }
-    });
+        
+        // Play Sound (Optional if you have sound-engine)
+        // playSound('cash_register'); 
+
+        setTimeout(() => {
+            alert(`ACQUISITION CONFIRMED.\n\nItem: ${itemData.name}\nCost: $${itemData.price}`);
+            window.location.href = 'Student_Room.html'; // Or Inventory Page
+        }, 1500);
+
+    } catch (error) {
+        // FAILURE SEQUENCE
+        console.error(error);
+        btnPay.disabled = false;
+        btnPay.innerHTML = '<i class="fas fa-exclamation-triangle"></i> RETRY PAYMENT';
+        if(statusText) {
+            statusText.innerText = "ERROR: " + error;
+            statusText.style.color = "#ff004c";
+        }
+        alert("TRANSACTION DECLINED: " + error);
+    }
 });

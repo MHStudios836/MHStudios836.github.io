@@ -304,37 +304,56 @@ permalink: /Recruitment_Center.html
 			});
 		}
 
-		// 5. DECODER (Show Details)
+		// 5. DECODER (Updated to match your HTML fields)
 		window.loadDossier = (uid, data, element) => {
 			selectedUserId = uid;
 			applicantData = data;
 			const opData = data.operational_data || {};
 
-			// Highlight visual (Optional)
-			// document.querySelectorAll('.recruit-item').forEach(c => c.style.background = 'transparent');
-			// element.style.background = '#1a1a1a';
-
 			// SWITCH PANELS
-			const emptyState = document.getElementById('empty-state');
-			const intelDisplay = document.getElementById('intel-display');
-			
-			if(emptyState) emptyState.style.display = 'none';
-			if(intelDisplay) intelDisplay.style.display = 'block';
+			document.getElementById('empty-state').style.display = 'none';
+			document.getElementById('intel-display').style.display = 'block';
 
-			// FILL INTEL (Make sure these IDs exist in your HTML Right Panel)
+			// FILL TEXT DATA
 			setText('d-name', (data.first_name + " " + data.last_name));
 			setText('d-handle', opData.codename || "N/A");
 			setText('d-phone', data.phone || "N/A");
-			setText('d-loc', opData.company || "N/A");
-			
-			// Skills / Specialty
+			setText('d-loc', data.location || "Unknown Sector"); // Changed from opData.company to data.location
+			setText('d-motivation', opData.motivation || "No motivation intel provided.");
+
+			// FILL SKILLS
 			const skillContainer = document.getElementById('d-skills');
 			if(skillContainer) {
-				skillContainer.innerHTML = `<span style="background:#333; padding:2px 8px; border-radius:4px;">${opData.specialty || "General"}</span>`;
+				skillContainer.innerHTML = `<span style="background:#333; padding:5px 10px; border:1px solid #555; border-radius:4px; color:#ffd700;">${opData.specialty || "General Infantry"}</span>`;
 			}
 
-			// Links (If you have them)
-			// document.getElementById('d-portfolio').href = opData.portfolio || "#";
+			// FILL LINKS (The buttons in your HTML)
+			const portLink = document.getElementById('d-portfolio');
+			if(portLink) {
+				// If link exists, enable it. If not, grey it out.
+				if(opData.portfolio_url) {
+					portLink.href = opData.portfolio_url;
+					portLink.style.opacity = "1";
+					portLink.style.pointerEvents = "auto";
+				} else {
+					portLink.href = "#";
+					portLink.style.opacity = "0.3";
+					portLink.style.pointerEvents = "none";
+				}
+			}
+
+			const idLink = document.getElementById('d-id-doc');
+			if(idLink) {
+				if(opData.id_document_url) {
+					idLink.href = opData.id_document_url;
+					idLink.style.opacity = "1";
+					idLink.style.pointerEvents = "auto";
+				} else {
+					idLink.href = "#";
+					idLink.style.opacity = "0.3";
+					idLink.style.pointerEvents = "none";
+				}
+			}
 		};
 
 		// Helper to safely set text

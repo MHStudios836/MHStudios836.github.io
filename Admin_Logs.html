@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | BLACK BOX ARCHIVE</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <script type="module" src="assets/js/auth-router.js"></script>
+
+    <style>
+        body { background: #050505; color: #ccc; font-family: 'Courier New', monospace; }
+        
+        .archive-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            border: 1px solid #333;
+            background: #0d1117;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .terminal-header {
+            background: #161b22;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr 150px 100px;
+            padding: 10px;
+            border-bottom: 1px solid #222;
+            font-size: 0.85em;
+        }
+        .log-grid.header { font-weight: bold; color: var(--mh-orange, #ffae00); border-bottom: 2px solid #333; }
+        .log-grid:hover { background: rgba(255,255,255,0.02); }
+
+        .status-rejected { color: #ff4444; }
+        .status-approved { color: #00ff41; }
+        .status-security { color: #e0e000; }
+
+        .btn-download {
+            background: transparent;
+            border: 1px solid var(--mh-orange, #ffae00);
+            color: var(--mh-orange, #ffae00);
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-download:hover { background: var(--mh-orange, #ffae00); color: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="archive-container">
+        <div class="terminal-header">
+            <span><i class="fas fa-server"></i> SYSTEM_LOGS // ARCHIVE</span>
+            <button class="btn-download" onclick="exportLogsToCSV()">
+                <i class="fas fa-download"></i> EXPORT TO .CSV
+            </button>
+        </div>
+
+        <div class="log-grid header">
+            <span>TIMESTAMP</span>
+            <span>EVENT DETAILS</span>
+            <span>ACTOR ID</span>
+            <span>STATUS</span>
+        </div>
+
+        <div id="log-feed">
+            <div style="padding:20px; text-align:center;">CONNECTING TO MAINFRAME...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, DB_PATH } from './assets/js/firebase-init.js';
+        import { collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // 1. INIT LISTENER
+        const logFeed = document.getElementById('log-feed');
+        
+        // Listen to the 'system_logs' collection we created in The Banker
+        const q = query(collection(db, 'system_logs'), orderBy('timestamp', 'desc'), limit(50));
+
+        // 2. RENDER LOOP
+        onSnapshot(q, (snapshot) => {
+            if(snapshot.empty) {
+                logFeed.innerHTML = '<div style="padding:20px; text-align:center;">NO ANOMALIES DETECTED.</div>';
+                return;
+            }
+
+            let html = '';
+            snapshot.forEach(doc => {
+                const log = doc.data();
+                const time = log.timestamp ? new Date(log.timestamp.toDate()).toLocaleString() : "UNKNOWN";
+                
+                // Color Code Logic
+                let colorClass = "";
+                if(log.event.includes("REJECTED")) colorClass = "status-rejected";
+                else if(log.event.includes("APPROVED")) colorClass = "status-approved";
+                else colorClass = "status-security";
+
+                html += `
+                <div class="log-grid">
+                    <span style="color:#666;">${time}</span>
+                    <span>
+                        <strong style="color:#eee;">[${log.event}]</strong> 
+                        ${log.reason || log.details || ""} 
+                        ${log.amount ? '($'+log.amount+')' : ''}
+                    </span>
+                    <span style="font-family:monospace; color:#888;">${log.actor_id ? log.actor_id.substring(0,8) : 'SYSTEM'}...</span>
+                    <span class="${colorClass}">${log.event.split('_')[1] || 'INFO'}</span>
+                </div>
+                `;
+            });
+            logFeed.innerHTML = html;
+        });
+
+        // 3. EXPORT FUNCTION (Download Logic)
+        window.exportLogsToCSV = () => {
+            const rows = [];
+            rows.push(["Timestamp", "Event", "Details", "Actor", "Amount"]); // CSV Header
+            
+            // Re-query logs from DOM or keep a local array (simplified here)
+            // Ideally, we would fetch the whole collection, but let's grab the screen data
+            document.querySelectorAll('.log-grid:not(.header)').forEach(row => {
+                const cols = row.innerText.split('\n'); // Crude scrape for demo
+                rows.push(cols); 
+            });
+
+            let csvContent = "data:text/csv;charset=utf-8," 
+                + rows.map(e => e.join(",")).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "MH_System_Logs_" + Date.now() + ".csv");
+            document.body.appendChild(link);
+            link.click();
+        };
+    </script>
+</body>
+</html>

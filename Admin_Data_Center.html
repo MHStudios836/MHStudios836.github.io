@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | DATA CENTER</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <script type="module" src="assets/js/auth-router.js"></script>
+
+    <style>
+        body { background: #05070a; color: #ccc; font-family: 'Courier New', monospace; overflow-x: hidden; }
+        
+        /* --- LAYOUT GRID --- */
+        .dc-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR (FINANCE) --- */
+        .dc-sidebar {
+            background: #0b0e11;
+            border-right: 1px solid #333;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .vault-card {
+            background: rgba(0, 128, 255, 0.05);
+            border: 1px solid var(--mh-blue, #0080ff);
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .vc-val { font-size: 1.5em; color: #fff; font-weight: bold; display: block; }
+        .vc-lbl { font-size: 0.7em; color: var(--mh-blue, #0080ff); letter-spacing: 1px; }
+
+        /* --- MAIN AREA (SEARCH) --- */
+        .dc-main { padding: 30px; overflow-y: auto; }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            background: #000;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 15px;
+            font-family: inherit;
+            font-size: 1.1em;
+        }
+        .search-input:focus { border-color: var(--mh-orange, #ffae00); outline: none; }
+        
+        .btn-search {
+            background: var(--mh-orange, #ffae00);
+            color: #000;
+            border: none;
+            padding: 0 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- DOSSIER CARD (USER PROFILE) --- */
+        .dossier-card {
+            background: #111;
+            border: 1px solid #333;
+            display: grid;
+            grid-template-columns: 100px 1fr 200px;
+            gap: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .dossier-card:hover { border-color: #666; }
+        
+        .dc-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #444; }
+        
+        .dc-info h3 { margin: 0; color: #fff; }
+        .dc-info span { font-size: 0.8em; color: #888; display: block; }
+        .dc-role { 
+            display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; 
+            margin-top: 5px; font-weight: bold;
+        }
+        .role-student { background: #444; color: #fff; }
+        .role-freelancer { background: #0080ff; color: #fff; }
+        .role-admin { background: #ff4444; color: #fff; }
+
+        .dc-stats { text-align: right; border-left: 1px solid #333; padding-left: 20px; }
+        .stat-row { display: flex; justify-content: space-between; font-size: 0.8em; margin-bottom: 5px; gap: 15px; }
+        .val-money { color: #00ff41; }
+
+        .action-bar { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid #222; padding-top: 10px; }
+        .btn-mini { background: #222; color: #ccc; border: 1px solid #444; padding: 5px 10px; font-size: 0.75em; cursor: pointer; text-decoration: none; }
+        .btn-mini:hover { background: #333; color: #fff; }
+
+    </style>
+</head>
+<body>
+
+    <div class="dc-container">
+        
+        <div class="dc-sidebar">
+            <h3 style="color:#666; border-bottom:1px solid #333; padding-bottom:10px;">
+                <i class="fas fa-university"></i> MH VAULT
+            </h3>
+
+            <div class="vault-card">
+                <span class="vc-val" id="vault-revenue">$...</span>
+                <span class="vc-lbl">TOTAL REVENUE (TAX)</span>
+            </div>
+
+            <div class="vault-card" style="border-color: #00ff41; background: rgba(0, 255, 65, 0.05);">
+                <span class="vc-val" id="vault-escrow" style="color:#00ff41;">$...</span>
+                <span class="vc-lbl">ESCROW HOLDINGS (LOCKED)</span>
+            </div>
+
+            <div class="vault-card" style="border-color: #ffae00; background: rgba(255, 174, 0, 0.05);">
+                <span class="vc-val" id="vault-users" style="color:#ffae00;">$...</span>
+                <span class="vc-lbl">USER LIQUID CASH</span>
+            </div>
+            
+            <div style="margin-top:40px; text-align:center;">
+                <a href="Admin_Room.html" class="btn-mini"><i class="fas fa-arrow-left"></i> BACK TO HQ</a>
+            </div>
+        </div>
+
+        <div class="dc-main">
+            <h2 style="color:var(--mh-orange, #ffae00);">DATA CENTER <span style="font-size:0.5em; color:#666;">// GOD MODE</span></h2>
+            
+            <div class="search-box">
+                <input type="text" id="search-input" class="search-input" placeholder="Enter Name, ID, or Email...">
+                <button class="btn-search" id="btn-search"><i class="fas fa-search"></i> SEARCH</button>
+            </div>
+
+            <div id="results-area">
+                <div style="text-align:center; color:#444; margin-top:50px;">
+                    <i class="fas fa-database" style="font-size:3em; margin-bottom:10px;"></i><br>
+                    WAITING FOR INPUT...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="assets/js/admin-datacenter.js"></script>
+
+</body>
+</html>

@@ -1,691 +1,711 @@
----
-permalink: /Product_Room.html
----
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <title>MH Studios™ | Asset Detail Terminal</title>
+    <title>MH STUDIOS | ASSET TERMINAL</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#05070a">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <meta name="description" content="Secure Asset Acquisition Interface.">
-
+    
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
-        /* --- CORE IDENTITY --- */
+        /* =========================================
+           THEME: TITAN BLUE (TACTICAL E-COMMERCE)
+           ========================================= */
         :root {
             --titan-dark: #05070a;
             --titan-panel: rgba(13, 17, 23, 0.95);
             --titan-blue: #0080FF;
             --titan-cyan: #00e5ff;
-            --titan-red: #ff004c;
-            --titan-gold: #FFD700;
-            --titan-green: #00ff41;
-            --titan-border: rgba(255, 255, 255, 0.1);
-            --glass-blur: blur(20px);
+            --titan-text: #e0e0e0;
+            --titan-border: rgba(0, 128, 255, 0.2);
+            --glass: backdrop-filter: blur(10px);
         }
 
-        /* --- RESET & BASE --- */
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        
         body {
             background-color: var(--titan-dark);
-            color: #e0e0e0;
-            font-family: "Uni Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0;
-            padding-top: 80px; /* Space for fixed header */
+            color: var(--titan-text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
             overflow-x: hidden;
-            background-image: 
-                linear-gradient(rgba(5, 7, 10, 0.92), rgba(5, 7, 10, 0.92)),
-                url('images/grid_bg.png');
-            background-attachment: fixed;
-            background-size: cover;
+            padding-top: 80px; /* Space for fixed header */
         }
 
-        /* --- TYPOGRAPHY --- */
-        h1, h2, h3, h4, h5 { text-transform: uppercase; letter-spacing: 1px; color: #fff; margin: 0 0 15px 0; font-weight: 800; }
-        p { line-height: 1.6; color: #aaa; font-size: 0.95em; margin-bottom: 20px; }
-        a { text-decoration: none; color: var(--titan-cyan); transition: 0.3s; }
-        a:hover { color: #fff; text-shadow: 0 0 10px var(--titan-cyan); }
+        /* --- LAYOUT GRID --- */
+        .product-interface {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 0.8fr; /* Image | Details | Buy Box */
+            gap: 20px;
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+        }
 
-        /* SCROLLBARS */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--titan-blue); }
+        /* --- COL 1: VISUAL INTEL --- */
+        .image-sector {
+            position: relative;
+        }
+        .main-img-frame {
+            width: 100%;
+            height: 400px;
+            border: 1px solid var(--titan-border);
+            background: #000;
+            overflow: hidden; /* For Zoom */
+            border-radius: 4px;
+            cursor: zoom-in;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-img-frame img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .main-img-frame:hover img {
+            transform: scale(1.6); /* ZOOM EFFECT */
+        }
+        .thumb-grid {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .thumb {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #333;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
+        }
+        .thumb:hover, .thumb.active {
+            border-color: var(--titan-cyan);
+            opacity: 1;
+        }
+        .qr-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed var(--titan-border);
+            text-align: center;
+            background: rgba(255,255,255,0.05);
+        }
 
-        /* --- HEADER (TACTICAL NAV) --- */
-        #titan-header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
-            background: rgba(5, 7, 10, 0.95);
-            backdrop-filter: var(--glass-blur);
+        /* --- COL 2: DATA CORE --- */
+        .data-sector {
+            padding: 0 20px;
+        }
+        h1.asset-title {
+            font-size: 1.8em;
+            color: #fff;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+        .sku-tag {
+            font-family: monospace;
+            color: var(--titan-cyan);
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            display: block;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .price-tag {
+            font-size: 2.5em;
+            color: var(--titan-blue);
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 0 15px rgba(0, 128, 255, 0.4);
+        }
+        
+        /* TABS */
+        .intel-tabs {
+            display: flex;
             border-bottom: 1px solid var(--titan-border);
-            z-index: 5000; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            margin-top: 40px;
         }
-        .brand-module { display: flex; align-items: center; gap: 15px; }
-        .brand-module img { height: 40px; }
-        .brand-text { font-size: 1.1em; font-weight: 900; letter-spacing: 2px; }
-
-        .header-actions { display: flex; gap: 15px; }
-        .icon-btn {
-            width: 40px; height: 40px; border: 1px solid var(--titan-border); border-radius: 6px;
-            display: flex; align-items: center; justify-content: center; color: #888; cursor: pointer;
-            transition: 0.3s; background: rgba(255,255,255,0.02);
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #888;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            font-family: inherit;
         }
-        .icon-btn:hover { color: var(--titan-cyan); border-color: var(--titan-cyan); background: rgba(0, 229, 255, 0.1); }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active {
+            color: var(--titan-cyan);
+            border-bottom: 2px solid var(--titan-cyan);
+        }
+        .tab-content {
+            display: none;
+            line-height: 1.6;
+            font-size: 0.9em;
+            color: #ccc;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active { display: block; }
+        .spec-table { width: 100%; border-collapse: collapse; }
+        .spec-table td { padding: 8px; border-bottom: 1px solid #222; }
+        .spec-table td:first-child { color: #888; width: 40%; }
 
-        /* --- MAIN LAYOUT GRID --- */
-        .product-container {
-            max-width: 1400px; margin: 40px auto; padding: 0 20px;
-            display: grid; grid-template-columns: 1fr 400px; gap: 40px;
+        /* --- COL 3: ACQUISITION (THE BUY BOX) --- */
+        .buy-box {
+            background: var(--titan-panel);
+            border: 1px solid var(--titan-border);
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        .stock-indicator {
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: monospace;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #333; }
+        .dot.green { background: #00ff41; box-shadow: 0 0 8px #00ff41; }
+        .dot.red { background: #ff004c; }
+
+        .qty-selector {
+            display: flex;
+            align-items: center;
+            background: #000;
+            border: 1px solid #333;
+            width: fit-content;
+            margin-bottom: 20px;
+        }
+        .qty-btn {
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .qty-val {
+            padding: 0 15px;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
         }
 
-        /* --- LEFT COLUMN: ASSET VISUALS & DATA --- */
-        .visual-sector { display: flex; flex-direction: column; gap: 30px; }
-
-        .main-image-frame {
-            width: 100%; height: 500px;
-            background: #000; border: 1px solid var(--titan-border);
-            border-radius: 8px; overflow: hidden; position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
         }
-        .main-image-frame img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .main-image-frame:hover img { transform: scale(1.05); }
-
-        .image-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 20px; background: linear-gradient(to top, #000, transparent);
-            pointer-events: none;
+        .btn-cart {
+            background: transparent;
+            border: 1px solid var(--titan-blue);
+            color: var(--titan-blue);
         }
-        .io-badge {
-            background: var(--titan-blue); color: #fff; padding: 5px 12px;
-            font-size: 0.7em; font-weight: bold; border-radius: 4px; text-transform: uppercase;
-        }
-
-        .details-card {
-            background: var(--titan-panel); border: 1px solid var(--titan-border);
-            padding: 30px; border-radius: 8px; position: relative;
-        }
-        /* Corner Accent */
-        .details-card::before {
-            content: ''; position: absolute; top: -1px; left: -1px; width: 30px; height: 30px;
-            border-top: 3px solid var(--titan-blue); border-left: 3px solid var(--titan-blue);
-            border-radius: 8px 0 0 0;
-        }
-
-        .prod-title { font-size: 2.2em; text-shadow: 0 0 20px rgba(0, 128, 255, 0.3); margin-bottom: 10px; }
-        .prod-meta { display: flex; gap: 20px; font-size: 0.8em; color: #888; margin-bottom: 25px; border-bottom: 1px solid var(--titan-border); padding-bottom: 20px; }
-        .meta-item i { margin-right: 8px; color: var(--titan-blue); }
-
-        .tech-specs-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .tech-specs-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9em; }
-        .spec-label { color: #666; font-weight: bold; width: 150px; }
-        .spec-val { color: var(--titan-cyan); font-family: monospace; }
-
-        /* --- RIGHT COLUMN: ACTIONS & SOCIAL --- */
-        .sidebar-sector { display: flex; flex-direction: column; gap: 25px; }
-
-        .action-card {
-            background: #0b0e11; border: 1px solid var(--titan-border);
-            padding: 25px; border-radius: 8px; position: sticky; top: 90px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-
-        .price-tag { font-size: 2.5em; font-weight: 900; color: #fff; display: block; margin-bottom: 5px; }
-        .price-sub { font-size: 0.8em; color: var(--titan-green); margin-bottom: 25px; display: block; }
-
-        .btn-titan {
-            width: 100%; padding: 15px; border: none; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
-            transition: 0.3s; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-        }
+        .btn-cart:hover { background: rgba(0, 128, 255, 0.1); }
         
         .btn-buy {
-            background: var(--titan-blue); color: #fff; margin-bottom: 15px;
-            box-shadow: 0 0 20px rgba(0, 128, 255, 0.2);
+            background: var(--titan-blue);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 128, 255, 0.3);
         }
-        .btn-buy:hover { background: #fff; color: #000; box-shadow: 0 0 30px #fff; }
+        .btn-buy:hover { background: var(--titan-cyan); color: #000; }
 
-        .btn-wish {
-            background: transparent; border: 1px solid var(--titan-border); color: #ccc;
+        .payment-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            opacity: 0.6;
+            justify-content: center;
+            font-size: 1.8em;
         }
-        .btn-wish:hover { border-color: var(--titan-red); color: var(--titan-red); }
 
-        .social-grid {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px;
+        /* --- RECON (SIMILAR ITEMS) --- */
+        .recon-belt {
+            max-width: 1400px;
+            margin: 0 auto 60px auto;
+            padding: 20px;
+            border-top: 1px solid #222;
         }
-        .soc-btn {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--titan-border);
-            padding: 10px; border-radius: 4px; text-align: center; color: #888;
-            cursor: pointer; font-size: 0.8em; transition: 0.3s;
+        .recon-grid {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
         }
-        .soc-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .soc-btn.active { color: var(--titan-red); border-color: var(--titan-red); }
+        .recon-card {
+            min-width: 200px;
+            background: #0b0e12;
+            border: 1px solid #333;
+            padding: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .recon-card:hover { border-color: var(--titan-blue); transform: translateY(-5px); }
+        .recon-img { width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px; }
 
-        /* --- COMMENTS SECTION --- */
-        .comments-feed {
-            margin-top: 20px; max-height: 400px; overflow-y: auto;
-            border: 1px solid var(--titan-border); background: #000;
-            padding: 15px; border-radius: 4px;
-        }
-        .comment-node {
-            margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .cn-header { display: flex; justify-content: space-between; font-size: 0.75em; margin-bottom: 5px; }
-        .cn-user { color: var(--titan-cyan); font-weight: bold; }
-        .cn-time { color: #555; }
-        .cn-text { font-size: 0.9em; color: #ccc; }
-
-        .comment-input-area {
-            display: flex; gap: 10px; margin-top: 15px;
-        }
-        .titan-input {
-            flex: 1; background: #080a0c; border: 1px solid #333;
-            color: #fff; padding: 10px; border-radius: 4px;
-        }
-        .titan-input:focus { border-color: var(--titan-blue); }
-
-        /* --- RELATED ASSETS (BOTTOM) --- */
-        .related-sector {
-            max-width: 1400px; margin: 60px auto; padding: 0 20px;
-        }
-        .related-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;
-        }
-        .mini-card {
-            background: var(--titan-panel); border: 1px solid var(--titan-border);
-            border-radius: 6px; overflow: hidden; transition: 0.3s;
-        }
-        .mini-card:hover { transform: translateY(-5px); border-color: var(--titan-blue); }
-        .mc-img { height: 150px; background: #000; background-size: cover; background-position: center; }
-        .mc-body { padding: 15px; }
-        .mc-title { font-size: 0.9em; font-weight: bold; margin-bottom: 5px; color: #fff; display: block; }
-        .mc-price { color: var(--titan-gold); font-size: 0.9em; }
-
-        /* --- MODAL (CHECKOUT & REPORT) --- */
-        .titan-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9000;
-            display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
+        /* --- MODAL (REPORT/CONTACT) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
         }
         .modal-content {
-            background: #0b0e11; border: 1px solid var(--titan-border);
-            width: 500px; padding: 30px; border-radius: 8px; position: relative;
-            box-shadow: 0 0 50px rgba(0, 128, 255, 0.2);
-            animation: slideUp 0.3s ease-out;
+            background: #111;
+            padding: 30px;
+            border: 1px solid var(--titan-red);
+            max-width: 400px;
+            width: 90%;
         }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .modal-header { font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; color: #fff; display: flex; justify-content: space-between; }
-        .close-modal { cursor: pointer; color: #666; transition: 0.3s; }
-        .close-modal:hover { color: var(--titan-red); }
 
-        /* --- RESPONSIVE MATRIX --- */
-        @media screen and (max-width: 980px) {
-            .product-container { grid-template-columns: 1fr; }
-            .action-card { position: static; margin-top: 20px; }
-            .main-image-frame { height: 300px; }
-            .prod-title { font-size: 1.8em; }
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- RESPONSIVE --- */
+        @media(max-width: 980px) {
+            .product-interface { grid-template-columns: 1fr; }
+            .buy-box { position: static; }
         }
     </style>
 </head>
 <body>
 
-    <header id="titan-header">
-        <a href="index.html" class="brand-module">
-            <img src="images/Logo_1.png" alt="MH Logo">
-            <div class="brand-text">
-                <span style="color:#fff;">MH</span><span style="color:var(--titan-blue);">ARMORY</span>
-            </div>
+    <header id="header" style="background: rgba(5,7,10,0.95); padding: 0 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: fixed; top: 0; width: 100%; z-index: 1000; height: 80px; box-sizing: border-box;">
+        <a href="index.html" class="logo" style="color:#fff; text-decoration: none; font-weight: bold; font-size: 1.5em; display: flex; align-items: center; gap: 10px;">
+            <img src="images/Logo_1.png" style="height: 40px;"> MH STUDIOS
         </a>
-
-        <div class="header-actions">
-            <a href="Products_Services_Room.html" class="icon-btn" title="Back to Armory">
-                <i class="fas fa-arrow-left"></i>
+        <nav style="display: flex; gap: 20px; align-items: center;">
+            <a href="Products_Services_Room.html" style="color:#ccc; text-decoration: none; font-size: 0.9em;">ARMORY</a>
+            <a href="#" style="color:var(--titan-cyan); text-decoration: none; position: relative;">
+                <i class="fas fa-shopping-cart fa-lg"></i> 
+                <span id="cart-badge" style="position: absolute; top: -8px; right: -10px; background: var(--titan-blue); color: #fff; font-size: 0.7em; padding: 2px 5px; border-radius: 3px;">0</span>
             </a>
-            <div class="icon-btn" title="My Cart">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="icon-btn" id="user-status-indicator" title="User Status">
-                <i class="fas fa-user-circle"></i>
-            </div>
-        </div>
+            <a href="DoD_Login_Style.html" id="nav-profile" style="color:#fff; text-decoration: none; border: 1px solid var(--titan-blue); padding: 5px 15px; border-radius: 4px;">
+                <i class="fas fa-user-circle"></i> LOGIN
+            </a>
+        </nav>
     </header>
 
-    <main class="product-container">
-
-        <section class="visual-sector">
+    <main class="product-interface">
+        
+        <section class="image-sector">
+            <div class="main-img-frame" id="zoom-container">
+                <img id="main-display" src="images/placeholder_product.jpg" alt="Product Asset">
+            </div>
             
-            <div class="main-image-frame">
-                <img id="p-image" src="images/placeholder_product.png" alt="Asset Visual">
-                <div class="image-overlay">
-                    <span class="io-badge" id="p-branch">CLASSIFIED</span>
-                </div>
+            <div class="thumb-grid">
+                <img src="images/placeholder_product.jpg" class="thumb active" onclick="switchImage(this)">
+            </div>
+            
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 0.8em;">
+                <button onclick="downloadImage()" style="background:none; border:none; color:#888; cursor:pointer;">
+                    <i class="fas fa-download"></i> SAVE INTEL
+                </button>
+                <button onclick="openReportModal()" style="background:none; border:none; color:var(--titan-red); cursor:pointer;">
+                    <i class="fas fa-flag"></i> REPORT
+                </button>
             </div>
 
-            <div class="details-card">
-                <h1 class="prod-title" id="p-name">LOADING ASSET DATA...</h1>
-                
-                <div class="prod-meta">
-                    <span class="meta-item"><i class="fas fa-cube"></i> <span id="p-id">ID-0000</span></span>
-                    <span class="meta-item"><i class="fas fa-calendar-alt"></i> <span id="p-date">Today</span></span>
-                    <span class="meta-item"><i class="fas fa-shield-alt"></i> VERIFIED</span>
-                </div>
-
-                <h3><i class="fas fa-info-circle" style="color:var(--titan-blue);"></i> MISSION BRIEF (DESCRIPTION)</h3>
-                <p id="p-desc">
-                    System is retrieving the asset description from the secure archive. Please stand by...
-                </p>
-
-                <h3><i class="fas fa-microchip" style="color:var(--titan-blue);"></i> TECHNICAL SPECIFICATIONS</h3>
-                <table class="tech-specs-table">
-                    <tr>
-                        <td class="spec-label">FILE TYPE</td>
-                        <td class="spec-val">ZIP / PDF / EXE</td>
-                    </tr>
-                    <tr>
-                        <td class="spec-label">VERSION</td>
-                        <td class="spec-val">v2.4 (Stable)</td>
-                    </tr>
-                    <tr>
-                        <td class="spec-label">LICENSE</td>
-                        <td class="spec-val">Commercial Use</td>
-                    </tr>
-                    <tr>
-                        <td class="spec-label">SUPPORT</td>
-                        <td class="spec-val" style="color:var(--titan-green);">ACTIVE (24/7)</td>
-                    </tr>
-                </table>
+            <div class="qr-box">
+                <div id="qrcode" style="margin-bottom: 10px;"></div>
+                <small style="color:var(--titan-cyan);">SCAN FOR MOBILE UPLINK</small>
             </div>
-
         </section>
 
+        <section class="data-sector">
+            <h1 class="asset-title" id="asset-title">INITIALIZING...</h1>
+            <span class="sku-tag">SKU: <span id="sku-val" style="color:#fff;">--</span> | CONDITION: <span style="color:#00ff41">NEW</span></span>
 
-        <aside class="sidebar-sector">
+            <div class="price-tag" id="asset-price">--</div>
+
+            <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <button class="tab-btn" id="btn-like" style="border:1px solid #333;"><i class="far fa-heart"></i> LIKE (<span id="like-count">0</span>)</button>
+                <button class="tab-btn" onclick="shareAsset()" style="border:1px solid #333;"><i class="fas fa-share-alt"></i> SHARE</button>
+            </div>
+
+            <div class="intel-tabs">
+                <button class="tab-btn active" onclick="openTab('desc', this)">DESCRIPTION</button>
+                <button class="tab-btn" onclick="openTab('specs', this)">SPECS</button>
+                <button class="tab-btn" onclick="openTab('reviews', this)">REVIEWS</button>
+            </div>
+
+            <div id="tab-desc" class="tab-content active">
+                <p id="asset-desc">Loading classified description...</p>
+            </div>
             
-            <div class="action-card">
-                <span class="price-tag" id="p-price">$0.00</span>
-                <span class="price-sub"><i class="fas fa-check-circle"></i> INSTANT DIGITAL DELIVERY</span>
-
-                <button class="btn-titan btn-buy" onclick="openCheckout()">
-                    <i class="fas fa-download"></i> ACQUIRE ASSET
-                </button>
-
-                <button class="btn-titan btn-wish" onclick="toggleWishlist()">
-                    <i class="far fa-star"></i> ADD TO WISHLIST
-                </button>
-
-                <div class="social-grid">
-                    <div class="soc-btn" id="btn-like" onclick="actionLike()">
-                        <i class="far fa-heart"></i> <span id="like-count">0</span>
+            <div id="tab-specs" class="tab-content">
+                <table class="spec-table">
+                    <tbody id="specs-body">
+                        </tbody>
+                </table>
+            </div>
+            
+            <div id="tab-reviews" class="tab-content">
+                <div id="reviews-list" style="margin-bottom: 20px; max-height: 200px; overflow-y: auto;">
                     </div>
-                    <div class="soc-btn" onclick="actionShare()">
-                        <i class="fas fa-share-alt"></i> SHARE
-                    </div>
-                    <div class="soc-btn" onclick="openReportModal()" style="border-color:rgba(255,0,0,0.2);">
-                        <i class="fas fa-flag"></i> REPORT
-                    </div>
+                <div style="border-top: 1px solid #333; padding-top: 10px;">
+                    <textarea id="review-input" placeholder="Enter tactical assessment..." style="width:100%; background:#111; border:1px solid #333; color:#fff; padding:10px; margin-bottom:10px; resize:vertical;"></textarea>
+                    <button class="action-btn btn-cart" style="width:auto; padding:5px 15px; font-size:0.8em;" onclick="submitReview()">SUBMIT REPORT</button>
                 </div>
             </div>
+        </section>
 
-            <div class="details-card">
-                <h3><i class="fas fa-comments" style="color:var(--titan-blue);"></i> OPERATIVE CHATTER</h3>
-                
-                <div class="comments-feed" id="comments-container">
-                    <div style="text-align:center; padding:20px; color:#444;">NO COMMS DETECTED</div>
-                </div>
-
-                <div class="comment-input-area">
-                    <input type="text" id="comment-input" class="titan-input" placeholder="Type encrypted message...">
-                    <button class="icon-btn" style="background:var(--titan-blue); color:#fff; border:none;" onclick="actionComment()">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
+        <section class="buy-box">
+            <div class="stock-indicator">
+                <div id="stock-dot" class="dot"></div>
+                <span id="stock-text">CHECKING INVENTORY...</span>
             </div>
 
-        </aside>
+            <label style="font-size: 0.8em; color: #888;">QUANTITY</label>
+            <div class="qty-selector">
+                <button class="qty-btn" onclick="updateQty(-1)">-</button>
+                <span class="qty-val" id="qty-display">1</span>
+                <button class="qty-btn" onclick="updateQty(1)">+</button>
+            </div>
+
+            <button class="action-btn btn-buy" id="btn-buy-now">
+                <i class="fas fa-bolt"></i> ACQUIRE NOW
+            </button>
+            <button class="action-btn btn-cart" id="btn-add-cart">
+                <i class="fas fa-cart-plus"></i> ADD TO CRATE
+            </button>
+            
+            <button class="action-btn" onclick="openContactModal()" style="background:#222; color:#ccc; margin-top:10px;">
+                <i class="fas fa-envelope"></i> CONTACT SELLER
+            </button>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #333; font-size: 0.8em; color: #888;">
+                <div style="margin-bottom: 8px;"><i class="fas fa-truck" style="width:20px; text-align:center;"></i> GLOBAL SHIPPING</div>
+                <div style="margin-bottom: 8px;"><i class="fas fa-undo" style="width:20px; text-align:center;"></i> 30-DAY RETURNS</div>
+                <div><i class="fas fa-shield-alt" style="width:20px; text-align:center;"></i> SECURE CHECKOUT</div>
+            </div>
+
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
+                <i class="fab fa-cc-stripe"></i>
+            </div>
+        </section>
 
     </main>
 
-    <section class="related-sector">
-        <h3><i class="fas fa-boxes"></i> RELATED DEPLOYMENTS</h3>
-        <div class="related-grid">
-            <div class="mini-card">
-                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
-                <div class="mc-body">
-                    <a href="#" class="mc-title">Advanced React Dashboard</a>
-                    <span class="mc-price">$45.00</span>
-                </div>
-            </div>
-            <div class="mini-card">
-                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
-                <div class="mc-body">
-                    <a href="#" class="mc-title">Python Automation Script</a>
-                    <span class="mc-price">$20.00</span>
-                </div>
-            </div>
-            <div class="mini-card">
-                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
-                <div class="mc-body">
-                    <a href="#" class="mc-title">UI Kit - Dark Mode</a>
-                    <span class="mc-price">$35.00</span>
-                </div>
-            </div>
-            <div class="mini-card">
-                <div class="mc-img" style="background-image:url('images/placeholder.png');"></div>
-                <div class="mc-body">
-                    <a href="#" class="mc-title">Firebase Rules Template</a>
-                    <span class="mc-price">$15.00</span>
-                </div>
-            </div>
+    <section class="recon-belt">
+        <h3 style="color:#fff; border-left: 3px solid var(--titan-blue); padding-left: 10px;">SIMILAR ASSETS DETECTED</h3>
+        <div class="recon-grid" id="recon-container">
+            <div style="color:#666;">Scanning database...</div>
         </div>
     </section>
 
-
-    <footer style="border-top:1px solid #222; margin-top:50px; padding:40px; text-align:center; background:#020202; color:#555;">
-        <p>&copy; 2026 MH Studios. Secure Connection Established.</p>
-    </footer>
-
-
-    <div id="modal-checkout" class="titan-modal">
+    <div id="modal-report" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <span>SECURE CHECKOUT</span>
-                <span class="close-modal" onclick="closeModals()"><i class="fas fa-times"></i></span>
-            </div>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:4px; margin-bottom:20px; display:flex; gap:15px;">
-                <img id="chk-img" src="" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
-                <div>
-                    <div id="chk-name" style="font-weight:bold; color:#fff;">Product Name</div>
-                    <div id="chk-price" style="color:var(--titan-gold);">$0.00</div>
-                </div>
-            </div>
-
-            <form id="checkout-form">
-                <label style="font-size:0.8em; color:#888;">PAYMENT METHOD</label>
-                <select class="titan-input" style="width:100%; margin-bottom:15px;">
-                    <option>Credits (Wallet Balance)</option>
-                    <option>Credit Card (Stripe)</option>
-                    <option>PayPal</option>
-                </select>
-
-                <label style="font-size:0.8em; color:#888;">CONFIRM EMAIL</label>
-                <input type="email" class="titan-input" style="width:100%; margin-bottom:20px;" placeholder="delivery@email.com" required>
-
-                <div style="font-size:0.7em; color:#666; margin-bottom:20px;">
-                    <i class="fas fa-lock"></i> Transaction is encrypted via SSL-256.
-                </div>
-
-                <button type="submit" class="btn-titan btn-buy" style="margin:0;">
-                    CONFIRM PAYMENT
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-report" class="titan-modal">
-        <div class="modal-content" style="border-color:var(--titan-red);">
-            <div class="modal-header">
-                <span style="color:var(--titan-red);">REPORT VIOLATION</span>
-                <span class="close-modal" onclick="closeModals()"><i class="fas fa-times"></i></span>
-            </div>
-            <p>Please select the reason for flagging this asset.</p>
-            <select id="report-reason" class="titan-input" style="width:100%; margin-bottom:15px;">
-                <option>Copyright Infringement</option>
-                <option>Malicious Software</option>
-                <option>False Advertising</option>
+            <h3 style="color:var(--titan-red);">REPORT VIOLATION</h3>
+            <select id="report-reason" style="width:100%; background:#222; color:#fff; padding:10px; margin: 10px 0; border:none;">
+                <option>Broken Asset</option>
+                <option>Scam / Fraud</option>
                 <option>Inappropriate Content</option>
             </select>
-            <textarea id="report-desc" class="titan-input" rows="3" placeholder="Additional details..." style="width:100%; margin-bottom:20px;"></textarea>
-            <button class="btn-titan" style="background:var(--titan-red); color:#fff;" onclick="submitReport()">SUBMIT REPORT</button>
+            <textarea placeholder="Details..." style="width:100%; background:#222; border:none; color:#fff; height: 80px;"></textarea>
+            <button onclick="closeModals()" style="margin-top:10px; padding:10px; background:#333; color:#fff; border:none; cursor:pointer;">CANCEL</button>
+            <button onclick="submitReport()" style="margin-top:10px; padding:10px; background:var(--titan-red); color:#fff; border:none; cursor:pointer;">SEND</button>
         </div>
     </div>
 
+    <footer id="footer" style="background: #000; border-top: 1px solid #222; padding: 40px 20px; margin-top: 50px;">
+        <div class="inner" style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;">
+            <div class="footer-col">
+                <h4 style="color: #fff; margin-bottom: 15px;">MH STUDIOS</h4>
+                <p style="color: #666; font-size: 0.9em; max-width: 300px;">
+                    Providing elite digital assets and tactical solutions for the modern web.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4 style="color: #fff; margin-bottom: 15px;">LEGAL</h4>
+                <ul style="list-style: none; padding: 0; color: #888; font-size: 0.9em;">
+                    <li><a href="#" style="color:#888; text-decoration:none;">Privacy Policy</a></li>
+                    <li><a href="#" style="color:#888; text-decoration:none;">Terms of Service</a></li>
+                    <li><a href="#" style="color:#888; text-decoration:none;">Returns</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; color: #444; font-size: 0.8em; margin-top: 40px;">
+            &copy; 2026 MH STUDIOS. ALL RIGHTS RESERVED.
+        </div>
+    </footer>
 
-    <script src="assets/js/jquery.min.js"></script>
-    
     <script type="module">
-        // 1. IMPORT FIREBASE CORE
-        import { auth, db, dbID } from './assets/js/firebase-init.js';
-        import { 
-            doc, getDoc, collection, addDoc, serverTimestamp, 
-            updateDoc, arrayUnion, arrayRemove, increment, onSnapshot, query, orderBy 
-        } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { db, auth, DB_PATH } from './assets/js/firebase-init.js';
+        import { doc, getDoc, updateDoc, collection, addDoc, query, limit, getDocs, increment, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-        import { notify } from './assets/js/notification-hub.js';
+        import { notify } from './assets/js/notification-hub.js'; // Ensure you have this file
 
-        // 2. STATE VARIABLES
-        let currentProductId = null;
+        // GLOBAL STATE
+        let currentProductId = new URLSearchParams(window.location.search).get('id');
         let productData = null;
         let currentUser = null;
+        let currentQty = 1;
 
-        // 3. INITIALIZATION
+        // --- 1. INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Check Auth
-            onAuthStateChanged(auth, (user) => {
-                currentUser = user;
-                if(user) {
-                    $('#user-status-indicator').css('color', 'var(--titan-green)');
-                }
-            });
-
-            // Get Product ID from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            currentProductId = urlParams.get('id');
-
-            if(currentProductId) {
-                loadProductData(currentProductId);
-                listenToComments(currentProductId);
-            } else {
-                // Mock Data for Demo if no ID
-                loadMockData();
+            initCart(); // Check localstorage
+            
+            if(!currentProductId) {
+                document.body.innerHTML = "<h1 style='text-align:center; padding-top:100px; color:red;'>ERROR 404: MISSING ASSET ID</h1>";
+                return;
             }
+
+            // QR CODE GENERATION
+            new QRCode(document.getElementById("qrcode"), {
+                text: window.location.href,
+                width: 100,
+                height: 100,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
         });
 
-        // 4. DATA LOADING LOGIC
-        async function loadProductData(id) {
+        // --- 2. AUTH & DATA FETCH ---
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if(user) {
+                document.getElementById('nav-profile').innerHTML = `<i class="fas fa-check-circle"></i> ${user.displayName || 'OPERATIVE'}`;
+            }
+
+            // LOAD DATA
+            await loadAssetData();
+            loadReconData(); // Similar items
+        });
+
+        async function loadAssetData() {
             try {
-                const docRef = doc(db, 'artifacts', dbID, 'products', id);
+                const docRef = doc(db, `${DB_PATH}/products/${currentProductId}`);
                 const snap = await getDoc(docRef);
 
                 if (snap.exists()) {
                     productData = snap.data();
-                    renderProduct(productData);
-                    checkIfLiked(productData);
+                    renderInterface(productData);
                 } else {
-                    alert("ASSET NOT FOUND IN ARCHIVE.");
-                    window.location.href = "Products_Services_Room.html";
+                    alert("ASSET DECLASSIFIED (REMOVED).");
+                    window.location.href = 'Products_Services_Room.html';
                 }
             } catch (e) {
-                console.error("DATA FETCH ERROR:", e);
-                loadMockData(); // Fallback
+                console.error("DATA ERROR:", e);
             }
         }
 
-        function renderProduct(data) {
-            $('#p-name').text(data.name);
-            $('#p-price').text('$' + data.price);
-            $('#p-desc').text(data.description);
-            $('#p-branch').text(data.branch || "GENERAL");
-            $('#p-id').text("ID-" + currentProductId.substring(0,6).toUpperCase());
-            
-            if(data.imageUrl) {
-                $('#p-image').attr('src', data.imageUrl);
-            }
-            if(data.likeCount) {
-                $('#like-count').text(data.likeCount);
-            }
-        }
+        // --- 3. RENDER LOGIC ---
+        function renderInterface(data) {
+            // Text
+            document.getElementById('asset-title').innerText = data.title;
+            document.getElementById('asset-desc').innerText = data.description || "No intel available.";
+            document.getElementById('asset-price').innerText = `$${parseFloat(data.price).toFixed(2)}`;
+            document.getElementById('sku-val').innerText = (data.id || currentProductId).substring(0,8).toUpperCase();
+            document.getElementById('like-count').innerText = data.likes || 0;
 
-        function loadMockData() {
-            renderProduct({
-                name: "Titan Stealth Suit (Demo)",
-                price: 999.99,
-                description: "This is a demonstration asset because no ID was provided in the URL. Real assets load from Firestore.",
-                branch: "HARDWARE",
-                likeCount: 42,
-                imageUrl: "images/placeholder_product.png"
-            });
-            currentProductId = "DEMO_ID";
-        }
+            // Images
+            const mainImg = document.getElementById('main-display');
+            mainImg.src = data.image_url || 'images/placeholder_product.jpg';
 
-        // 5. SOCIAL LOGIC (LIKES)
-        window.actionLike = async function() {
-            if(!currentUser) return notify("ACCESS DENIED", "Login required to vote.", "warn");
-            if(!currentProductId) return;
+            // Stock Logic
+            const stockEl = document.getElementById('stock-text');
+            const dot = document.getElementById('stock-dot');
+            const buyBtn = document.getElementById('btn-buy-now');
 
-            const btn = $('#btn-like');
-            const isActive = btn.hasClass('active');
-            const ref = doc(db, 'artifacts', dbID, 'products', currentProductId);
-
-            // Optimistic UI
-            if(isActive) {
-                btn.removeClass('active').css('color', '');
-                $('#like-count').text( parseInt($('#like-count').text()) - 1 );
-                await updateDoc(ref, { likes: arrayRemove(currentUser.uid), likeCount: increment(-1) });
+            if (data.stock > 0) {
+                stockEl.innerText = `${data.stock} UNITS AVAILABLE`;
+                stockEl.style.color = "#00ff41";
+                dot.className = "dot green";
             } else {
-                btn.addClass('active').css('color', 'var(--titan-red)');
-                $('#like-count').text( parseInt($('#like-count').text()) + 1 );
-                await updateDoc(ref, { likes: arrayUnion(currentUser.uid), likeCount: increment(1) });
-                notify("VOTE RECORDED", "Asset endorsement logged.", "success");
+                stockEl.innerText = "OUT OF STOCK";
+                stockEl.style.color = "#ff004c";
+                dot.className = "dot red";
+                buyBtn.disabled = true;
+                buyBtn.innerText = "UNAVAILABLE";
+                buyBtn.style.background = "#333";
             }
-        };
 
-        function checkIfLiked(data) {
-            if(currentUser && data.likes && data.likes.includes(currentUser.uid)) {
-                $('#btn-like').addClass('active').css('color', 'var(--titan-red)');
+            // Specs Table (Mock JSON Logic)
+            const specsBody = document.getElementById('specs-body');
+            const specs = data.specs || { "Type": data.type, "Manufacturer": "MH Forge", "Warranty": "Standard" }; 
+            
+            specsBody.innerHTML = Object.entries(specs).map(([key, val]) => `
+                <tr><td>${key}</td><td style="color:#fff;">${val}</td></tr>
+            `).join('');
+
+            // Reviews (Mock + Real Logic)
+            const reviewsList = document.getElementById('reviews-list');
+            if(data.reviews) {
+                reviewsList.innerHTML = data.reviews.map(r => `
+                     <div style="border-bottom:1px solid #333; padding:10px 0;">
+                        <small style="color:var(--titan-blue);">${r.user}:</small>
+                        <p style="margin:5px 0; font-size:0.9em;">${r.text}</p>
+                    </div>
+                `).join('');
             }
         }
 
-        // 6. COMMENTS LOGIC
-        function listenToComments(id) {
-            const q = query(
-                collection(db, 'artifacts', dbID, 'products', id, 'comments'),
-                orderBy('timestamp', 'desc')
-            );
+        async function loadReconData() {
+            // Fetch 4 random items (mock query for now)
+            const q = query(collection(db, `${DB_PATH}/products`), limit(4));
+            const snap = await getDocs(q);
+            const container = document.getElementById('recon-container');
+            container.innerHTML = '';
 
-            onSnapshot(q, (snapshot) => {
-                const container = $('#comments-container');
-                container.empty();
-                
-                if(snapshot.empty) {
-                    container.html('<div style="text-align:center; padding:20px; color:#444;">NO COMMS DETECTED</div>');
-                    return;
-                }
-
-                snapshot.forEach(docSnap => {
-                    const c = docSnap.data();
-                    const time = c.timestamp ? new Date(c.timestamp.seconds * 1000).toLocaleString() : '';
-                    container.append(`
-                        <div class="comment-node">
-                            <div class="cn-header">
-                                <span class="cn-user">${c.userName}</span>
-                                <span class="cn-time">${time}</span>
-                            </div>
-                            <div class="cn-text">${c.text}</div>
-                        </div>
-                    `);
-                });
+            snap.forEach(doc => {
+                if(doc.id === currentProductId) return; // Skip self
+                const d = doc.data();
+                const card = document.createElement('div');
+                card.className = 'recon-card';
+                card.innerHTML = `
+                    <img src="${d.image_url || 'images/placeholder_product.jpg'}" class="recon-img">
+                    <div style="font-size:0.9em; font-weight:bold; color:#fff;">${d.title}</div>
+                    <div style="color:var(--titan-blue);">$${d.price}</div>
+                `;
+                card.onclick = () => window.location.href = `Product_Room.html?id=${doc.id}`;
+                container.appendChild(card);
             });
         }
 
-        window.actionComment = async function() {
-            const txt = $('#comment-input').val();
-            if(!txt.trim()) return;
-            if(!currentUser) return notify("ACCESS DENIED", "Login required to communicate.", "warn");
-
-            try {
-                await addDoc(collection(db, 'artifacts', dbID, 'products', currentProductId, 'comments'), {
-                    userId: currentUser.uid,
-                    userName: currentUser.displayName || "Operative",
-                    text: txt,
-                    timestamp: serverTimestamp()
-                });
-                $('#comment-input').val(''); // Clear
-            } catch(e) {
-                notify("TRANSMISSION ERROR", "Message failed.", "error");
-            }
-        };
-
-        // 7. SHARE & WISHLIST
-        window.actionShare = function() {
-            const url = window.location.href;
-            navigator.clipboard.writeText(url);
-            notify("LINK SECURED", "Copied to clipboard.", "info");
-        };
-
-        window.toggleWishlist = function() {
-            if(!currentUser) return notify("ACCESS DENIED", "Login required.", "warn");
-            notify("WISHLIST UPDATED", "Asset added to tactical reserve.", "success");
-        };
-
-        // 8. MODAL CONTROLS
-        window.openCheckout = function() {
-            if(!currentUser) return notify("ACCESS DENIED", "Login required to purchase.", "warn");
-            $('#chk-name').text(productData ? productData.name : "Unknown Asset");
-            $('#chk-price').text('$' + (productData ? productData.price : "0.00"));
-            if(productData && productData.imageUrl) $('#chk-img').attr('src', productData.imageUrl);
-            
-            $('#modal-checkout').css('display', 'flex');
-        };
-
-        window.openReportModal = function() {
-            $('#modal-report').css('display', 'flex');
-        };
-
-        window.closeModals = function() {
-            $('.titan-modal').fadeOut(200);
-        };
-
-		// 9. UPGRADED CHECKOUT LOGIC
-		document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-			e.preventDefault();
-			
-			// UI Feedback
-			const buyBtn = e.target.querySelector('button[type="submit"]');
-			buyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AUTHORIZING...';
-			buyBtn.disabled = true;
-
-			try {
-				// We pull 'sellerUid' from the product data we loaded earlier
-				const sellerId = productData.sellerId || "ADMIN_ID"; 
-				
-				// EXECUTE THE FINANCIAL PROTOCOL
-				await purchaseArtifact(
-					currentUser.uid, 
-					currentProductId, 
-					productData.price, 
-					sellerId
-				);
-
-				closeModals();
-				alert("TRANSACTION COMPLETE: ASSET ADDED TO YOUR COLLECTION.");
-				window.location.reload(); 
-
-			} catch(err) {
-				console.error(err);
-				alert("TRANSACTION DECLINED: " + (err === "INSUFFICIENT_CREDITS" ? "Insufficient Credits in Wallet." : "Bank Error."));
-				buyBtn.innerHTML = 'CONFIRM ACQUISITION';
-				buyBtn.disabled = false;
-			}
-		});
+        // --- 4. INTERACTION FUNCTIONS ---
         
-        // 10. REPORT SUBMISSION
-        window.submitReport = function() {
-            notify("REPORT FILED", "Admin team notified of violation.", "error");
+        // Quantity
+        window.updateQty = (change) => {
+            let newQty = currentQty + change;
+            if (newQty < 1) newQty = 1;
+            if (productData && newQty > productData.stock) newQty = productData.stock;
+            currentQty = newQty;
+            document.getElementById('qty-display').innerText = currentQty;
+        };
+
+        // Buy Redirect
+        document.getElementById('btn-buy-now').addEventListener('click', () => {
+            if(!currentUser) return alert("LOGIN REQUIRED");
+            // Redirect to Gateway
+            const totalPrice = (parseFloat(productData.price) * currentQty).toFixed(2);
+            const safeName = encodeURIComponent(productData.title);
+            window.location.href = `Payment_Gateway.html?id=${currentProductId}&name=${safeName}&price=${totalPrice}&qty=${currentQty}`;
+        });
+
+        // Add to Cart (LocalStorage)
+        document.getElementById('btn-add-cart').addEventListener('click', () => {
+            let cart = JSON.parse(localStorage.getItem('mh_cart')) || [];
+            cart.push({
+                id: currentProductId,
+                title: productData.title,
+                price: productData.price,
+                qty: currentQty
+            });
+            localStorage.setItem('mh_cart', JSON.stringify(cart));
+            initCart(); // Update Badge
+            alert("ADDED TO CRATE.");
+            // Or use: notify("CART UPDATE", `${productData.title} added.`, "success");
+        });
+
+        // Tabs
+        window.openTab = (tabName, btn) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            btn.classList.add('active');
+        };
+
+        // Like Logic
+        document.getElementById('btn-like').addEventListener('click', async () => {
+            if(!currentUser) return alert("LOGIN REQUIRED");
+            const ref = doc(db, `${DB_PATH}/products/${currentProductId}`);
+            await updateDoc(ref, { likes: increment(1) });
+            document.getElementById('like-count').innerText = parseInt(document.getElementById('like-count').innerText) + 1;
+        });
+
+        // Share
+        window.shareAsset = () => {
+            navigator.clipboard.writeText(window.location.href);
+            alert("UPLINK COPIED.");
+        };
+
+        // Init Cart Badge
+        function initCart() {
+            let cart = JSON.parse(localStorage.getItem('mh_cart')) || [];
+            document.getElementById('cart-badge').innerText = cart.length;
+        }
+
+        // Image Logic
+        window.switchImage = (el) => {
+            document.getElementById('main-display').src = el.src;
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        };
+        
+        window.downloadImage = () => {
+            const link = document.createElement('a');
+            link.href = document.getElementById('main-display').src;
+            link.download = `MH_ASSET_${currentProductId}.jpg`;
+            link.click();
+        };
+
+        // --- 5. REPORT / REVIEWS ---
+        window.openReportModal = () => document.getElementById('modal-report').style.display = 'flex';
+        window.openContactModal = () => alert("CONTACT CHANNEL OPEN: Direct Message sent to Admin."); // Placeholder for chat integration
+        window.closeModals = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+
+        window.submitReport = async () => {
+            // Save report to 'reports' collection
+            const reason = document.getElementById('report-reason').value;
+            await addDoc(collection(db, `${DB_PATH}/reports`), {
+                itemId: currentProductId,
+                reason: reason,
+                reporter: currentUser ? currentUser.uid : 'ANONYMOUS',
+                timestamp: serverTimestamp()
+            });
+            alert("VIOLATION REPORTED. COMMAND WILL INVESTIGATE.");
             closeModals();
         };
 
-    </script>
+        window.submitReview = async () => {
+            if(!currentUser) return alert("LOGIN REQUIRED");
+            const text = document.getElementById('review-input').value;
+            if(!text) return;
 
+            const ref = doc(db, `${DB_PATH}/products/${currentProductId}`);
+            await updateDoc(ref, {
+                reviews: arrayUnion({
+                    user: currentUser.displayName || "Operative",
+                    text: text,
+                    date: Date.now()
+                })
+            });
+            alert("REVIEW LOGGED.");
+            window.location.reload();
+        };
+
+    </script>
 </body>
 </html>

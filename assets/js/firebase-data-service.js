@@ -1,14 +1,14 @@
 // assets/js/firebase-data-service.js
-// STATUS: UPGRADED [VERSION 12.7.0]
+// STATUS: REPAIRED & STANDARDIZED
 
-import { db, dbID } from './firebase-init.js';
-import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { db, DB_PATH } from './firebase-init.js'; // Changed dbID to DB_PATH
+import { doc, getDoc, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 /**
  * Fetch a single product by ID
  */
 export async function fetchProduct(productId) {
-    const productRef = doc(db, 'artifacts', dbID, 'products', productId);
+    const productRef = doc(db, `${DB_PATH}/products/${productId}`);
     try {
         const productSnap = await getDoc(productRef);
         if (productSnap.exists()) {
@@ -27,9 +27,8 @@ export async function fetchProduct(productId) {
  * Fetch all available products
  */
 export async function fetchAvailableProducts() {
-    const productsRef = collection(db, 'artifacts', dbID, 'products');
-    // Example: Only show items that have price > 0 or status 'active'
-    // For now, we fetch all to be safe
+    // UPDATED: Uses DB_PATH
+    const productsRef = collection(db, `${DB_PATH}/products`);
     const q = query(productsRef); 
     
     try {
@@ -40,7 +39,7 @@ export async function fetchAvailableProducts() {
         });
         return products;
     } catch (error) {
-        console.error("Error loading Armory:", error);
+        console.error("Error fetching arsenal:", error);
         return [];
     }
 }
@@ -52,41 +51,25 @@ export async function fetchAvailableProducts() {
 const db = firebase.firestore();
 
 // 2. The Main Function: Submit Service Request
-async function submitServiceRequest(event) {
-    // Prevent the page from refreshing (which kills the data)
-    event.preventDefault();
-
-    console.log("[UPLINK] Initiating transmission...");
-
-    // 3. Grab the Data from the Form Inputs using their IDs
-    // (We will make sure these IDs match your HTML in Phase 2)
-    const requestData = {
-        clientName: document.getElementById('client-name').value,
-        clientEmail: document.getElementById('client-email').value,
-        serviceType: document.getElementById('service-type').value, // e.g., "Web Design", "Hardware Fix"
-        urgency: document.getElementById('urgency-level').value,
-        details: document.getElementById('request-details').value,
-        
-        // Metadata (Crucial for tracking)
-        status: "PENDING", // Default status
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        ip_tracker: "LOGGED" // Placeholder for security logging
-    };
-
+/**
+ * Submit a Service Request
+ */
+export async function submitServiceRequest(requestData) {
     try {
-        // 4. Send to Firestore Collection "service_requests"
-        const docRef = await db.collection('service_requests').add(requestData);
+        // UPDATED: Uses DB_PATH
+        const requestsRef = collection(db, `${DB_PATH}/service_requests`);
         
-        console.log("[SUCCESS] Request logged with ID: ", docRef.id);
+        const docRef = await addDoc(requestsRef, {
+            ...requestData,
+            timestamp: serverTimestamp(),
+            status: "PENDING"
+        });
         
-        // 5. Visual Feedback (The "BOOM" effect)
-        alert("Transmission Received. MH Studios will contact you shortly.");
-        
-        // Optional: Clear the form
-        document.getElementById('service-request-form').reset();
+        console.log("Transmission Successful. ID:", docRef.id);
+        return { success: true, id: docRef.id };
 
     } catch (error) {
-        console.error("[FAILURE] Transmission blocked: ", error);
-        alert("Error sending request. Check console.");
+        console.error("Transmission Blocked:", error);
+        return { success: false, error: error.message };
     }
 }

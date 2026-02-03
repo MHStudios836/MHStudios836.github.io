@@ -1,0 +1,260 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH STUDIOS | COMMS INTERCEPT</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <script type="module" src="assets/js/auth-router.js"></script>
+
+    <style>
+        body { background: #05070a; color: #ccc; font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* HEADER */
+        .cv-header {
+            background: #0b0e11;
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--mh-orange, #ffae00);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cv-title { color: var(--mh-orange, #ffae00); font-weight: bold; letter-spacing: 1px; }
+        .target-info { color: #fff; font-size: 0.9em; }
+
+        /* MAIN LAYOUT */
+        .cv-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR (THREADS) */
+        .thread-list {
+            background: #080a0d;
+            border-right: 1px solid #333;
+            overflow-y: auto;
+        }
+        .thread-item {
+            padding: 15px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .thread-item:hover { background: rgba(255,255,255,0.05); }
+        .thread-item.active { background: rgba(255, 174, 0, 0.1); border-left: 3px solid var(--mh-orange, #ffae00); }
+        
+        .t-participants { color: #eee; font-weight: bold; font-size: 0.9em; display: block; margin-bottom: 5px; }
+        .t-last-msg { color: #666; font-size: 0.75em; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* MAIN (TRANSCRIPT) */
+        .transcript-view {
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: radial-gradient(#111 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .msg-feed {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg-bubble {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            position: relative;
+        }
+        
+        /* Message Types */
+        .msg-target {
+            align-self: flex-start;
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            color: #ffcccc;
+        }
+        .msg-other {
+            align-self: flex-end;
+            background: rgba(0, 128, 255, 0.1);
+            border: 1px solid #0080ff;
+            color: #cce5ff;
+        }
+        .msg-system {
+            align-self: center;
+            background: #222;
+            border: 1px solid #444;
+            color: #888;
+            font-size: 0.7em;
+            padding: 5px 10px;
+        }
+
+        .msg-meta {
+            display: block;
+            font-size: 0.7em;
+            margin-bottom: 4px;
+            opacity: 0.7;
+            font-family: sans-serif;
+        }
+
+        .empty-state {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cv-header">
+        <div>
+            <span class="cv-title"><i class="fas fa-satellite-dish"></i> COMMS INTERCEPT</span>
+        </div>
+        <div class="target-info">
+            TARGET: <span id="target-id-display" style="color: #fff; font-weight:bold;">LOADING...</span>
+        </div>
+        <div>
+            <button onclick="window.close()" style="background:#333; color:#ccc; border:none; padding:5px 10px; cursor:pointer;">CLOSE LINK</button>
+        </div>
+    </div>
+
+    <div class="cv-container">
+        <div class="thread-list" id="thread-list">
+            <div style="padding:20px; text-align:center; color:#666;">SCANNING FREQUENCIES...</div>
+        </div>
+
+        <div class="transcript-view">
+            <div class="msg-feed" id="msg-feed">
+                <div class="empty-state">
+                    <div>
+                        <i class="fas fa-comment-slash" style="font-size:3em; margin-bottom:10px;"></i><br>
+                        SELECT A FREQUENCY TO BEGIN INTERCEPT
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './assets/js/firebase-init.js';
+        import { 
+            collection, query, where, getDocs, doc, getDoc, orderBy, onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        const params = new URLSearchParams(window.location.search);
+        const targetUid = params.get('uid');
+
+        if(!targetUid) {
+            alert("TARGET ID MISSING.");
+            window.close();
+        }
+
+        document.getElementById('target-id-display').innerText = targetUid;
+        let unsubscribeTranscript = null;
+
+        // 1. LOAD THREADS (Conversations involving Target)
+        async function initInterceptor() {
+            try {
+                // "chats" collection -> find docs where 'participants' array contains targetUid
+                const q = query(collection(db, 'chats'), where('participants', 'array-contains', targetUid));
+                const snapshot = await getDocs(q);
+                
+                const list = document.getElementById('thread-list');
+                
+                if(snapshot.empty) {
+                    list.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">NO COMMS DETECTED.</div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const otherParticipants = data.participants.filter(id => id !== targetUid);
+                    const lastMsg = data.lastMessage ? data.lastMessage.text : "No data";
+                    const time = data.lastMessageTimestamp ? new Date(data.lastMessageTimestamp.toDate()).toLocaleDateString() : "";
+
+                    // We create a clickable item
+                    html += `
+                    <div class="thread-item" onclick="loadTranscript('${docSnap.id}', this)">
+                        <span class="t-participants">With: ${otherParticipants.join(', ').substring(0, 15)}...</span>
+                        <span class="t-last-msg">${time} // ${lastMsg}</span>
+                    </div>`;
+                });
+                
+                list.innerHTML = html;
+
+            } catch (e) {
+                console.error("INTERCEPT ERROR:", e);
+                alert("ACCESS DENIED: " + e.message);
+            }
+        }
+
+        // 2. LOAD TRANSCRIPT (Messages inside a Chat)
+        window.loadTranscript = (chatId, el) => {
+            // UI Highlight
+            document.querySelectorAll('.thread-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            const feed = document.getElementById('msg-feed');
+            feed.innerHTML = '<div class="empty-state">DECRYPTING STREAM...</div>';
+
+            // Unsubscribe previous listener if exists
+            if(unsubscribeTranscript) unsubscribeTranscript();
+
+            // Real-time listener for messages
+            const q = query(
+                collection(db, `chats/${chatId}/messages`), 
+                orderBy('timestamp', 'asc')
+            );
+
+            unsubscribeTranscript = onSnapshot(q, (snapshot) => {
+                let html = '';
+                
+                if(snapshot.empty) {
+                    feed.innerHTML = '<div class="empty-state">NO TRANSMISSIONS FOUND.</div>';
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const msg = docSnap.data();
+                    const isTarget = msg.senderId === targetUid;
+                    const isSystem = msg.senderId === 'SYSTEM';
+
+                    let typeClass = isTarget ? 'msg-target' : 'msg-other';
+                    if(isSystem) typeClass = 'msg-system';
+
+                    const senderLabel = isTarget ? 'TARGET' : (isSystem ? 'SYS' : 'CONTACT');
+                    const time = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString() : "??:??";
+
+                    html += `
+                    <div class="msg-bubble ${typeClass}">
+                        <span class="msg-meta">[${time}] ${senderLabel} (${msg.senderId ? msg.senderId.substring(0,5) : '?'})</span>
+                        ${msg.text}
+                    </div>`;
+                });
+
+                feed.innerHTML = html;
+                feed.scrollTop = feed.scrollHeight; // Auto scroll to bottom
+            });
+        };
+
+        // Initialize
+        initInterceptor();
+    </script>
+</body>
+</html>

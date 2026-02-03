@@ -522,7 +522,127 @@ permalink: /Student_Room.html
 			box-shadow: 0 0 15px rgba(205, 127, 50, 0.4);
 		}
 		
-		
+		/* assets/css/task-card.css */
+
+		/* --- THE CARD CONTAINER --- */
+		.titan-task-card {
+			background: #0e1217; /* Upwork Dark Mode bg */
+			border: 1px solid #2b303b;
+			border-radius: 8px;
+			padding: 20px;
+			margin-bottom: 20px;
+			position: relative;
+			transition: all 0.2s ease;
+			font-family: 'Segoe UI', sans-serif;
+			color: #e0e0e0;
+		}
+
+		.titan-task-card:hover {
+			border-color: var(--mh-blue);
+			background: #13171d;
+		}
+
+		/* --- 1. HEADER (Date & Socials) --- */
+		.ttc-header {
+			display: flex;
+			justify-content: space-between;
+			font-size: 0.85em;
+			color: #888;
+			margin-bottom: 10px;
+		}
+
+		.ttc-socials i {
+			margin-left: 15px;
+			cursor: pointer;
+			transition: color 0.2s;
+		}
+		.ttc-socials i:hover { color: #fff; }
+		.ttc-socials i.liked { color: #ff004c; }
+
+		/* --- 2. TITLE & PRIORITY --- */
+		.ttc-title-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+		}
+		.ttc-title {
+			font-size: 1.3em;
+			font-weight: 600;
+			color: #fff;
+			margin: 0;
+			flex: 1;
+		}
+		.ttc-title:hover { text-decoration: underline; cursor: pointer; color: var(--mh-blue); }
+
+		.ttc-priority {
+			font-size: 0.75em;
+			padding: 4px 10px;
+			border-radius: 12px;
+			font-weight: bold;
+			text-transform: uppercase;
+			white-space: nowrap;
+			margin-left: 10px;
+		}
+		/* Priority Colors */
+		.p-critical { background: rgba(255, 0, 76, 0.2); color: #ff004c; border: 1px solid #ff004c; }
+		.p-high     { background: rgba(255, 174, 0, 0.2); color: #ffae00; border: 1px solid #ffae00; }
+		.p-inter    { background: rgba(0, 229, 255, 0.2); color: #00e5ff; border: 1px solid #00e5ff; }
+		.p-low      { background: rgba(0, 255, 65, 0.2);  color: #00ff41; border: 1px solid #00ff41; }
+
+		/* --- 3. META DATA (Budget, etc) --- */
+		.ttc-meta-row {
+			font-size: 0.9em;
+			color: #aaa;
+			margin: 8px 0 15px 0;
+		}
+		.ttc-meta-item { margin-right: 15px; }
+
+		/* --- 4. DESCRIPTION --- */
+		.ttc-desc {
+			font-size: 0.95em;
+			line-height: 1.5;
+			color: #ccc;
+			margin-bottom: 15px;
+		}
+
+		/* --- 5. TAGS --- */
+		.ttc-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+		.ttc-tag {
+			background: #2b303b;
+			color: #aaa;
+			padding: 4px 12px;
+			border-radius: 20px;
+			font-size: 0.8em;
+			text-decoration: none;
+		}
+		.ttc-tag:hover { background: #3a4150; color: #fff; }
+
+		/* --- 6. FOOTER (Rating, Location, Proposals) --- */
+		.ttc-footer {
+			border-top: 1px solid #2b303b;
+			padding-top: 15px;
+			display: flex;
+			align-items: center;
+			font-size: 0.85em;
+			color: #888;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+
+		.verified-badge { color: #00e5ff; }
+		.rating-stars { color: #ffae00; }
+
+		/* --- HIDDEN PANELS (Comment/Share) --- */
+		.ttc-panel {
+			display: none; /* Hidden by default */
+			background: #1a1f26;
+			padding: 10px;
+			margin-top: 10px;
+			border-radius: 4px;
+			border-left: 2px solid var(--mh-blue);
+		}
+		.ttc-input { width: 70%; background: #000; border: 1px solid #333; color: #fff; padding: 5px; }
+		.ttc-btn-mini { background: var(--mh-blue); color: #fff; border: none; padding: 5px 10px; cursor: pointer; }
 
         /* --- 9. MOBILE SPECIFIC OVERRIDES (THE HEAVY ARTILLERY) --- */
         @media screen and (max-width: 980px) {
@@ -813,50 +933,50 @@ permalink: /Student_Room.html
 					</div>
 
 					<div class="mission-grid-container">
-						
+    
 						<div class="grid-item full-width">
 							<label class="titan-label">OBJECTIVE TITLE</label>
-							<input type="text" id="task-title" placeholder="e.g. C++ Engine Optimization" class="titan-input" required />
+							<input type="text" id="task-title" placeholder="e.g. 3D Keychain Modeling (Capybara)" class="titan-input" required />
 						</div>
 
 						<div class="grid-item">
-							<label class="titan-label">MISSION TYPE</label>
-							<select id="task-type" class="titan-select">
-								<option value="Programming">Programming</option>
-								<option value="Design">Graphic Design</option>
-								<option value="Writing">Academic Writing</option>
-								<option value="Engineering">Engineering</option>
-							</select>
+							<label class="titan-label">LOCATION / UNIVERSITY</label>
+							<input type="text" id="task-location" placeholder="e.g. Middle East University" class="titan-input" />
 						</div>
+
 						<div class="grid-item">
 							<label class="titan-label">DEADLINE</label>
 							<input type="date" id="task-deadline" class="titan-input" />
 						</div>
 
 						<div class="grid-item">
-							<label class="titan-label">OPERATIONAL BUDGET ($)</label>
-							<input type="number" id="task-budget" placeholder="0.00" class="titan-input" min="10" />
+							<label class="titan-label">BUDGET ($)</label>
+							<input type="number" id="task-budget" placeholder="150.00" class="titan-input" min="10" />
 						</div>
+
 						<div class="grid-item">
-							<label class="titan-label">PRIORITY LEVEL</label>
-							<select id="task-priority" class="titan-select">
-								<option value="Standard" style="color:#fff;">Standard</option>
-								<option value="High" style="color:orange;">High Priority (+Fee)</option>
-								<option value="Critical" style="color:red;">Critical (Emergency)</option>
-							</select>
+							<label class="titan-label">TAGS (Comma Separated)</label>
+							<input type="text" id="task-tags" placeholder="e.g. Blender, 3D, Modeling" class="titan-input" />
 						</div>
 
 						<div class="grid-item full-width">
 							<label class="titan-label">BROADCAST SETTINGS</label>
-							<select id="task-visibility" class="titan-select">
-								<option value="Global">Broadcast Global (Public to all Operatives)</option>
-								<option value="Private">Invite Only (Private)</option>
+							
+							<select id="task-visibility" class="titan-select" onchange="togglePrivateField()">
+								<option value="PUBLIC">Broadcast Global (Public)</option>
+								<option value="PRIVATE">Classified / Invite Only (Private)</option>
 							</select>
+						</div>
+
+						<div id="private-target-field" class="grid-item full-width" style="display: none; border-left: 2px solid var(--mh-orange); background: rgba(255, 174, 0, 0.05); padding: 10px;">
+							<label class="titan-label" style="color: var(--mh-orange);">TARGET OPERATIVE ID (REQUIRED)</label>
+							<input type="text" id="target-operative-id" placeholder="Paste Operative UID here (e.g. 7X99...)" class="titan-input" style="border-color: var(--mh-orange);">
+							<small style="color: #666; font-size: 0.8em;">* This mission will be encrypted and visible ONLY to this Operative.</small>
 						</div>
 
 						<div class="grid-item full-width">
 							<label class="titan-label">TACTICAL DETAILS</label>
-							<textarea id="task-desc" placeholder="Enter mission parameters..." class="titan-textarea" rows="5"></textarea>
+							<textarea id="task-desc" placeholder="Describe the mission parameters..." class="titan-textarea" rows="5"></textarea>
 						</div>
 
 						<div class="grid-item full-width upload-zone">
@@ -933,10 +1053,10 @@ permalink: /Student_Room.html
 						<span class="filter-badge" style="border-color:#666; color:#888;">COMPLETED</span>
 					</div>
 
-					<div id="mission-feed-container" class="mission-grid-layout">
+					<div id="my-mission-grid" class="mission-grid-layout">
 						<div style="text-align:center; padding:40px; color:#666;">
 							<i class="fas fa-circle-notch fa-spin fa-2x"></i><br>
-							<span>RETRIEVING MISSION DATA...</span>
+							<span>CONNECTING TO SATELLITE...</span>
 						</div>
 					</div>
 
@@ -1050,6 +1170,21 @@ permalink: /Student_Room.html
     </script>
 	
 	<script>
+		function togglePrivateField() {
+			const select = document.getElementById('task-visibility');
+			const targetField = document.getElementById('private-target-field');
+			
+			if (select.value === 'PRIVATE') {
+				targetField.style.display = 'block';
+				// Optional: Add a sound effect here for "Tactical Selection"
+			} else {
+				targetField.style.display = 'none';
+				document.getElementById('target-operative-id').value = ''; // Clear it
+			}
+		}
+	</script>
+	
+	<script>
 			// Simple Network Listener
 			window.addEventListener('offline', () => {
 				document.getElementById('network-status').innerText = "CONNECTION LOST";
@@ -1083,6 +1218,75 @@ permalink: /Student_Room.html
 
     <script type="module">
         import { initChatSystem } from './assets/js/chat-core.js';
+		import { deployMission } from './assets/js/task-core.js';
+		import { auth } from './assets/js/firebase-init.js';
+
+		const deployBtn = document.getElementById('btn-deploy-mission');
+
+		if (deployBtn) {
+			deployBtn.addEventListener('click', async (e) => {
+				e.preventDefault(); // Stop form refresh
+				
+				const user = auth.currentUser;
+				if (!user) {
+					alert("SECURITY ALERT: You must be logged in to deploy operations.");
+					return;
+				}
+
+				// 1. Get Values from YOUR form
+				const title = document.getElementById('task-title').value;
+				const type = document.getElementById('task-type').value;
+				const deadline = document.getElementById('task-deadline').value;
+				const budget = document.getElementById('task-budget').value;
+				const priority = document.getElementById('task-priority').value;
+				const visibility = document.getElementById('task-visibility').value;
+				const description = document.getElementById('task-desc').value;
+				const fileInput = document.getElementById('task-files');
+
+				// 2. Validation
+				if (!title || !budget || !description) {
+					alert("COMMAND ERROR: Mandatory fields (Title, Budget, Details) are missing.");
+					return;
+				}
+
+				// 3. UI Feedback (Loading State)
+				const originalBtnText = deployBtn.innerHTML;
+				deployBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> TRANSMITTING DATA...';
+				deployBtn.disabled = true;
+
+				// 4. Construct Data Object
+				const missionData = {
+					title: title,
+					type: type,          // Programming, Design, etc.
+					deadline: deadline,
+					bounty: budget,      // Mapped to your "Operational Budget"
+					difficulty: priority,// Mapped to your "Priority Level"
+					visibility: visibility,
+					description: description,
+					clientName: user.displayName || "Unknown Commander"
+				};
+
+				try {
+					// 5. Send to Firebase
+					await deployMission(user.uid, missionData, fileInput.files);
+					
+					alert("MISSION DEPLOYED. Broadcasting to global network.");
+					
+					// 6. Reset Form
+					document.getElementById('task-title').value = "";
+					document.getElementById('task-desc').value = "";
+					document.getElementById('task-budget').value = "";
+					document.getElementById('task-files').value = ""; // Clear files
+					
+				} catch (error) {
+					alert("DEPLOYMENT FAILURE: " + error.message);
+				} finally {
+					// Restore Button
+					deployBtn.innerHTML = originalBtnText;
+					deployBtn.disabled = false;
+				}
+			});
+		}
         
         // Wait for DOM & Auth
         document.addEventListener('DOMContentLoaded', () => {

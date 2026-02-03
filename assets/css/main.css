@@ -5504,3 +5504,68 @@ body.has-ticker {
 
 
 --- */
+
+/* --- TITAN CARD ARCHITECTURE (UNIFIED) --- */
+.titan-card {
+    background: rgba(13, 17, 23, 0.95); /* Dark Metal */
+    border: 1px solid #333;
+    border-left: 5px solid var(--priority-color, #00ff41); /* Default Green */
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: transform 0.2s ease;
+}
+
+.titan-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px var(--priority-color); /* Glows with priority color */
+}
+
+.tc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.tc-id { font-family: 'Courier New', monospace; font-size: 0.8em; color: #666; }
+.tc-badge { 
+    background: var(--priority-color); 
+    color: #000; 
+    padding: 2px 8px; 
+    font-size: 0.7em; 
+    font-weight: 800; 
+    border-radius: 2px;
+}
+
+.tc-body h3 { margin: 0 0 5px 0; color: #fff; font-size: 1.1em; }
+.tc-body p { font-size: 0.9em; color: #aaa; margin-bottom: 15px; }
+
+.tc-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.8em;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.tc-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    margin: -20px -20px -20px -20px; /* Bleed to edges */
+    padding: 15px 20px;
+    border-top: 1px solid #333;
+    margin-top: 10px;
+}
+
+.tc-price { font-size: 1.2em; font-weight: bold; color: var(--priority-color); }
+
+/* PRIORITY VARIABLES */
+.p-critical { --priority-color: #ff3333; } /* Red */
+.p-high     { --priority-color: #ffae00; } /* Yellow/Orange */
+.p-standard { --priority-color: #00ff41; } /* Green */

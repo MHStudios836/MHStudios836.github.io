@@ -1,120 +1,91 @@
 /* assets/js/contract-manager.js */
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { app } from "./firebase-init.js";
-import { requireAuth } from "./auth-guard.js";
+import { db, auth, dbID } from './firebase-init.js';
+import { 
+    doc, getDoc, updateDoc, serverTimestamp, collection, addDoc 
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-const db = getFirestore(app);
-const appId = 'mhstudios-836';
-let currentOperative = null;
-let missionId = null;
+// 1. GET MISSION ID
+const urlParams = new URLSearchParams(window.location.search);
+const missionId = urlParams.get('id');
 
-// INIT
+// 2. INJECT THE "HUD WINDOW" (Hidden by default)
+const hudHTML = `
+<div id="mission-hud" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0, 20, 0, 0.95); border:2px solid #00ff41; padding:30px; text-align:center; z-index:9999; box-shadow:0 0 50px rgba(0,255,65,0.2);">
+    <i class="fas fa-check-circle" style="font-size:3em; color:#00ff41; margin-bottom:15px;"></i>
+    <h2 style="color:#fff; margin:0;">MISSION ACCEPTED SUCCESSFULLY!</h2>
+    <p style="color:#ccc; font-size:0.8em; margin-top:10px;">
+        Go back to the "Active Ops" to view the Accepted Tasks
+    </p>
+    <div style="margin-top:20px; font-size:0.4em; color:#00ff41; animation: blink 1s infinite;">
+        REDIRECTING TO DASHBOARD...
+    </div>
+</div>
+`;
+document.body.insertAdjacentHTML('beforeend', hudHTML);
+
+// 3. LOAD DATA
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Get Mission ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    missionId = urlParams.get('id');
+    if(!missionId) return window.location.href = 'Broadcast_Station.html';
+    
+    // Bind Button
+    const btn = document.getElementById('btn-execute');
+    if(btn) btn.addEventListener('click', executeContract);
 
-    if (!missionId) {
-        alert("CRITICAL ERROR: MISSING MISSION PARAMETERS.");
-        window.location.href = 'Freelancers_Room.html';
-        return;
-    }
-
-    // 2. Run Security Check
-    requireAuth((user) => {
-        currentOperative = user;
-        loadMissionIntel(missionId);
-    });
-
-    // 3. Bind UI Events
-    bindInterfaceEvents();
+    loadMissionIntel(missionId);
 });
 
 async function loadMissionIntel(id) {
-    try {
-        const missionRef = doc(db, 'artifacts', appId, 'missions', id);
-        const missionSnap = await getDoc(missionRef);
-
-        if (missionSnap.exists()) {
-            const data = missionSnap.data();
-            renderIntel(data);
-        } else {
-            throw new Error("Mission data deleted or corrupted.");
-        }
-    } catch (err) {
-        console.error("INTEL FAILURE:", err);
-        alert("MISSION DATA UNREACHABLE.");
-        window.location.href = 'Freelancers_Room.html';
+    const docRef = doc(db, 'artifacts', dbID, 'missions', id);
+    const snap = await getDoc(docRef);
+    if(snap.exists()) {
+        const data = snap.data();
+        if(document.getElementById('m-desc')) 
+            document.getElementById('m-desc').innerText = data.description;
     }
 }
 
-function renderIntel(data) {
-    // Inject Text
-    setText('#m-title', data.title);
-    setText('#m-type', data.type);
-    setText('#m-deadline', data.deadline);
-    setText('#m-budget', `$${data.budget}`);
-
-    // Description Animation
-    const descBox = document.getElementById('m-desc');
-    descBox.style.opacity = 0;
-    descBox.innerText = data.description;
-    
-    // Simple fade in
-    setTimeout(() => { descBox.style.opacity = 1; }, 300);
-}
-
-function setText(selector, text) {
-    const el = document.querySelector(selector);
-    if(el) el.innerText = text ? text.toUpperCase() : "---";
-}
-
-function bindInterfaceEvents() {
-    const checkbox = document.getElementById('agree-check');
-    const btn = document.getElementById('btn-execute');
-
-    checkbox.addEventListener('change', (e) => {
-        if (e.target.checked) {
-            btn.classList.add('active');
-            btn.innerText = "SIGN & EXECUTE (READY)";
-        } else {
-            btn.classList.remove('active');
-            btn.innerText = "SIGN & EXECUTE";
-        }
-    });
-
-    btn.addEventListener('click', async () => {
-        if (!checkbox.checked) return;
-        
-        btn.innerText = "ENCRYPTING SIGNATURE...";
-        btn.disabled = true;
-
-        await executeContract();
-    });
-}
-
+// 4. THE ACCEPT LOGIC
 async function executeContract() {
-    try {
-        // Fetch User Name for the signature
-        const userDoc = await getDoc(doc(db, 'artifacts', appId, 'users', currentOperative.uid));
-        const opName = userDoc.exists() ? userDoc.data().name : "UNKNOWN_MERCENARY";
+    const user = auth.currentUser;
+    if (!user) return alert("LOGIN REQUIRED");
+    
+    const checkbox = document.getElementById('agree-check');
+    if (checkbox && !checkbox.checked) return alert("YOU MUST AGREE TO TERMS.");
 
-        // Update Mission Status
-        await updateDoc(doc(db, 'artifacts', appId, 'missions', missionId), {
-            status: 'ASSIGNED',
-            freelancerId: currentOperative.uid,
-            freelancerName: opName,
-            activationDate: new Date().toISOString()
+    const btn = document.getElementById('btn-execute');
+    btn.disabled = true;
+    btn.innerText = "SECURING CONTRACT...";
+
+    try {
+        // A. LOCK MISSION (Assign to Freelancer)
+        await updateDoc(doc(db, 'artifacts', dbID, 'missions', missionId), {
+            status: 'ACTIVE',
+            freelancerUid: user.uid,
+            freelancerName: user.displayName || 'Operative',
+            acceptedAt: serverTimestamp()
         });
 
-        alert("CONTRACT CONFIRMED. FUNDS HELD IN ESCROW. GOOD HUNTING.");
-        window.location.href = 'Freelancers_Room.html';
+        // B. CREATE CHAT (Student <> Freelancer)
+        // Note: We create a chat doc so it appears in the list
+        await addDoc(collection(db, 'artifacts', dbID, 'chats'), {
+            missionId: missionId,
+            participants: [user.uid], // Add student UID here if available in mission data
+            lastMessage: "MISSION ACCEPTED. AWAITING ORDERS.",
+            timestamp: serverTimestamp()
+        });
 
-    } catch (error) {
-        console.error("SIGNATURE FAILED:", error);
-        alert("CONTRACT ERROR: PLEASE RETRY.");
-        const btn = document.getElementById('btn-execute');
-        btn.innerText = "SIGN & EXECUTE (READY)";
+        // C. SHOW THE HUD (Your Specific Request)
+        document.getElementById('mission-hud').style.display = 'block';
+
+        // D. REDIRECT TO ACTIVE OPS (After 3 seconds)
+        setTimeout(() => {
+            window.location.href = 'Freelancers_Room.html';
+        }, 3000);
+
+    } catch (e) {
+        console.error(e);
+        alert("ERROR: " + e.message);
         btn.disabled = false;
     }
 }

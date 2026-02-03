@@ -1,5 +1,5 @@
 /* assets/js/squad-comms.js */
-import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 import { app } from "./firebase-init.js";
 import { playSound } from "./sound-engine.js";
 import { formatTacticalDate } from "./data-transformer.js";

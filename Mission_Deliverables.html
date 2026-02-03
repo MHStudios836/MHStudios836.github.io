@@ -4,127 +4,236 @@ permalink: /Mission_Deliverables.html
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <title>MH&AS Studios™ | Secure Uplink</title>
+    <title>MH STUDIOS | MISSION HANDOVER</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <meta name="robots" content="noindex, nofollow"> <link rel="stylesheet" href="assets/css/main.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
     
+    <script type="module" src="assets/js/auth-router.js"></script>
+
     <style>
-        body {
-            background: #000; color: #fff; font-family: 'Uni Sans', sans-serif;
-            height: 100vh; display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-            background-image: radial-gradient(circle at center, #111 0%, #000 70%);
-        }
+        body { background: #05070a; color: #ccc; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        
         .upload-card {
-            width: 500px; background: rgba(10, 15, 20, 0.95);
-            border: 1px solid #333; padding: 40px; border-radius: 8px;
-            text-align: center; position: relative;
-            box-shadow: 0 0 50px rgba(0, 128, 255, 0.1);
+            width: 100%;
+            max-width: 600px;
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid #333;
+            border-top: 3px solid var(--mh-orange, #ffae00);
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
         }
-        .upload-icon { font-size: 3em; color: #0080FF; margin-bottom: 20px; }
-        .file-zone {
-            border: 2px dashed #333; padding: 30px; margin: 20px 0;
-            border-radius: 4px; cursor: pointer; transition: 0.3s;
+
+        .uc-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .uc-title { font-family: 'Uni Sans', sans-serif; font-size: 1.5em; color: #fff; letter-spacing: 2px; }
+        .uc-subtitle { color: var(--mh-orange, #ffae00); font-size: 0.9em; text-transform: uppercase; }
+
+        /* DROP ZONE */
+        .drop-zone {
+            border: 2px dashed #444;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.02);
+            cursor: pointer;
+            margin-bottom: 20px;
         }
-        .file-zone:hover { border-color: #0080FF; background: rgba(0, 128, 255, 0.05); }
-        
-        .progress-container {
-            width: 100%; background: #222; height: 6px; border-radius: 3px;
-            margin-top: 20px; overflow: hidden; display: none;
-        }
-        .progress-bar {
-            height: 100%; width: 0%; background: #00ff41; transition: 0.2s;
-        }
-        .status-text { font-size: 0.8em; color: #888; margin-top: 10px; font-family: monospace; }
-        
-        .btn-action {
-            width: 100%; padding: 12px; background: #0080FF; color: #fff;
-            border: none; font-weight: bold; margin-top: 20px; cursor: pointer;
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--mh-orange, #ffae00); background: rgba(255, 174, 0, 0.05); }
+        .dz-icon { font-size: 3em; color: #666; margin-bottom: 10px; }
+        .dz-text { color: #888; font-size: 0.9em; }
+
+        /* PROGRESS BAR */
+        .progress-container { height: 6px; background: #222; border-radius: 3px; margin: 20px 0; overflow: hidden; display: none; }
+        .progress-bar { height: 100%; background: var(--mh-orange, #ffae00); width: 0%; transition: width 0.2s; }
+
+        /* BUTTONS */
+        .btn-deliver {
+            width: 100%;
+            padding: 15px;
+            background: var(--mh-orange, #ffae00);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
         }
+        .btn-deliver:hover { background: #ffcc00; box-shadow: 0 0 15px rgba(255, 174, 0, 0.4); }
+        .btn-deliver:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
+
+        /* DETAILS GRID */
+        .mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; font-size: 0.9em; }
+        .mg-item { background: #111; padding: 10px; border: 1px solid #222; }
+        .mg-label { color: #666; display: block; font-size: 0.7em; }
+        .mg-val { color: #fff; }
     </style>
 </head>
 <body>
 
     <div class="upload-card">
-        <div class="upload-icon"><i class="fas fa-satellite-dish"></i></div>
-        <h3>MISSION DELIVERABLES</h3>
-        <p style="color:#666; font-size:0.9em;">Upload the final project files. The client will receive them upon payment.</p>
-
-        <div class="file-zone" onclick="document.getElementById('file-input').click()">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <div style="margin-top:10px;">CLICK TO SELECT FILE</div>
-            <div id="file-name" style="color:#00e5ff; font-size:0.8em; margin-top:5px;"></div>
+        <div class="uc-header">
+            <div class="uc-title">MISSION HANDOVER</div>
+            <div class="uc-subtitle" id="mission-id-display">OP-LOADING...</div>
         </div>
-        <input type="file" id="file-input" style="display:none;">
 
-        <div class="progress-container" id="progress-box">
-            <div class="progress-bar" id="progress-fill"></div>
+        <div class="mission-grid">
+            <div class="mg-item">
+                <span class="mg-label">CLIENT</span>
+                <span class="mg-val" id="client-name">Loading...</span>
+            </div>
+            <div class="mg-item">
+                <span class="mg-label">PAYOUT (TAX DEDUCTED)</span>
+                <span class="mg-val" id="payout-amount" style="color:var(--mh-orange)">$...</span>
+            </div>
         </div>
-        <div class="status-text" id="status-msg">WAITING FOR UPLINK...</div>
 
-        <button class="btn-action" id="btn-upload">INITIATE UPLOAD</button>
-        <button class="btn-action" style="background:transparent; border:1px solid #333; margin-top:10px;" onclick="history.back()">ABORT</button>
+        <input type="file" id="file-input" style="display: none;">
+        
+        <div class="drop-zone" id="drop-zone">
+            <i class="fas fa-cloud-upload-alt dz-icon"></i>
+            <div class="dz-text">DRAG & DROP PAYLOAD HERE<br><span style="font-size:0.8em; opacity:0.6;">(ZIP, RAR, PDF - MAX 500MB)</span></div>
+        </div>
+
+        <div id="file-name" style="text-align:center; color:#fff; margin-bottom:15px; font-family:monospace; display:none;">
+            <i class="fas fa-file-archive"></i> <span id="fname-text">data.zip</span>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="upload-progress"></div>
+        </div>
+
+        <button class="btn-deliver" id="btn-submit" disabled>
+            <i class="fas fa-paper-plane"></i> DELIVER ASSETS & REQUEST PAYMENT
+        </button>
+
+        <div style="text-align:center; margin-top:20px;">
+            <a href="Freelancers_Room.html" style="color:#666; text-decoration:none; font-size:0.8em;">ABORT & RETURN TO BASE</a>
+        </div>
     </div>
 
-    <script src="assets/js/jquery.min.js"></script>
     <script type="module">
-        import { auth, db, dbID, storage } from './assets/js/firebase-init.js';
-        import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { db, storage, auth } from './assets/js/firebase-init.js';
+        import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const missionId = urlParams.get('id');
+        const params = new URLSearchParams(window.location.search);
+        const missionId = params.get('id');
+        
+        let selectedFile = null;
+        const dbID = "mhstudios-836"; // Hardcoded Artifact ID
 
-        // 1. FILE SELECTION
-        $('#file-input').change(function() {
-            const file = this.files[0];
-            if(file) $('#file-name').text(file.name);
+        // 1. AUTH CHECK & DATA LOAD
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) window.location.href = 'DoD_Login_Style.html';
+            
+            if (!missionId) {
+                alert("NAVIGATION ERROR: No Mission ID.");
+                window.location.href = 'Freelancers_Room.html';
+                return;
+            }
+
+            // Load Mission Data
+            const docSnap = await getDoc(doc(db, `artifacts/${dbID}/missions/${missionId}`));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('mission-id-display').innerText = `OP-${missionId.substring(0,6).toUpperCase()}`;
+                document.getElementById('client-name').innerText = "Student #" + (data.creatorId ? data.creatorId.substring(0,4) : 'UNKNOWN');
+                
+                // Calculate Net Payout (Price - 20%)
+                const net = (data.price * 0.8).toFixed(2);
+                document.getElementById('payout-amount').innerText = `$${net}`;
+            }
         });
 
-        // 2. UPLOAD LOGIC
-        $('#btn-upload').click(function() {
-            const file = $('#file-input')[0].files[0];
-            if(!file) return alert("NO FILE SELECTED");
-            if(!missionId) return alert("ERROR: NO MISSION ID LINKED");
+        // 2. DRAG & DROP LOGIC
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
 
-            // UI UPDATE
-            $('#progress-box').show();
-            $('#btn-upload').prop('disabled', true).text("UPLOADING...");
+        dropZone.addEventListener('click', () => fileInput.click());
 
-            // STORAGE PATH: artifacts/MH.../mission_files/ID/filename
-            const storageRef = ref(storage, `artifacts/${dbID}/mission_files/${missionId}/${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
+        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
 
-            uploadTask.on('state_changed',
+        function handleFile(file) {
+            if (!file) return;
+            selectedFile = file;
+            
+            document.getElementById('fname-text').innerText = file.name;
+            document.getElementById('file-name').style.display = 'block';
+            document.getElementById('btn-submit').disabled = false;
+        }
+
+        // 3. UPLOAD & SUBMIT LOGIC
+        document.getElementById('btn-submit').addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            const btn = document.getElementById('btn-submit');
+            const progressContainer = document.querySelector('.progress-container');
+            const progressBar = document.getElementById('upload-progress');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-satellite-dish fa-spin"></i> UPLOADING TO MAINFRAME...';
+            progressContainer.style.display = 'block';
+
+            // A. UPLOAD FILE
+            const fileName = `deliverables/${missionId}_${Date.now()}_${selectedFile.name}`;
+            const storageRef = ref(storage, fileName);
+            const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+            uploadTask.on('state_changed', 
                 (snapshot) => {
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    $('#progress-fill').css('width', progress + '%');
-                    $('#status-msg').text(`ENCRYPTING PACKETS: ${Math.round(progress)}%`);
-                },
+                    progressBar.style.width = progress + '%';
+                }, 
                 (error) => {
-                    alert("UPLOAD FAILED: " + error.message);
-                    $('#btn-upload').prop('disabled', false).text("RETRY");
-                },
-                () => {
-                    // SUCCESS: Get Link & Save to Firestore
-                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                        await updateDoc(doc(db, 'artifacts', dbID, 'missions', missionId), {
-                            status: 'REVIEW_PENDING', // This triggers the "Pay" button for Student
-                            fileUrl: downloadURL,
-                            fileName: file.name,
-                            uploadedAt: serverTimestamp()
+                    console.error("Upload Error:", error);
+                    alert("TRANSMISSION FAILED. CHECK NETWORK.");
+                    btn.disabled = false;
+                    btn.innerText = "RETRY TRANSMISSION";
+                }, 
+                async () => {
+                    // B. ON COMPLETE: GET URL & UPDATE DB
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    
+                    try {
+                        await updateDoc(doc(db, `artifacts/${dbID}/missions/${missionId}`), {
+                            status: 'DELIVERED', // Status Change -> Triggers Notification to Student
+                            deliverableUrl: downloadURL,
+                            deliveredAt: serverTimestamp(),
+                            deliverableName: selectedFile.name
                         });
+
+                        btn.style.background = "#00ff41";
+                        btn.style.color = "#000";
+                        btn.innerHTML = '<i class="fas fa-check"></i> MISSION ACCOMPLISHED';
                         
-                        $('#status-msg').text("UPLOAD COMPLETE. REDIRECTING...");
-                        $('#progress-fill').css('background', '#00ff41');
-                        
+                        // Notify User
                         setTimeout(() => {
+                            alert("ASSETS SECURED. CLIENT NOTIFIED FOR REVIEW.\nFunds will be released upon Client Approval.");
                             window.location.href = 'Freelancers_Room.html';
-                        }, 1500);
-                    });
+                        }, 1000);
+
+                    } catch (e) {
+                        console.error("DB Error:", e);
+                        alert("DATABASE SYNC ERROR.");
+                    }
                 }
             );
         });

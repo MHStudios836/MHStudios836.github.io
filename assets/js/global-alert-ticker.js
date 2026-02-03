@@ -1,5 +1,5 @@
 /* assets/js/global-alert-ticker.js */
-import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 import { app } from "./firebase-init.js";
 
 const db = getFirestore(app);

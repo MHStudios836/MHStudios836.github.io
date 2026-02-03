@@ -243,8 +243,130 @@ permalink: /Broadcast_Station.html
             position: absolute; top: 10px; right: 15px; color: #555; cursor: pointer; font-size: 1.5em;
         }
         .hm-close:hover { color: var(--bs-red); }
+		
+		/* assets/css/task-card.css */
 
-/* --- MOBILE PATCH (COVERS 720px - 740px GLITCH) --- */
+		/* --- THE CARD CONTAINER --- */
+		.titan-task-card {
+			background: #0e1217; /* Upwork Dark Mode bg */
+			border: 1px solid #2b303b;
+			border-radius: 8px;
+			padding: 20px;
+			margin-bottom: 20px;
+			position: relative;
+			transition: all 0.2s ease;
+			font-family: 'Segoe UI', sans-serif;
+			color: #e0e0e0;
+		}
+
+		.titan-task-card:hover {
+			border-color: var(--mh-blue);
+			background: #13171d;
+		}
+
+		/* --- 1. HEADER (Date & Socials) --- */
+		.ttc-header {
+			display: flex;
+			justify-content: space-between;
+			font-size: 0.85em;
+			color: #888;
+			margin-bottom: 10px;
+		}
+
+		.ttc-socials i {
+			margin-left: 15px;
+			cursor: pointer;
+			transition: color 0.2s;
+		}
+		.ttc-socials i:hover { color: #fff; }
+		.ttc-socials i.liked { color: #ff004c; }
+
+		/* --- 2. TITLE & PRIORITY --- */
+		.ttc-title-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+		}
+		.ttc-title {
+			font-size: 1.3em;
+			font-weight: 600;
+			color: #fff;
+			margin: 0;
+			flex: 1;
+		}
+		.ttc-title:hover { text-decoration: underline; cursor: pointer; color: var(--mh-blue); }
+
+		.ttc-priority {
+			font-size: 0.75em;
+			padding: 4px 10px;
+			border-radius: 12px;
+			font-weight: bold;
+			text-transform: uppercase;
+			white-space: nowrap;
+			margin-left: 10px;
+		}
+		/* Priority Colors */
+		.p-critical { background: rgba(255, 0, 76, 0.2); color: #ff004c; border: 1px solid #ff004c; }
+		.p-high     { background: rgba(255, 174, 0, 0.2); color: #ffae00; border: 1px solid #ffae00; }
+		.p-inter    { background: rgba(0, 229, 255, 0.2); color: #00e5ff; border: 1px solid #00e5ff; }
+		.p-low      { background: rgba(0, 255, 65, 0.2);  color: #00ff41; border: 1px solid #00ff41; }
+
+		/* --- 3. META DATA (Budget, etc) --- */
+		.ttc-meta-row {
+			font-size: 0.9em;
+			color: #aaa;
+			margin: 8px 0 15px 0;
+		}
+		.ttc-meta-item { margin-right: 15px; }
+
+		/* --- 4. DESCRIPTION --- */
+		.ttc-desc {
+			font-size: 0.95em;
+			line-height: 1.5;
+			color: #ccc;
+			margin-bottom: 15px;
+		}
+
+		/* --- 5. TAGS --- */
+		.ttc-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+		.ttc-tag {
+			background: #2b303b;
+			color: #aaa;
+			padding: 4px 12px;
+			border-radius: 20px;
+			font-size: 0.8em;
+			text-decoration: none;
+		}
+		.ttc-tag:hover { background: #3a4150; color: #fff; }
+
+		/* --- 6. FOOTER (Rating, Location, Proposals) --- */
+		.ttc-footer {
+			border-top: 1px solid #2b303b;
+			padding-top: 15px;
+			display: flex;
+			align-items: center;
+			font-size: 0.85em;
+			color: #888;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+
+		.verified-badge { color: #00e5ff; }
+		.rating-stars { color: #ffae00; }
+
+		/* --- HIDDEN PANELS (Comment/Share) --- */
+		.ttc-panel {
+			display: none; /* Hidden by default */
+			background: #1a1f26;
+			padding: 10px;
+			margin-top: 10px;
+			border-radius: 4px;
+			border-left: 2px solid var(--mh-blue);
+		}
+		.ttc-input { width: 70%; background: #000; border: 1px solid #333; color: #fff; padding: 5px; }
+		.ttc-btn-mini { background: var(--mh-blue); color: #fff; border: none; padding: 5px 10px; cursor: pointer; }
+
+	/* --- MOBILE PATCH (COVERS 720px - 740px GLITCH) --- */
     @media screen and (max-width: 740px) {
         
         /* 1. Stack the Layout */
@@ -582,43 +704,56 @@ permalink: /Broadcast_Station.html
 				document.getElementById('val-ops').innerText = snapshot.size;
 		});
 
-		// D. CARD RENDERER
+		// D. CARD RENDERER (CORRECTED)
 		function createBroadcastCard(data, id) {
-			let border = "var(--bs-cyan)";
-			if (data.priority === "HIGH") border = "var(--mh-orange)";
-			if (data.priority === "CRITICAL") border = "var(--mh-red)";
+			// 1. Standardize Color Logic based on "difficulty" field from Student Room
+			let themeColor = "var(--bs-cyan)"; // Default (Standard/Easy)
 			
+			// Check purely for the values we set in the Student Modal
+			if (data.difficulty === "High" || data.difficulty === "HIGH") themeColor = "var(--mh-orange)";
+			if (data.difficulty === "Critical" || data.difficulty === "HARD") themeColor = "var(--mh-red)";
+			
+			// 2. Social Data Checks
 			const likeCount = data.likes ? data.likes.length : 0;
 			const isLiked = data.likes && auth.currentUser && data.likes.includes(auth.currentUser.uid);
 			const heartColor = isLiked ? "var(--mh-red)" : "#666";
+			const creatorName = data.clientName || "Anonymous Client"; // specific fix for name
 
 			return `
-			<div class="titan-panel" style="margin-bottom: 12px; padding: 15px; border-left: 4px solid ${border}; background: rgba(0,0,0,0.4);">
+			<div class="titan-panel" style="margin-bottom: 12px; padding: 15px; border-left: 4px solid ${themeColor}; background: rgba(0,0,0,0.4);">
 				<div style="display: flex; justify-content: space-between; align-items: flex-start;">
 					<div style="flex: 1;">
-						<span class="badge" style="background: ${border}; color: #000; font-weight: bold;">${data.priority || 'NORM'}</span>
-						<h3 style="margin: 5px 0; color: #fff;">${data.title}</h3>
-						<div style="font-size: 0.8em; color: #888;">${data.creatorName}</div>
+						<span class="badge" style="background: ${themeColor}; color: #000; font-weight: bold; font-size: 0.7em;">
+							${data.difficulty ? data.difficulty.toUpperCase() : 'STD'}
+						</span>
+						
+						<h3 style="margin: 8px 0 4px 0; color: #fff; font-size: 1.1em;">${data.title}</h3>
+						<div style="font-size: 0.8em; color: #888;">
+							<i class="fas fa-user-circle"></i> ${creatorName}
+						</div>
 					</div>
+					
 					<div style="text-align: right;">
-						<div style="color: var(--mh-green); font-size: 1.3em; font-weight: 800;">${formatBounty(data.budget)}</div>
+						<div style="color: var(--mh-green); font-size: 1.3em; font-weight: 800;">
+							${formatBounty ? formatBounty(data.bounty) : '$' + data.bounty}
+						</div>
+						<div style="font-size: 0.7em; color: #666; margin-top:4px;">${data.deadline || 'ASAP'}</div>
 					</div>
 				</div>
 				
 				<div style="margin-top: 15px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-					<button class="titan-btn" style="padding: 5px 10px; color: ${heartColor};" 
+					<button class="titan-btn" style="padding: 5px 10px; color: ${heartColor}; background:transparent; border: 1px solid #333;" 
 						onclick="toggleLike('missions', '${id}', '${auth.currentUser ? auth.currentUser.uid : ''}')">
 						<i class="fas fa-heart"></i> ${likeCount}
 					</button>
 
-					<button class="titan-btn" style="padding: 5px 10px;" 
+					<button class="titan-btn" style="padding: 5px 10px; background:transparent; border: 1px solid #333;" 
 						onclick="shareContent('${data.title}', 'Check out this mission on MH Studios')">
 						<i class="fas fa-share-alt"></i>
 					</button>
 
-					<button class="titan-btn" style="margin-left: auto; background: var(--bs-cyan); color: #000;" 
-						onclick="alert('Use the Freelancer Room to Accept Contracts')">
-						<i class="fas fa-file-contract"></i> DETAILS
+					<button class="titan-btn btn-inspect" data-id="${id}" style="margin-left: auto; background: ${themeColor}; color: #000; border:none; font-weight:bold;">
+						<i class="fas fa-eye"></i> INSPECT
 					</button>
 				</div>
 			</div>

@@ -1,5 +1,5 @@
 /* assets/js/session-monitor.js */
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import { app } from "./firebase-init.js";
 import { notify } from "./notification-hub.js";
 import { playSound } from "./sound-engine.js";

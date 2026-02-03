@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>MH COMMAND | ENTITY LOCATOR</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    
+    <style>
+        /* TITAN THEME OVERRIDES */
+        body { 
+            background: #05070a; 
+            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('images/bg_tactical.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff; 
+            font-family: 'Uni Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .command-console {
+            width: 100%;
+            max-width: 700px;
+            padding: 20px;
+        }
+
+        /* SEARCH INPUT BAR */
+        .titan-search-bar {
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            text-align: center;
+            margin-bottom: 30px;
+            border-top: 3px solid var(--mh-green, #00ff41);
+        }
+
+        .titan-input-lg {
+            width: 100%;
+            background: #0b0e11;
+            border: 2px solid #333;
+            padding: 15px;
+            font-size: 1.2em;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .titan-input-lg:focus {
+            border-color: var(--mh-green, #00ff41);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        /* RESULT DOSSIER CARD */
+        .dossier-card {
+            display: none; /* Hidden initially */
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        /* Dynamic Border Colors */
+        .theme-student { border-top: 4px solid var(--mh-blue, #0080FF); }
+        .theme-merc { border-top: 4px solid var(--mh-orange, #ffae00); }
+        .theme-admin { border-top: 4px solid #ff004c; }
+
+        .dossier-header {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-img {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 2px solid #666;
+            object-fit: cover;
+        }
+
+        .role-badge {
+            font-size: 0.7em; padding: 4px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;
+        }
+        .badge-blue { background: rgba(0, 128, 255, 0.2); color: #0080FF; border: 1px solid #0080FF; }
+        .badge-orange { background: rgba(255, 174, 0, 0.2); color: #ffae00; border: 1px solid #ffae00; }
+        .badge-red { background: rgba(255, 0, 76, 0.2); color: #ff004c; border: 1px solid #ff004c; }
+
+        .dossier-body { padding: 30px; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px dashed #333; padding-bottom: 8px; }
+        .data-lbl { color: #666; font-size: 0.8em; letter-spacing: 1px; }
+        .data-val { color: #fff; font-weight: bold; font-family: 'Courier New', monospace; }
+
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--mh-green, #00ff41);
+            color: var(--mh-green, #00ff41);
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .action-btn:hover { background: var(--mh-green, #00ff41); color: #000; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="command-console">
+        
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h1 style="font-size: 2.5em; margin: 0; text-shadow: 0 0 20px rgba(0,255,65,0.3);">
+                <i class="fas fa-globe-americas"></i> ENTITY LOCATOR
+            </h1>
+            <p style="color: #666; letter-spacing: 2px;">GLOBAL SURVEILLANCE SYSTEM</p>
+        </div>
+
+        <div class="titan-search-bar">
+            <input type="text" id="entity-search" class="titan-input-lg" placeholder="ENTER SERIAL ID OR EMAIL">
+            
+            <button id="btn-scan" class="action-btn" style="margin-top: 20px; font-size: 1.1em;">
+                <i class="fas fa-crosshairs"></i> INITIATE DEEP SCAN
+            </button>
+        </div>
+
+        <div id="empty-state" style="text-align: center; color: #444; margin-top: 50px;">
+            <i class="fas fa-terminal" style="font-size: 3em; margin-bottom: 20px; opacity: 0.3;"></i><br>
+            WAITING FOR INPUT...
+        </div>
+
+        <div id="result-display" class="dossier-card">
+            <div class="dossier-header">
+                <img id="res-img" src="" class="profile-img">
+                <div>
+                    <h2 id="res-name" style="margin: 0; font-size: 1.5em;">TARGET NAME</h2>
+                    <span id="res-badge" class="role-badge">ROLE</span>
+                </div>
+            </div>
+            
+            <div class="dossier-body">
+                <div class="data-row">
+                    <span class="data-lbl">TITAN SERIAL ID</span>
+                    <span class="data-val" id="res-id" style="color: var(--mh-green, #00ff41);">---</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-lbl">DESIGNATION</span>
+                    <span class="data-val" id="res-role">---</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-lbl">ORIGIN (NAT)</span>
+                    <span class="data-val" id="res-nat">---</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-lbl">CURRENT LOCATION</span>
+                    <span class="data-val" id="res-loc">---</span>
+                </div>
+
+                <button onclick="window.viewDossier()" class="action-btn">
+                    <i class="fas fa-folder-open"></i> ACCESS FULL INTEL
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="assets/js/search-entity.js"></script>
+
+</body>
+</html>

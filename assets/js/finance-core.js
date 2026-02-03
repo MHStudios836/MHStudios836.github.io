@@ -303,3 +303,81 @@ export async function upgradeSubscription(uid, packageType, price) {
         throw e;
     }
 }
+
+/* --- APPEND THIS TO assets/js/finance-core.js --- */
+
+/**
+ * EXECUTE STORE PURCHASE (The Atomic Transfer)
+ * 1. Checks Buyer Balance.
+ * 2. Deducts Price.
+ * 3. Adds to Admin Vault.
+ * 4. Creates Transaction Log.
+ */
+export async function executeStorePurchase(buyerUid, itemData) {
+    const buyerRef = doc(db, `${DB_PATH}/users/${buyerUid}`);
+    // The "Vault" is a special document where we store the Empire's Revenue
+    const vaultRef = doc(db, `${DB_PATH}/system/vault`); 
+    const txRef = collection(db, `${DB_PATH}/transactions`);
+    const ordersRef = collection(db, `${DB_PATH}/orders`);
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            // A. READ (Lock the documents)
+            const buyerDoc = await transaction.get(buyerRef);
+            const vaultDoc = await transaction.get(vaultRef);
+
+            if (!buyerDoc.exists()) throw "Buyer profile corrupted.";
+            
+            // Calculate Math
+            const currentBal = Number(buyerDoc.data().wallet_balance) || 0;
+            const price = Number(itemData.price);
+
+            // B. VERIFY FUNDS
+            if (currentBal < price) {
+                throw "INSUFFICIENT FUNDS. PLEASE TOP UP.";
+            }
+
+            // C. WRITE (The Transfer)
+            // 1. Deduct from Buyer
+            transaction.update(buyerRef, { 
+                wallet_balance: currentBal - price 
+            });
+
+            // 2. Add to Vault (Create vault if it doesn't exist yet)
+            const currentVault = vaultDoc.exists() ? (Number(vaultDoc.data().totalRevenue) || 0) : 0;
+            transaction.set(vaultRef, { 
+                totalRevenue: currentVault + price,
+                lastUpdate: serverTimestamp()
+            }, { merge: true });
+
+            // 3. Log the Transaction (For Admin Spy)
+            const newTx = doc(txRef);
+            transaction.set(newTx, {
+                type: 'STORE_PURCHASE',
+                amount: price,
+                user_id: buyerUid,
+                item_name: itemData.name,
+                timestamp: serverTimestamp(),
+                status: 'CLEARED'
+            });
+
+            // 4. Create the Order Record
+            const newOrder = doc(ordersRef);
+            transaction.set(newOrder, {
+                buyerId: buyerUid,
+                itemId: itemData.id,
+                itemName: itemData.name,
+                price: price,
+                status: 'COMPLETED', // Auto-complete for digital goods
+                timestamp: serverTimestamp()
+            });
+        });
+
+        console.log("TRANSACTION SECURED.");
+        return true;
+
+    } catch (error) {
+        console.error("TRANSACTION FAILED:", error);
+        throw error; // Throw it back to the UI to handle
+    }
+}

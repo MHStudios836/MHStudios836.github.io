@@ -333,6 +333,127 @@ permalink: /Admin_Room.html
 		input:checked + .slider:before { transform: translateX(26px); }
 		.slider.round { border-radius: 34px; }
 		.slider.round:before { border-radius: 50%; }
+		
+		/* --- THE FORGE (ARMORY PANEL STYLES) --- */
+		.forge-layout {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 30px;
+			margin-top: 20px;
+		}
+
+		.forge-card {
+			background: rgba(13, 17, 23, 0.95); /* Titan Panel Background */
+			border: 1px solid rgba(0, 128, 255, 0.2); /* Titan Blue Border */
+			padding: 25px;
+			border-radius: 6px;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+		}
+
+		.forge-input-group {
+			margin-bottom: 15px;
+		}
+
+		.forge-label {
+			display: block;
+			color: #888;
+			font-size: 0.8em;
+			margin-bottom: 5px;
+			letter-spacing: 1px;
+		}
+
+		.forge-input {
+			width: 100%;
+			padding: 12px;
+			background: #05070a; /* Darkest input bg */
+			border: 1px solid #333;
+			color: #fff;
+			font-family: 'Segoe UI', monospace; /* Tactical Font */
+			transition: 0.3s;
+		}
+
+		.forge-input:focus {
+			border-color: var(--mh-gold); /* Gold glow on focus */
+			outline: none;
+			box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+		}
+
+		.forge-btn {
+			width: 100%;
+			padding: 15px;
+			background: var(--mh-gold);
+			color: #000;
+			font-weight: bold;
+			border: none;
+			cursor: pointer;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			margin-top: 10px;
+			transition: 0.3s;
+		}
+
+		.forge-btn:hover {
+			background: #fff;
+			box-shadow: 0 0 15px var(--mh-gold);
+		}
+
+		/* Responsive Fix */
+		@media (max-width: 768px) {
+			.forge-layout { grid-template-columns: 1fr; }
+		}
+		
+		/* --- GLOBAL ADMIN CARDS (Titan UI) --- */
+		.admin-layout {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 30px;
+			margin-top: 20px;
+		}
+
+		.admin-card {
+			background: rgba(13, 17, 23, 0.95);
+			border: 1px solid rgba(0, 128, 255, 0.2);
+			padding: 25px;
+			border-radius: 6px;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+			display: flex;
+			flex-direction: column;
+		}
+
+		.admin-input-group { margin-bottom: 15px; }
+		.admin-label { display: block; color: #888; font-size: 0.8em; margin-bottom: 5px; letter-spacing: 1px; }
+
+		.admin-input {
+			width: 100%;
+			padding: 12px;
+			background: #05070a;
+			border: 1px solid #333;
+			color: #fff;
+			font-family: 'Segoe UI', monospace;
+			transition: 0.3s;
+		}
+
+		.admin-input:focus { border-color: var(--mh-gold); outline: none; }
+
+		.admin-btn {
+			width: 100%;
+			padding: 15px;
+			background: var(--mh-gold);
+			color: #000;
+			font-weight: bold;
+			border: none;
+			cursor: pointer;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			margin-top: 10px;
+			transition: 0.3s;
+		}
+
+		.admin-btn:hover { background: #fff; box-shadow: 0 0 15px var(--mh-gold); }
+		.admin-btn.cyan { background: var(--mh-cyan); }
+		.admin-btn.red { background: var(--mh-red); color: #fff; }
+
+		@media (max-width: 900px) { .admin-layout { grid-template-columns: 1fr; } }
 
         /* --- MOBILE OVERRIDES --- */
         @media screen and (max-width: 980px) {
@@ -372,7 +493,7 @@ permalink: /Admin_Room.html
                 <i class="fas fa-users-cog"></i> PERSONNEL
             </div>
             <div class="nav-item" onclick="switchPanel('panel-armory')">
-                <i class="fas fa-boxes"></i> THE FOUNDRY
+                <i class="fas fa-boxes"></i> THE ARMORY
             </div>
             <div class="nav-item" onclick="switchPanel('panel-spy')">
                 <i class="fas fa-satellite-dish"></i> SIGNAL INTERCEPT
@@ -440,7 +561,7 @@ permalink: /Admin_Room.html
 
         <section id="panel-dashboard" class="panel active">
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h2>WAR ROOM ANALYTICS</h2>
+                <h2><i class="fas fa-chart-line"></i> WAR ROOM ANALYTICS</h2>
                 <span class="text-gold"><i class="fas fa-clock"></i> LIVE FEED</span>
             </div>
 
@@ -533,7 +654,7 @@ permalink: /Admin_Room.html
 
 
         <section id="panel-users" class="panel">
-            <h2>PERSONNEL MANAGEMENT</h2>
+            <h2><i class="fas fa-users-cog"></i> PERSONNEL MANAGEMENT</h2>
             
             <div class="card">
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
@@ -614,111 +735,137 @@ permalink: /Admin_Room.html
 					</table>
 				</div>
 			</div>
+			
+		<div class="stats-grid">
+			<div class="stat-card" style="border-left: 4px solid #0080FF;">
+				<div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+				<div class="stat-info">
+					<h3>STUDENTS</h3>
+					<h1 id="crm-count-student">0</h1>
+				</div>
+			</div>
+
+			<div class="stat-card" style="border-left: 4px solid #ffae00;">
+				<div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+				<div class="stat-info">
+					<h3>MERCENARIES</h3>
+					<h1 id="crm-count-merc">0</h1>
+				</div>
+			</div>
+
+			<div class="stat-card" style="border-left: 4px solid #ff004c;">
+				<div class="stat-icon"><i class="fas fa-skull"></i></div>
+				<div class="stat-info">
+					<h3>OPERATORS</h3>
+					<h1 id="crm-count-operator">0</h1> </div>
+			</div>
+		</div>
+		
+		<div class="stats-grid">
+			<div class="stat-card">
+				<h3>OPEN BOUNTIES</h3>
+				<h1 id="crm-task-open" style="color: #00e5ff;">0</h1>
+			</div>
+			<div class="stat-card">
+				<h3>ACTIVE OPS</h3>
+				<h1 id="crm-task-active" style="color: #ffae00;">0</h1>
+			</div>
+			<div class="stat-card">
+				<h3>COMPLETED</h3>
+				<h1 id="crm-task-completed" style="color: #00ff41;">0</h1>
+			</div>
+			<div class="stat-card">
+				<h3>ACTIVE VALUE</h3>
+				<h1 id="crm-task-value" style="color: #ffd700;">$0.00</h1>
+			</div>
+		</div>
+			
 		</section>
 
 
         <section id="panel-armory" class="panel">
-            <h2>THE FOUNDRY (PRODUCT MANAGEMENT)</h2>
+            <h2><i class="fas fa-boxes"></i> THE Armory (PRODUCT MANAGEMENT)</h2>
             <p>Deploy new assets to <a href="Products_Services_Room.html" target="_blank" class="text-gold">The Armory</a>.</p>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; margin-top:20px;">
-                
-                <div class="card">
-                    <h4 class="text-gold">FORGE NEW ASSET</h4>
-                    <form id="add-product-form">
-                        <label>ASSET VISUAL (UPLOAD OR URL)</label>
-						<div style="display:flex; gap:10px; align-items:flex-start;">
-							<input type="file" id="prod-file" accept="image/*" style="display:none;" onchange="window.triggerProductUpload(this)">
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+					
+					<div class="forge-card" style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 8px;">
+						<form id="product-upload-form">
 							
-							<button type="button" class="btn-red" style="padding:12px; border:1px solid #333;" onclick="document.getElementById('prod-file').click()">
-								<i class="fas fa-cloud-upload-alt"></i>
+							<label style="color:#888; font-size:0.8em;">ASSET TITLE</label>
+							<input type="text" id="prod-title" placeholder="e.g. Tactical Gaming Mouse" required 
+								   style="width:100%; padding:10px; background:#111; border:1px solid #333; color:#fff; margin-bottom:15px;">
+
+							<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+								<div>
+									<label style="color:#888; font-size:0.8em;">PRICE ($)</label>
+									<input type="number" id="prod-price" placeholder="0.00" step="0.01" required 
+										   style="width:100%; padding:10px; background:#111; border:1px solid #333; color:#fff;">
+								</div>
+								<div>
+									<label style="color:#888; font-size:0.8em;">CATEGORY</label>
+									<select id="prod-type" style="width:100%; padding:10px; background:#111; border:1px solid #333; color:#fff;">
+										<option value="PHYSICAL">HARDWARE (Physical)</option>
+										<option value="SERVICE">SERVICE (Digital)</option>
+										<option value="MERC_HIRE">MERCENARY CONTRACT</option>
+									</select>
+								</div>
+							</div>
+
+							<label style="color:#888; font-size:0.8em; margin-top:15px; display:block;">DESCRIPTION / SPECS</label>
+							<textarea id="prod-desc" rows="4" placeholder="Classified details..." 
+									  style="width:100%; padding:10px; background:#111; border:1px solid #333; color:#fff; margin-bottom:15px;"></textarea>
+
+							<label style="color:#888; font-size:0.8em;">VISUAL ASSET (IMAGE)</label>
+							<input type="file" id="prod-image" accept="image/*" required 
+								   style="width:100%; padding:10px; background:#111; border:1px solid #333; color:#fff; margin-bottom:20px;">
+
+							<button type="submit" id="btn-deploy-asset" 
+									style="width:100%; padding:15px; background: var(--mh-gold); color:#000; font-weight:bold; border:none; cursor:pointer;">
+								<i class="fas fa-upload"></i> DEPLOY ASSET
 							</button>
-							
-							<input type="text" id="prod-img" class="tac-input" placeholder="Image URL will appear here..." onchange="updatePreview()" style="margin:0;">
+						</form>
+					</div>
+
+					<div class="forge-card" style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 8px;">
+						<h4 style="color: #fff; margin-top:0;">RECENT DEPLOYMENTS</h4>
+						<div id="admin-product-list" style="height: 350px; overflow-y: auto;">
+							<div style="color:#666; font-style:italic;">Scanning armory database...</div>
 						</div>
-						<div id="upload-progress" style="height:2px; background:var(--mh-gold); width:0%; transition:0.3s; margin-bottom:15px; display:none;"></div>
+					</div>
 
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                            <div>
-                                <label>CLASSIFICATION</label>
-                                <select id="prod-cat" class="tac-select">
-                                    <option value="software">Software / Script</option>
-                                    <option value="design">Design Asset / Template</option>
-                                    <option value="service">Service / Consultation</option>
-                                    <option value="hardware">Physical Hardware</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label>PRICE ($ USD)</label>
-                                <input type="number" id="prod-price" class="tac-input" placeholder="49.99" required>
-                            </div>
-                        </div>
-
-                        <label>IMAGE URL (PREVIEW)</label>
-                        <input type="text" id="prod-img" class="tac-input" placeholder="https://..." onchange="updatePreview()">
-
-                        <label>TECHNICAL SPECIFICATIONS (DESC)</label>
-                        <textarea id="prod-desc" class="tac-area" rows="4" placeholder="Detailed description of the asset..."></textarea>
-
-                        <button type="submit" class="btn-gold" style="width:100%;">DEPLOY TO ARMORY</button>
-                    </form>
-                </div>
-
-                <div>
-                    <div class="card" style="text-align:center;">
-                        <h4 style="color:#555;">VISUAL PREVIEW</h4>
-                        <img id="preview-box" src="images/placeholder_product.png" style="max-width:100%; height:150px; border-radius:4px; border:1px solid #333; margin-bottom:10px;">
-                        <h3 id="preview-title" style="margin:0;">ASSET NAME</h3>
-                        <span id="preview-price" class="text-gold" style="font-weight:bold; font-size:1.2em;">$0.00</span>
-                    </div>
-
-                    <div class="card" style="height:300px; overflow-y:auto;">
-                        <h4>CURRENT INVENTORY</h4>
-                        <table class="admin-table" style="font-size:0.8em;">
-                            <thead>
-                                <tr><th>NAME</th><th>PRICE</th><th>ACTION</th></tr>
-                            </thead>
-                            <tbody id="product-mini-list">
-                                <tr>
-                                    <td>Golden WordPress Theme</td>
-                                    <td class="text-gold">$50.00</td>
-                                    <td><i class="fas fa-trash text-red" style="cursor:pointer;"></i></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+				</div>
         </section>
 
 		<section id="panel-chat" class="panel">
-		<div class="titan-panel terminal-chat-wrap">
-			<div class="panel-header">
-				<span><i class="fas fa-terminal"></i> SECURE_COMM_UPLINK v4.2</span>
-				<div class="terminal-controls">
-					<button onclick="toggleTheme()" title="Toggle Matrix Mode"><i class="fas fa-palette"></i></button>
-					<button onclick="triggerUpload()" title="Attach Packet"><i class="fas fa-paperclip"></i></button>
-					<img id="my-profile-icon" src="images/hacker.png" class="chat-profile-icon" onclick="openChatSettings()">
-				</div>
-			</div>
-			
-			<div id="terminal-chat-body" class="terminal-body">
-				<div class="sys-msg">> [SYSTEM] UPLINK ESTABLISHED. SCANNING CHANNELS...</div>
-			</div>
+			<h2><i class="fas fa-message"></i> Secure Communication Uplink</h2>
+				<div class="titan-panel terminal-chat-wrap">
+					<div class="panel-header">
+						<span><i class="fas fa-terminal"></i> SECURE_COMM_UPLINK v4.2</span>
+						<div class="terminal-controls">
+							<button onclick="toggleTheme()" title="Toggle Matrix Mode"><i class="fas fa-palette"></i></button>
+							<button onclick="triggerUpload()" title="Attach Packet"><i class="fas fa-paperclip"></i></button>
+							<img id="my-profile-icon" src="images/hacker.png" class="chat-profile-icon" onclick="openChatSettings()">
+						</div>
+					</div>
+					
+					<div id="terminal-chat-body" class="terminal-body">
+						<div class="sys-msg">> [SYSTEM] UPLINK ESTABLISHED. SCANNING CHANNELS...</div>
+					</div>
 
-			<div class="terminal-input-area">
-				<span class="prompt">ADMIN@TITAN:~$</span>
-				<input type="text" id="terminal-input" placeholder="Type message or command..." autocomplete="off">
-				<button id="send-btn" onclick="triggerSend()"><i class="fas fa-arrow-right"></i></button>
-			</div>
-			
-			<input type="file" id="chat-file-input" style="display:none;" onchange="handleFileSelect(event)">
-		</div>
+					<div class="terminal-input-area">
+						<span class="prompt">ADMIN@TITAN:~$</span>
+						<input type="text" id="terminal-input" placeholder="Type message or command..." autocomplete="off">
+						<button id="send-btn" onclick="triggerSend()"><i class="fas fa-arrow-right"></i></button>
+					</div>
+					
+					<input type="file" id="chat-file-input" style="display:none;" onchange="handleFileSelect(event)">
+				</div>
 		</section>
 
         <section id="panel-spy" class="panel">
             <div style="display:flex; justify-content:space-between;">
-                <h2>SIGNAL INTERCEPT</h2>
+                <h2><i class="fas fa-satellite-dish"></i> SIGNAL INTERCEPT</h2>
                 <button class="btn-red" onclick="alert('ALL CHANNELS TERMINATED')">KILL SWITCH (ALL)</button>
             </div>
             
@@ -768,7 +915,7 @@ permalink: /Admin_Room.html
 
 
         <section id="panel-console" class="panel">
-            <h2>COMMAND TERMINAL</h2>
+            <h2><i class="fas fa-terminal"></i> COMMAND TERMINAL</h2>
             <div class="card" style="padding:0;">
 				<div class="titan-panel system-logs">
 					<div class="panel-header">
@@ -783,66 +930,130 @@ permalink: /Admin_Room.html
                     <input type="text" style="flex:1; background:transparent; border:none; color:#fff; padding:10px; font-family:monospace;" placeholder="enter command...">
                 </div>
             </div>
+			
+			<div id="broadcast-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9000; align-items:center; justify-content:center;">
+					<div class="card" style="width:500px; border:2px solid var(--mh-red);">
+						<h3 class="text-red">EMERGENCY BROADCAST</h3>
+						<p>This message will appear on ALL screens (Students & Freelancers).</p>
+						<textarea class="tac-area" id="bc-message" rows="3" placeholder="ATTENTION ALL OPERATIVES..."></textarea>
+						<div style="display:flex; justify-content:flex-end; gap:10px;">
+						<button class="btn-red" style="border:1px solid #555; color:#aaa;" onclick="document.getElementById('broadcast-modal').style.display='none'">CANCEL</button>
+						<button class="btn-gold" style="background:var(--mh-red); color:#fff;" onclick="sendBroadcast()">TRANSMIT</button>
+					</div>
+				</div>
+			</div>
         </section>
+		
+		<section id="panel-finance" class="panel admin-panel" style="display:none;">
+			
+			<h2 style="color: var(--mh-gold); border-bottom: 2px solid #333; padding-bottom: 10px;">
+				<i class="fas fa-coins"></i> THE TREASURY (ECONOMY COMMAND)
+			</h2>
 
-    </main>
-
-    <div id="broadcast-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9000; align-items:center; justify-content:center;">
-        <div class="card" style="width:500px; border:2px solid var(--mh-red);">
-            <h3 class="text-red">EMERGENCY BROADCAST</h3>
-            <p>This message will appear on ALL screens (Students & Freelancers).</p>
-            <textarea class="tac-area" id="bc-message" rows="3" placeholder="ATTENTION ALL OPERATIVES..."></textarea>
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button class="btn-red" style="border:1px solid #555; color:#aaa;" onclick="document.getElementById('broadcast-modal').style.display='none'">CANCEL</button>
-                <button class="btn-gold" style="background:var(--mh-red); color:#fff;" onclick="sendBroadcast()">TRANSMIT</button>
-            </div>
-        </div>
-    </div>
-	
-	<section>
-	    <footer id="merc-footer">
-			<div class="footer-cols">
-				<div>
-					<div class="brand-module" style="margin-bottom:20px;">
-						<img src="images/Logo_1.png" style="height:35px;">
-						<div class="brand-text">
-							<span class="main">MH STUDIOS</span>
+			<div class="admin-layout">
+				
+				<div class="admin-card">
+					<div style="text-align: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px;">
+						<h4 style="color: #888; margin: 0;">TOTAL EMPIRE REVENUE</h4>
+						<div id="vault-display" style="font-size: 3em; font-weight: bold; color: var(--mh-gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
+							$0.00
+						</div>
+						<div style="font-size: 0.8em; color: #555; margin-top: 5px;">
+							<i class="fas fa-lock"></i> SECURE STORAGE
 						</div>
 					</div>
-					<p>The premier network for elite digital contractors. Secure, anonymous, and lucrative.</p>
-					<div class="ft-social">
-						<a href="#"><i class="fab fa-discord"></i></a>
-						<a href="#"><i class="fab fa-github"></i></a>
-						<a href="#"><i class="fab fa-twitter"></i></a>
+
+					<h4 style="color: #fff; margin-bottom: 15px;"><i class="fas fa-hand-holding-usd"></i> MANUAL TRANSFER</h4>
+					<form id="treasury-override-form">
+						<div class="admin-input-group">
+							<label class="admin-label">TARGET UID</label>
+							<input type="text" id="finance-target-uid" class="admin-input" placeholder="User ID..." required>
+						</div>
+						
+						<div style="display: flex; gap: 10px; margin-bottom: 15px;">
+							<div style="flex:1;">
+								<label class="admin-label">AMOUNT ($)</label>
+								<input type="number" id="finance-amount" class="admin-input" placeholder="0.00" step="0.01" required>
+							</div>
+							<div style="flex:1;">
+								<label class="admin-label">ACTION</label>
+								<select id="finance-action" class="admin-input">
+									<option value="GRANT">GRANT (+)</option>
+									<option value="SEIZE">SEIZE (-)</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="admin-input-group">
+							<label class="admin-label">REASON (LOG)</label>
+							<input type="text" id="finance-reason" class="admin-input" placeholder="e.g. Bonus" required>
+						</div>
+
+						<button type="submit" class="admin-btn cyan">EXECUTE TRANSFER</button>
+					</form>
+				</div>
+
+				<div class="admin-card">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+						<h4 style="color: #fff; margin:0;"><i class="fas fa-list-alt"></i> LIVE LEDGER</h4>
+						<span style="font-size: 0.7em; color: var(--mh-green);"><i class="fas fa-circle"></i> ONLINE</span>
+					</div>
+					
+					<div id="admin-revenue-feed" style="flex-grow: 1; overflow-y: auto; font-family: monospace; border-top: 1px solid #333; padding-top: 10px;">
+						<div style="padding: 20px; text-align: center; color: #666;">
+							CONNECTING TO BANKING SATELLITE...
+						</div>
 					</div>
 				</div>
-				<div>
-					<h4 style="color:#fff;">RESOURCES</h4>
-					<ul>
-						<li><a href="#">API Documentation</a></li>
-						<li><a href="#">Market Analytics</a></li>
-						<li><a href="#">Security Protocol</a></li>
-					</ul>
-				</div>
-				<div>
-					<h4 style="color:#fff;">LEGAL</h4>
-					<ul>
-						<li><a href="#">Contract Terms</a></li>
-						<li><a href="#">Privacy Policy</a></li>
-						<li><a href="#">Dispute Resolution</a></li>
-					</ul>
-				</div>
-				<div>
-					<h4 style="color:#fff;">SUPPORT</h4>
-					<p><i class="fas fa-envelope"></i> ops@mhstudios.net</p>
-					<p><i class="fas fa-headset"></i> Live Support: Online</p>
-				</div>
+
 			</div>
-			<div style="text-align:center; margin-top:50px; padding-top:20px; border-top:1px solid #111; color:#444; font-size:0.8em;">
-				&copy; 2026 MH Studios. All Rights Reserved. Clearance Level: Confidential.
-			</div>
-		</footer>
-	</section>
+		</section>
+		
+		<section>
+			<footer id="merc-footer">
+				<div class="footer-cols">
+					<div>
+						<div class="brand-module" style="margin-bottom:20px;">
+							<img src="images/Logo_1.png" style="height:35px;">
+							<div class="brand-text">
+								<span class="main">MH STUDIOS</span>
+							</div>
+						</div>
+						<p>The premier network for elite digital contractors. Secure, anonymous, and lucrative.</p>
+						<div class="ft-social">
+							<a href="#"><i class="fab fa-discord"></i></a>
+							<a href="#"><i class="fab fa-github"></i></a>
+							<a href="#"><i class="fab fa-twitter"></i></a>
+						</div>
+					</div>
+					<div>
+						<h4 style="color:#fff;">RESOURCES</h4>
+						<ul>
+							<li><a href="#">API Documentation</a></li>
+							<li><a href="#">Market Analytics</a></li>
+							<li><a href="#">Security Protocol</a></li>
+						</ul>
+					</div>
+					<div>
+						<h4 style="color:#fff;">LEGAL</h4>
+						<ul>
+							<li><a href="#">Contract Terms</a></li>
+							<li><a href="#">Privacy Policy</a></li>
+							<li><a href="#">Dispute Resolution</a></li>
+						</ul>
+					</div>
+					<div>
+						<h4 style="color:#fff;">SUPPORT</h4>
+						<p><i class="fas fa-envelope"></i> ops@mhstudios.net</p>
+						<p><i class="fas fa-headset"></i> Live Support: Online</p>
+					</div>
+				</div>
+				<div style="text-align:center; margin-top:50px; padding-top:20px; border-top:1px solid #111; color:#444; font-size:0.8em;">
+					&copy; 2026 MH Studios. All Rights Reserved. Clearance Level: Confidential.
+				</div>
+			</footer>
+		</section>
+    </main>
 	
     <script src="assets/js/jquery.min.js"></script>
 	
@@ -905,92 +1116,199 @@ permalink: /Admin_Room.html
     </script>
 
 	<script type="module">
-		// --- 1. IMPORT THE ENGINES ---
-		import { initDashboardCharts, initLiveMissionFeed, initSystemLogs } from './assets/js/admin-dashboard.js';
-		import { initChatSystem, triggerSend } from './assets/js/chat-core.js';
-		import { initUserGrid } from './assets/js/admin-users.js';
-		// CRITICAL: We import 'forgeNewProduct' so the form works
-		import { refreshInventory, forgeNewProduct } from './assets/js/admin-products.js';
+		// --- 1. CORE IMPORTS ---
+		import { auth, db, DB_PATH } from './assets/js/firebase-init.js';
+		import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+		import { 
+			collection, query, onSnapshot, runTransaction, doc, serverTimestamp, updateDoc, getDoc 
+		} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-		// --- 2. START THE SYSTEM ---
-		document.addEventListener('DOMContentLoaded', () => {
-			console.log(">> TITAN COMMAND: SYSTEM STARTUP");
-			
-			// A. Activate Dashboard & Data
-			initDashboardCharts();
-			initLiveMissionFeed();
-			initSystemLogs();
-			initUserGrid();
-			refreshInventory();
+		// --- 2. MODULE IMPORTS ---
+		import { forgeNewProduct } from './assets/js/admin-forge.js';
+		import { initGlobalFinanceMonitor } from './assets/js/admn-finance-spy.js';
+		import { initPortableCRM } from './assets/js/admin-crm.js';
 
-			// B. Activate Chat System
-			initChatSystem();
-			const chatInput = document.getElementById('terminal-input');
-			if(chatInput) {
-				chatInput.addEventListener('keypress', (e) => {
-					if(e.key === 'Enter') triggerSend();
-				});
-			}
-
-			// C. ACTIVATE THE FOUNDRY (Product Upload Form)
-			// This is the part I missed in the previous version!
-			const prodForm = document.getElementById('add-product-form');
-			if(prodForm) {
-				prodForm.addEventListener('submit', async (e) => {
-					e.preventDefault();
-					
-					// 1. Gather Data
-					const productData = {
-						name: document.getElementById('prod-name').value,
-						price: parseFloat(document.getElementById('prod-price').value),
-						branch: document.getElementById('prod-cat').value,
-						imageUrl: document.getElementById('prod-img').value,
-						description: document.getElementById('prod-desc').value
-					};
-
-					// 2. Send to Forge
-					const success = await forgeNewProduct(productData);
-					
-					// 3. Handle Result
-					if(success) {
-						alert("ASSET DEPLOYED TO ARMORY.");
-						prodForm.reset();
-						// Reset Progress Bar
-						const progBar = document.getElementById('upload-progress');
-						if(progBar) progBar.style.width = '0%';
-					} else {
-						alert("FORGE ERROR. CHECK CONSOLE.");
-					}
-				});
+		// --- 3. AUTH GUARD (WARLORD CHECK) ---
+		onAuthStateChanged(auth, async (user) => {
+			if (!user) {
+				console.warn("UNAUTHORIZED ACCESS ATTEMPT. REDIRECTING...");
+				window.location.href = 'DoD_Login_Style.html';
+			} else {
+				console.log("WARLORD ON DECK:", user.email);
+				initWarRoom();
 			}
 		});
 
-		// --- 3. TERMINAL FX OVERRIDE ---
-		// Makes the chat look like a Command Prompt
-		window.renderTerminalMessage = (data) => {
-			const body = document.getElementById('terminal-chat-body');
-			if(!body) return;
-
-			const row = document.createElement('div');
-			row.className = 'msg-row';
-			const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+		// --- 4. SYSTEM BOOT SEQUENCE ---
+		function initWarRoom() {
+			console.log("SYSTEM: INITIALIZING COMMAND CENTER...");
 			
-			// Admin messages are GOLD, others are CYAN
-			const color = (data.senderId === 'ADMIN_ID' || data.senderId === 'mhjerjawi836@gmail.com') ? '#FFD700' : '#00e5ff';
+			initCounts();               // Live Header Stats
+			initPortableCRM();          // CRM Engine
+			initGlobalFinanceMonitor(); // The Ledger Spy
+			initTreasury();             // Treasury & Tax Controls (MERGED)
+			initArmoryLogic();          // Product Forge
+			
+			// Setup Logout
+			document.getElementById('admin-logout')?.addEventListener('click', () => {
+				signOut(auth);
+			});
+		}
 
-			row.innerHTML = `
-				<span class="msg-time">[${time}]</span>
-				<span class="msg-sender" style="color: ${color};">${data.senderName}:</span>
-				<span class="msg-text">${data.text}</span>
-			`;
-			body.appendChild(row);
-			body.scrollTop = body.scrollHeight;
+		// --- 5. TREASURY LOGIC (The Merged Fix) ---
+		function initTreasury() {
+			console.log("TREASURY: ONLINE");
+
+			// A. Listen to Vault Balance
+			const vaultRef = doc(db, `${DB_PATH}/system/vault`);
+			onSnapshot(vaultRef, (snap) => {
+				if(snap.exists()) {
+					const rev = snap.data().totalRevenue || 0;
+					const display = document.getElementById('vault-display');
+					if(display) {
+						display.innerText = `$${rev.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+					}
+				}
+			});
+
+			// B. Load Tax Rate Settings
+			const settingsRef = doc(db, `${DB_PATH}/system/settings`);
+			getDoc(settingsRef).then(snap => {
+				if(snap.exists()) {
+					const taxInput = document.getElementById('tax-rate-input');
+					if(taxInput) taxInput.value = snap.data().tax_rate || 10;
+				}
+			});
+
+			// C. Manual Transfer Form Logic
+			const treasuryForm = document.getElementById('treasury-override-form');
+			if(treasuryForm) {
+				treasuryForm.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					
+					const uid = document.getElementById('finance-target-uid').value.trim();
+					const amount = parseFloat(document.getElementById('finance-amount').value);
+					const action = document.getElementById('finance-action').value; // GRANT or SEIZE
+					const reason = document.getElementById('finance-reason').value;
+
+					if(!uid || !amount || amount <= 0) return alert("INVALID INPUT DATA");
+					if(!confirm(`CONFIRM: ${action} $${amount} for User ${uid}?`)) return;
+
+					try {
+						await runTransaction(db, async (transaction) => {
+							const userRef = doc(db, `${DB_PATH}/users/${uid}`);
+							const userDoc = await transaction.get(userRef);
+							
+							if(!userDoc.exists()) throw "USER UID NOT FOUND";
+
+							const currentBal = Number(userDoc.data().wallet_balance) || 0;
+							let newBal = (action === 'GRANT') ? currentBal + amount : currentBal - amount;
+
+							// Optional: Prevent negative balance if seizing
+							// if (newBal < 0) throw "INSUFFICIENT FUNDS";
+
+							// 1. Update User Wallet
+							transaction.update(userRef, { wallet_balance: newBal });
+
+							// 2. Log in Ledger
+							const txRef = doc(collection(db, `${DB_PATH}/transactions`));
+							transaction.set(txRef, {
+								type: `ADMIN_${action}`,
+								amount: amount,
+								user_id: uid,
+								admin_id: auth.currentUser.uid,
+								reason: reason,
+								timestamp: serverTimestamp(),
+								status: 'COMPLETED'
+							});
+						});
+
+						alert("TRANSFER EXECUTED SUCCESSFULLY.");
+						treasuryForm.reset();
+
+					} catch(err) {
+						console.error("TREASURY ERROR:", err);
+						alert("TRANSFER FAILED: " + err);
+					}
+				});
+			}
+		}
+
+		// --- 6. TAX RATE UPDATER (Global Function) ---
+		window.updateTaxRate = async () => {
+			const input = document.getElementById('tax-rate-input');
+			if(!input) return;
+
+			const newRate = parseFloat(input.value);
+			const settingsRef = doc(db, `${DB_PATH}/system/settings`);
+			
+			try {
+				// We use setDoc with merge:true in case the doc doesn't exist yet
+				await updateDoc(settingsRef, { tax_rate: newRate });
+				alert(`TAX RATE UPDATED TO ${newRate}%`);
+			} catch(e) {
+				console.error(e);
+				alert("ERROR UPDATING RATE (Check Console)");
+			}
 		};
 
-		// --- 4. TOGGLE THEME ---
-		window.toggleTheme = () => {
-			document.querySelector('.terminal-chat-wrap').classList.toggle('matrix-mode');
+		// --- 7. ARMORY LOGIC (Product Upload) ---
+		function initArmoryLogic() {
+			const prodForm = document.getElementById('product-upload-form');
+			if(prodForm) {
+				prodForm.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const btn = document.getElementById('btn-deploy-asset');
+					const originalText = btn.innerText;
+
+					btn.innerText = "FORGING...";
+					btn.disabled = true;
+
+					const fileInput = document.getElementById('prod-image');
+					const productData = {
+						title: document.getElementById('prod-title').value,
+						price: document.getElementById('prod-price').value,
+						type: document.getElementById('prod-type').value,
+						description: document.getElementById('prod-desc').value,
+						imageFile: fileInput.files ? fileInput.files[0] : null
+					};
+
+					const success = await forgeNewProduct(productData);
+					
+					if(success) {
+						alert("ASSET DEPLOYED.");
+						prodForm.reset();
+					}
+					btn.innerText = originalText;
+					btn.disabled = false;
+				});
+			}
+		}
+
+		// --- 8. NAVIGATION (Panel Switcher) ---
+		window.switchPanel = function(panelId) {
+			// Hide all panels
+			document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+			document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); // Assuming buttons have class 'nav-btn'
+			
+			// Show target
+			const target = document.getElementById(panelId);
+			if(target) {
+				target.style.display = 'block';
+			} else {
+				console.error(`Panel ID '${panelId}' not found.`);
+			}
 		};
+
+		// --- 9. LIVE STATS COUNTER ---
+		function initCounts() {
+			const q = query(collection(db, `${DB_PATH}/users`));
+			onSnapshot(q, (snap) => {
+				// Simple total count
+				const el = document.getElementById('stat-total');
+				if(el) el.innerText = snap.size;
+			});
+		}
 	</script>
     <script type="module" src="assets/js/admin-command-console.js"></script>
 

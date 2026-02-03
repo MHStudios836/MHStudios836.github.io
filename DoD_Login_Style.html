@@ -4,7 +4,7 @@ permalink: /DoD_Login_Style.html
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<title>MH&AS Studios™ | Operative Access</title>
+		<title>MA Studios™ | Operative Access</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		
@@ -245,14 +245,38 @@ permalink: /DoD_Login_Style.html
 			.forgot-link:hover { color: var(--mh-cyan); text-decoration: underline; }
 
 			/* ROLE CARDS */
-			.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+			.role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
 			.role-card {
 				background: rgba(0,0,0,0.3); border: 1px solid #333; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s;
 			}
-			.role-card:hover { border-color: #666; }
-			.role-card.selected { border-color: var(--mh-blue); background: rgba(0,128,255,0.1); }
+			/* Student (Blue - Existing) */
+			.role-card.selected[data-role="student"] { 
+				border-color: var(--mh-blue); 
+				background: rgba(0,128,255,0.1); 
+			}
+			.role-card.selected[data-role="student"] .role-icon { color: var(--mh-blue); }
+			
+			/* Freelancer (Orange - Existing) */
+			.role-card.selected[data-role="freelancer"] { 
+				border-color: var(--mh-orange, #ffae00); /* Fallback if var missing */
+				background: rgba(255, 174, 0, 0.1); 
+			}
+			.role-card.selected[data-role="freelancer"] .role-icon { color: var(--mh-orange, #ffae00); }
+			
+			/* Contractor (Yellow - NEW ADDITION) */
+			.role-card.selected[data-role="contractor"], 
+			.role-card[data-role="contractor"]:hover { 
+				border-color: #FFD700; 
+				background: rgba(255, 215, 0, 0.1); 
+				box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+			}
+			.role-card[data-role="contractor"] .role-icon { transition: color 0.3s; }
+			.role-card.selected[data-role="contractor"] .role-icon,
+			.role-card[data-role="contractor"]:hover .role-icon { 
+				color: #FFD700; 
+			}
+			
 			.role-icon { font-size: 1.5em; color: #888; margin-bottom: 5px; }
-			.role-card.selected .role-icon { color: var(--mh-blue); }
 			.role-label { font-size: 0.7em; font-weight: bold; color: #fff; }
 
 			/* UTILS */
@@ -268,6 +292,53 @@ permalink: /DoD_Login_Style.html
 
 			@keyframes bootUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
+			
+			/* --- 3-SLOT GRID SYSTEM --- */
+			.role-selection-grid {
+				display: flex;
+				gap: 15px;
+				justify-content: center;
+				margin-bottom: 25px;
+			}
+
+			.role-card {
+				background: rgba(255, 255, 255, 0.03);
+				border: 1px solid #333;
+				border-radius: 8px;
+				padding: 15px 10px;
+				width: 100px;
+				text-align: center;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				position: relative;
+			}
+
+			.role-icon { font-size: 1.5em; margin-bottom: 8px; color: #666; transition: color 0.3s; }
+			.role-title { font-size: 0.7em; letter-spacing: 1px; color: #888; font-weight: bold; }
+
+			/* 1. STUDENT (Blue/Cyan) */
+			.role-card.student:hover, .role-card.student.active {
+				border-color: var(--mh-cyan);
+				box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+				transform: translateY(-3px);
+			}
+			.role-card.student.active .role-icon { color: var(--mh-cyan); }
+
+			/* 2. FREELANCER (Orange) */
+			.role-card.freelancer:hover, .role-card.freelancer.active {
+				border-color: #ffae00;
+				box-shadow: 0 0 15px rgba(255, 174, 0, 0.2);
+				transform: translateY(-3px);
+			}
+			.role-card.freelancer.active .role-icon { color: #ffae00; }
+
+			/* 3. CONTRACTOR (Yellow/Gold) */
+			.role-card.contractor:hover {
+				border-color: #ffd700;
+				box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+				transform: translateY(-3px);
+			}
+			.role-card.contractor:hover .role-icon { color: #ffd700; }
 
 			/* ==========================================================================
 			   RESPONSIVE DESIGN (Tecno Spark 6 Go / 721px Ceiling)
@@ -450,7 +521,7 @@ permalink: /DoD_Login_Style.html
 					<div class="brand-lockup">
 						<a href="index.html" class="brand-link">
 							<img src="images/Logo_1.png" alt="MH LOGO">
-							MH&AS STUDIOS™
+							MA Studios™
 						</a>
 					</div>
 					<div class="sys-info">
@@ -464,6 +535,27 @@ permalink: /DoD_Login_Style.html
 				<div class="encryption-visual">
 					<div class="code-stream">
 						01010101 MH_PROTOCOL_INIT...<br>
+						VERIFYING HANDSHAKE...<br>
+						ACCESS_TOKEN: [NULL]<br>
+						WAITING FOR CREDENTIALS...<br>
+						FIREBASE_AUTH: READY<br>
+						SECURE_PIPE: ESTABLISHED<br>
+						0011010010110...
+						01010101 MH_PROTOCOL_INIT..<br>
+						VERIFYING HANDSHAKE...<br>
+						ACCESS_TOKEN: [NULL]<br>
+						WAITING FOR CREDENTIALS...<br>
+						FIREBASE_AUTH: READY<br>
+						SECURE_PIPE: ESTABLISHED<br>
+						0011010010110...
+						01010101 MH_PROTOCOL_INIT...<br>
+						VERIFYING HANDSHAKE...<br>
+						ACCESS_TOKEN: [NULL]<br>
+						WAITING FOR CREDENTIALS...<br>
+						FIREBASE_AUTH: READY<br>
+						SECURE_PIPE: ESTABLISHED<br>
+						0011010010110...
+						01010101 MH_PROTOCOL_INIT..<br>
 						VERIFYING HANDSHAKE...<br>
 						ACCESS_TOKEN: [NULL]<br>
 						WAITING FOR CREDENTIALS...<br>
@@ -524,15 +616,24 @@ permalink: /DoD_Login_Style.html
 					
 					<div class="input-frame">
 						<label>> DESIGNATION</label>
+						
 						<div class="role-grid">
+							
 							<div class="role-card selected" data-role="student" onclick="selectDesignation('student')">
 								<div class="role-icon"><i class="fas fa-user-graduate"></i></div>
 								<div class="role-label">STUDENT</div>
 							</div>
+
 							<div class="role-card" data-role="freelancer" onclick="selectDesignation('freelancer')">
 								<div class="role-icon"><i class="fas fa-terminal"></i></div>
 								<div class="role-label">FREELANCER</div>
 							</div>
+
+							<div class="role-card" data-role="contractor" onclick="selectDesignation('contractor')">
+								<div class="role-icon"><i class="fas fa-building"></i></div>
+								<div class="role-label">CONTRACTOR</div>
+							</div>
+
 						</div>
 						<input type="hidden" id="reg-role" value="student">
 					</div>
@@ -545,17 +646,8 @@ permalink: /DoD_Login_Style.html
 					<button type="submit" id="btn-register" class="cmd-btn btn-reg" style="background:var(--mh-blue); color:#000;">
 						INITIALIZE PROFILE
 					</button>
-
-				</form>
-
-				<div class="auth-divider"><span>OR</span></div>
-				<div style="text-align:center;">
-					<button class="social-btn" id="btn-google-reg" style="width:100%; justify-content:center;">
-						<i class="fab fa-google"></i> <span style="margin-left:10px;">REGISTER WITH GOOGLE</span>
-					</button>
-				</div>
-				
-				<div class="oauth-divider"><span>OR REGISTER WITH</span></div>
+					
+					<div class="oauth-divider"><span>OR REGISTER WITH</span></div>
 
 					<div class="oauth-grid">
 						<button type="button" class="oauth-btn" id="google-reg-btn" title="Google">
@@ -568,6 +660,8 @@ permalink: /DoD_Login_Style.html
 							<i class="fab fa-github"></i>
 						</button>
 					</div>
+
+				</form>
 
 					<div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #666;">
 						<a href="#" style="color: #FFD700; text-decoration: none;">Apply for Mercenary Status</a>
@@ -609,12 +703,8 @@ permalink: /DoD_Login_Style.html
 					$('.panel-title').text("ENLIST");
 				});
 
-				// --- B. ROLE SELECTION ---
-				$('.role-card').on('click', function() {
-					$('.role-card').removeClass('selected');
-					$(this).addClass('selected');
-					$('#reg-role').val($(this).data('role'));
-				});
+				// --- B. ROLE SELECTION (Deleted) ---
+
 
 				// --- C. THE SAFETY TIMER (CRITICAL FIX) ---
 				setTimeout(function() {
@@ -629,9 +719,9 @@ permalink: /DoD_Login_Style.html
 
 		<script type="module">
 			// 1. IMPORTS (Standard Stable Version 9.22.0)
-			import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-			import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-			import { getFirestore, doc, getDoc, setDoc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+			import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+			import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+			import { getFirestore, doc, getDoc, setDoc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 			// 2. CONFIGURATION (Replace with your actual keys)
 			const firebaseConfig = {
@@ -649,7 +739,7 @@ permalink: /DoD_Login_Style.html
 			const DB_PATH = "artifacts/MH_Studios_Project"; // Your Secure Path
 
 			// --- GLOBAL INTEL ---
-			let selectedRole = ""; // The Critical Variable
+			let selectedRole = "student"; // Default
 
 			// --- 3. UI FUNCTIONS (PRESERVED) ---
 			
@@ -694,32 +784,36 @@ permalink: /DoD_Login_Style.html
 			};
 
 			// Card Selector (UPGRADED)
-			window.selectDesignation = (role) => {
-				// 1. Update Global Variable (The Fix)
-				selectedRole = role;
+			window.selectDesignation = (role) => { // Attach to window so HTML can see it
 				
-				// 2. Update Hidden Input (For legacy form submit)
-				const hiddenInput = document.getElementById('reg-role');
-				if(hiddenInput) hiddenInput.value = role;
-
-				// 3. Visual Updates
-				document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-				const target = document.querySelector(`.role-card[data-role="${role}"]`);
-				if(target) target.classList.add('selected');
-
-				// 4. Button Feedback
-				const btn = document.getElementById('btn-register');
-				if(btn) {
-					if(role === 'freelancer') {
-						btn.innerText = "INITIALIZE MERCENARY";
-						btn.style.background = "#ffae00"; 
-						btn.style.color = "#000";
-					} else {
-						btn.innerText = "INITIALIZE STUDENT";
-						btn.style.background = "#0080FF"; 
-						btn.style.color = "#fff";
-					}
+				// 1. CONTRACTOR LOGIC (Immediate Redirect)
+				if (role === 'contractor') {
+					const cards = document.querySelectorAll('.role-card');
+					cards.forEach(c => c.classList.remove('selected'));
+					
+					const conCard = document.querySelector('.role-card[data-role="contractor"]');
+					if(conCard) conCard.classList.add('selected');
+					
+					setTimeout(() => {
+						window.location.href = "Contractor_Application.html";
+					}, 300);
+					return;
 				}
+
+				// 2. STANDARD LOGIC
+				selectedRole = role; // <--- CRITICAL: UPDATE GLOBAL MEMORY
+				
+				// Update Hidden Input
+				document.getElementById('reg-role').value = role;
+
+				// Update Visual Class
+				const cards = document.querySelectorAll('.role-card');
+				cards.forEach(c => {
+					c.classList.remove('selected');
+					if(c.getAttribute('data-role') === role) {
+						c.classList.add('selected');
+					}
+				});
 			};
 
 			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
@@ -760,8 +854,8 @@ permalink: /DoD_Login_Style.html
 						
 						setTimeout(() => {
 							if (role === 'admin') window.location.href = 'Admin_Room.html';
+							else if (role === 'contractor') window.location.href = 'Contractor_Room.html'; // <--- GOLD ACCESS
 							else if (role === 'freelancer') window.location.href = 'Freelancers_Room.html';
-							// Students go to Induction (User_Reg) if checkpoint is low, otherwise Room
 							else if (cp < 4) window.location.href = 'User_Registeration_Form.html';
 							else window.location.href = 'Student_Room.html';
 						}, 1000);

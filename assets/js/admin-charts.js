@@ -1,5 +1,5 @@
 /* assets/js/admin-charts.js - TACTICAL ANALYTICS */
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 import { app } from "./firebase-init.js";
 
 const db = getFirestore(app);
