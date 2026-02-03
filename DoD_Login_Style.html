@@ -292,53 +292,6 @@ permalink: /DoD_Login_Style.html
 
 			@keyframes bootUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 			@keyframes scrollCode { 0% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
-			
-			/* --- 3-SLOT GRID SYSTEM --- */
-			.role-selection-grid {
-				display: flex;
-				gap: 15px;
-				justify-content: center;
-				margin-bottom: 25px;
-			}
-
-			.role-card {
-				background: rgba(255, 255, 255, 0.03);
-				border: 1px solid #333;
-				border-radius: 8px;
-				padding: 15px 10px;
-				width: 100px;
-				text-align: center;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				position: relative;
-			}
-
-			.role-icon { font-size: 1.5em; margin-bottom: 8px; color: #666; transition: color 0.3s; }
-			.role-title { font-size: 0.7em; letter-spacing: 1px; color: #888; font-weight: bold; }
-
-			/* 1. STUDENT (Blue/Cyan) */
-			.role-card.student:hover, .role-card.student.active {
-				border-color: var(--mh-cyan);
-				box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
-				transform: translateY(-3px);
-			}
-			.role-card.student.active .role-icon { color: var(--mh-cyan); }
-
-			/* 2. FREELANCER (Orange) */
-			.role-card.freelancer:hover, .role-card.freelancer.active {
-				border-color: #ffae00;
-				box-shadow: 0 0 15px rgba(255, 174, 0, 0.2);
-				transform: translateY(-3px);
-			}
-			.role-card.freelancer.active .role-icon { color: #ffae00; }
-
-			/* 3. CONTRACTOR (Yellow/Gold) */
-			.role-card.contractor:hover {
-				border-color: #ffd700;
-				box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-				transform: translateY(-3px);
-			}
-			.role-card.contractor:hover .role-icon { color: #ffd700; }
 
 			/* ==========================================================================
 			   RESPONSIVE DESIGN (Tecno Spark 6 Go / 721px Ceiling)
@@ -356,10 +309,10 @@ permalink: /DoD_Login_Style.html
 					/* KEY FIX: Make the WHOLE box scrollable */
 					height: auto;
 					max-height: 90vh;       
-					overflow-y: auto;       /* This enables the Blue Scrollbar */
+					overflow-y: auto; /* This enables the Blue Scrollbar */
 					
 					margin: 0 auto;         
-					padding: 0;
+					padding: 0 auto;
 				}
 
 				/* LEFT PANEL (Logo) - Now it scrolls with the page */
@@ -385,7 +338,7 @@ permalink: /DoD_Login_Style.html
 					gap: 10px;
 				}
 				.brand-lockup img {
-					height: 30px;           /* Smaller logo for mobile */
+					height: 30px; /* Smaller logo for mobile */
 					width: auto;
 				}
 				.brand-text {
@@ -421,6 +374,11 @@ permalink: /DoD_Login_Style.html
 				.sys-info {
 					display: none; 
 				}
+				
+				
+				
+				
+				
 				
 				/* --- INSERT AT BOTTOM OF (style) --- */
 				/* Role Toggle Switch */
@@ -459,6 +417,27 @@ permalink: /DoD_Login_Style.html
 					background: rgba(255, 174, 0, 0.15);
 					color: #fff;
 					border-bottom-color: #ffae00;
+				}
+				
+				
+				
+				
+				
+				
+				/* --- FIX FOR ROLE GRID ON MOBILE --- */
+				.role-grid {
+					gap: 5px; /* Tighter gap */
+					margin-bottom: 15px;
+				}
+				.role-card {
+					padding: 10px 5px; /* Smaller padding */
+				}
+				.role-icon {
+					font-size: 1.2em; /* Smaller icon */
+					margin-bottom: 3px;
+				}
+				.role-label {
+					font-size: 0.6em; /* Smaller text */
 				}
 				
 				/* --- PASSWORD EYE STYLES --- */
@@ -784,21 +763,21 @@ permalink: /DoD_Login_Style.html
 			};
 
 			// Card Selector (UPGRADED)
-			window.selectDesignation = (role) => { // Attach to window so HTML can see it
-				
-				// 1. CONTRACTOR LOGIC (Immediate Redirect)
-				if (role === 'contractor') {
-					const cards = document.querySelectorAll('.role-card');
-					cards.forEach(c => c.classList.remove('selected'));
-					
-					const conCard = document.querySelector('.role-card[data-role="contractor"]');
-					if(conCard) conCard.classList.add('selected');
-					
-					setTimeout(() => {
-						window.location.href = "Contractor_Application.html";
-					}, 300);
-					return;
-				}
+			// Card Selector (LOGIC REPAIRED: No Immediate Redirect)
+			window.selectDesignation = (role) => { 
+				// 1. Just store the selection
+				selectedRole = role; 
+				document.getElementById('reg-role').value = role;
+
+				// 2. Update Visual Class (Highlight the card)
+				const cards = document.querySelectorAll('.role-card');
+				cards.forEach(c => {
+					c.classList.remove('selected');
+					if(c.getAttribute('data-role') === role) {
+						c.classList.add('selected');
+					}
+				});
+			};
 
 				// 2. STANDARD LOGIC
 				selectedRole = role; // <--- CRITICAL: UPDATE GLOBAL MEMORY
@@ -866,7 +845,7 @@ permalink: /DoD_Login_Style.html
 						
 						if (selectedRole === "") {
 							typeStatus("> ERROR: DESIGNATION MISSING.", "#ff004c");
-							alert("HALT! YOU MUST SELECT 'STUDENT' OR 'FREELANCER' TAB BEFORE SIGNING IN.");
+							alert("HALT! YOU MUST SELECT 'STUDENT' OR 'FREELANCER' TAB BEFORE SIGNING UP.");
 							
 							// Boot them out so they try again properly
 							await signOut(auth);
