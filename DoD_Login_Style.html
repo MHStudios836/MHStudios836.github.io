@@ -540,7 +540,10 @@ permalink: /DoD_Login_Style.html
 						WAITING FOR CREDENTIALS...<br>
 						FIREBASE_AUTH: READY<br>
 						SECURE_PIPE: ESTABLISHED<br>
-						0011010010110...
+						0011010010110...<br>
+						<br>
+						<br>
+						I am Handsome!
 					</div>
 				</div>
 			</div>
@@ -798,32 +801,25 @@ permalink: /DoD_Login_Style.html
 			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
 			// This is the brain. It decides where users go.
 			
+			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
 			async function routeUser(user) {
 				typeStatus("> VERIFYING BIOMETRICS...", "#FFD700");
 				
 				try {
-					const userRef = doc(db, "users", user.uid); // Direct root access for now
+					const userRef = doc(db, "users", user.uid); 
 					const userSnap = await getDoc(userRef);
 
 					// A. GOD MODE CHECK
 					if (user.email === "mhjerjawi836@gmail.com") {
 						typeStatus("> COMMANDER RECOGNIZED. OVERRIDING PROTOCOLS...", "#ff004c");
-						
-						// Force Admin Update
 						await setDoc(userRef, {
-							uid: user.uid,
-							email: user.email,
-							role: 'admin',
-							rank: 'GENERAL',
-							lastLogin: serverTimestamp(),
-							is_banned: false
+							uid: user.uid, email: user.email, role: 'admin', rank: 'GENERAL', lastLogin: serverTimestamp(), is_banned: false
 						}, { merge: true });
-
 						setTimeout(() => window.location.href = 'Admin_Room.html', 1000);
 						return;
 					}
 
-					// B. EXISTING USER CHECK
+					// B. EXISTING USER CHECK (Returning Users)
 					if (userSnap.exists()) {
 						const data = userSnap.data();
 						const role = data.role || 'student';
@@ -833,21 +829,17 @@ permalink: /DoD_Login_Style.html
 						
 						setTimeout(() => {
 							if (role === 'admin') window.location.href = 'Admin_Room.html';
-							else if (role === 'contractor') window.location.href = 'Contractor_Room.html'; // <--- GOLD ACCESS
+							else if (role === 'contractor') window.location.href = 'Contractor_Room.html'; 
 							else if (role === 'freelancer') window.location.href = 'Freelancers_Room.html';
 							else if (cp < 4) window.location.href = 'User_Registeration_Form.html';
 							else window.location.href = 'Student_Room.html';
 						}, 1000);
 
 					} else {
-						// C. NEW RECRUIT (The Fix)
-						// If they logged in via Google but haven't picked a role...
-						
+						// C. NEW RECRUIT (The Logic Fix)
 						if (selectedRole === "") {
 							typeStatus("> ERROR: DESIGNATION MISSING.", "#ff004c");
-							alert("HALT! YOU MUST SELECT 'STUDENT' OR 'FREELANCER' TAB BEFORE SIGNING UP.");
-							
-							// Boot them out so they try again properly
+							alert("HALT! YOU MUST SELECT A DESIGNATION (Student/Freelancer/Contractor).");
 							await signOut(auth);
 							return;
 						}
@@ -864,11 +856,10 @@ permalink: /DoD_Login_Style.html
 							is_banned: false
 						};
 
-						// Fast Track Mercenary Logic
-						if (selectedRole === 'freelancer') {
-							dossier.tier = 'MERCENARY';
-							dossier.status = 'ACTIVE';
-							dossier.checkpoint = 4; // Skip Form
+						// Fast Track Mercenary/Contractor Logic (Set default status)
+						if (selectedRole === 'freelancer' || selectedRole === 'contractor') {
+							dossier.status = 'PENDING';
+							dossier.checkpoint = 4; // Skip basic form
 						}
 
 						// CHANGE THE REDIRECT LOGIC HERE:
@@ -876,8 +867,11 @@ permalink: /DoD_Login_Style.html
 						setTimeout(() => {
 							if (selectedRole === 'student') {
 								window.location.href = 'User_Registeration_Form.html';
+							} else if (selectedRole === 'contractor') {
+								// NOW we send them to the Gold Form
+								window.location.href = 'Contractor_Application.html';
 							} else {
-								// FREELANCERS GO TO A DIFFERENT ROOM
+								// Freelancers
 								window.location.href = 'Freelancer_Application.html';
 							}
 						}, 1000);
