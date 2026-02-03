@@ -717,6 +717,15 @@ permalink: /DoD_Login_Style.html
 						$('#login-form').fadeIn(300);
 					});
 				});
+				
+				// --- C. THE SAFETY TIMER (CRITICAL FIX) ---
+				setTimeout(function() {
+					if ($('#page-loader').is(':visible')) {
+						console.warn("Security Block Detected? Forcing Interface Open...");
+						$('#page-loader').fadeOut(600);
+						$('.login-container').css('display', 'flex').hide().fadeIn(800);
+					}
+				}, 2500);
 			});
 		</script>
 
