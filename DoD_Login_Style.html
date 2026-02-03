@@ -543,7 +543,7 @@ permalink: /DoD_Login_Style.html
 						0011010010110...<br>
 						<br>
 						<br>
-						I am Handsome a lot!
+						I am Handsome too much a lot! I am Unstoppable!
 					</div>
 				</div>
 			</div>
@@ -594,6 +594,11 @@ permalink: /DoD_Login_Style.html
 					</a>
 					
 				</form>
+				
+				
+				
+				
+				
 
 				<form id="form-register" onsubmit="event.preventDefault();">
 					
@@ -636,7 +641,7 @@ permalink: /DoD_Login_Style.html
 						<input type="password" id="reg-pass" class="titan-field" placeholder="••••••" required>
 					</div>
 
-					<button type="submit" id="btn-register" class="cmd-btn btn-reg" style="background:var(--mh-blue); color:#000;">
+					<button type="submit" id="btn-register" class="execute-btn">
 						INITIALIZE PROFILE
 					</button>
 					
@@ -777,37 +782,26 @@ permalink: /DoD_Login_Style.html
 			};
 
 			// Card Selector (UPGRADED)
-			// Card Selector (LOGIC REPAIRED: No Immediate Redirect)
-			window.selectDesignation = (role) => { 
-				// 1. Just store the selection
-				selectedRole = role; 
-				document.getElementById('reg-role').value = role;
+			// Card Selector (REPAIRED & CLEAN)
+            window.selectDesignation = (role) => {
+                // 1. Update Global Memory
+                selectedRole = role;
+                
+                // 2. Update Hidden Input (So the form knows what to send)
+                const hiddenInput = document.getElementById('reg-role');
+                if(hiddenInput) hiddenInput.value = role;
 
-				// 2. Update Visual Class (Highlight the card)
-				const cards = document.querySelectorAll('.role-card');
-				cards.forEach(c => {
-					c.classList.remove('selected');
-					if(c.getAttribute('data-role') === role) {
-						c.classList.add('selected');
-					}
-				});
-			};
+                // 3. Visual Feedback (Highlight the card)
+                const cards = document.querySelectorAll('.role-card');
+                cards.forEach(c => {
+                    c.classList.remove('selected'); // Turn off others
+                    if(c.getAttribute('data-role') === role) {
+                        c.classList.add('selected'); // Turn on clicked
+                    }
+                });
 
-				// 2. STANDARD LOGIC
-				selectedRole = role; // <--- CRITICAL: UPDATE GLOBAL MEMORY
-				
-				// Update Hidden Input
-				document.getElementById('reg-role').value = role;
-
-				// Update Visual Class
-				const cards = document.querySelectorAll('.role-card');
-				cards.forEach(c => {
-					c.classList.remove('selected');
-					if(c.getAttribute('data-role') === role) {
-						c.classList.add('selected');
-					}
-				});
-			};
+                console.log("DESIGNATION SELECTED:", role.toUpperCase());
+            };
 
 			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
 			// This is the brain. It decides where users go.
@@ -933,7 +927,7 @@ permalink: /DoD_Login_Style.html
 					e.preventDefault();
 					// Ensure we have a role from the clicks
 					if(selectedRole === "") {
-						alert("PLEASE SELECT A DESIGNATION (Student/Freelancer)");
+						alert("HALT! YOU MUST CLICK A ROLE (Student / Freelancer / Contractor) BEFORE REGISTERING.");
 						return;
 					}
 
