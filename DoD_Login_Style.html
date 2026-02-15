@@ -584,7 +584,7 @@ permalink: /DoD_Login_Style.html
 					</div>
 					
 					<div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #666;">
-						<a href="#" style="color: #FFD700; text-decoration: none;">Apply for Mercenary Status</a>
+						<a href="#" onclick="initiateSpecOpsProtocol()" style="color: #FFD700; text-decoration: none;">Apply for SpecOps (Operative) Status</a>
 					</div>
 				
 					<div class="status-log" id="status-display"></div>
@@ -660,7 +660,7 @@ permalink: /DoD_Login_Style.html
 					</div>
 					
 					<div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #666;">
-						<a href="#" style="color: #FFD700; text-decoration: none;">Apply for Mercenary Status</a>
+						<a href="#" onclick="initiateSpecOpsProtocol()" style="color: #FFD700; text-decoration: none;">Apply for SpecOps (Operative) Status</a>
 					</div>
 				
 					<div class="status-log" id="status-display"></div>
@@ -730,12 +730,12 @@ permalink: /DoD_Login_Style.html
 		</script>
 
 		<script type="module">
-			// 1. IMPORTS (Standard Stable Version 9.22.0)
+			// 1. IMPORTS (Standard Stable Version 12.7.0)
 			import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 			import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 			import { getFirestore, doc, getDoc, setDoc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-			// 2. CONFIGURATION (Replace with your actual keys)
+			// 2. CONFIGURATION (ENSURE THESE ARE YOUR REAL KEYS)
 			const firebaseConfig = {
 				apiKey: "YOUR_API_KEY",
 				authDomain: "mhstudios-836.firebaseapp.com",
@@ -748,17 +748,19 @@ permalink: /DoD_Login_Style.html
 			const app = initializeApp(firebaseConfig);
 			const auth = getAuth(app);
 			const db = getFirestore(app);
-			const DB_PATH = "artifacts/MH_Studios_Project"; // Your Secure Path
+			
+			// NOTE: This path is defined but the logic below uses specific paths. 
+			// Keeping it for consistency with other files.
+			const DB_PATH = "artifacts/mhstudios-836"; 
 
 			// --- GLOBAL INTEL ---
 			let selectedRole = "student"; // Default
 
-			// --- 3. UI FUNCTIONS (PRESERVED) ---
+			// --- 3. UI FUNCTIONS ---
 			
 			// Status Display
 			function typeStatus(text, color = "#00e5ff") {
 				const display = document.getElementById('status-display');
-				// Also support your 'sys-alert' if you use that ID
 				const alertBox = document.getElementById('sys-alert'); 
 				
 				if(display) {
@@ -766,22 +768,11 @@ permalink: /DoD_Login_Style.html
 					display.innerText = text;
 					display.style.opacity = "1";
 				}
-				if(alertBox) {
-					alertBox.style.display = 'block';
-					alertBox.style.color = color;
-					alertBox.style.borderColor = color;
-					alertBox.style.background = color + '10';
-					alertBox.innerText = text;
-				}
 				console.log(`[SYSTEM]: ${text}`);
 			}
 
 			// Tab Switcher
 			window.switchTab = (tab) => {
-				// If you have sys-alert, hide it on switch
-				const alertBox = document.getElementById('sys-alert');
-				if(alertBox) alertBox.style.display = 'none';
-
 				if(tab === 'login') {
 					document.getElementById('login-form').style.display = 'block';
 					document.getElementById('form-register').style.display = 'none';
@@ -795,103 +786,125 @@ permalink: /DoD_Login_Style.html
 				}
 			};
 
-			// Card Selector (UPGRADED)
-			// Card Selector (REPAIRED & CLEAN)
-            window.selectDesignation = (role) => {
-                // 1. Update Global Memory
-                selectedRole = role;
-                
-                // 2. Update Hidden Input (So the form knows what to send)
-                const hiddenInput = document.getElementById('reg-role');
-                if(hiddenInput) hiddenInput.value = role;
+			// Card Selector
+			window.selectDesignation = (role) => {
+				selectedRole = role;
+				const hiddenInput = document.getElementById('reg-role');
+				if(hiddenInput) hiddenInput.value = role;
 
-                // 3. Visual Feedback (Highlight the card)
-                const cards = document.querySelectorAll('.role-card');
-                cards.forEach(c => {
-                    c.classList.remove('selected'); // Turn off others
-                    if(c.getAttribute('data-role') === role) {
-                        c.classList.add('selected'); // Turn on clicked
-                    }
-                });
+				const cards = document.querySelectorAll('.role-card');
+				cards.forEach(c => {
+					c.classList.remove('selected'); 
+					if(c.getAttribute('data-role') === role) {
+						c.classList.add('selected'); 
+					}
+				});
+				console.log("DESIGNATION SELECTED:", role.toUpperCase());
+			};
 
-                console.log("DESIGNATION SELECTED:", role.toUpperCase());
-            };
+			// SPECOPS TRIGGER (The Secret Link)
+			window.initiateSpecOpsProtocol = function() {
+				$('#btn-signup').click();
+				selectDesignation('freelancer'); // Operatives start as Freelancers
+				sessionStorage.setItem('target_tier', 'OPERATIVE'); // FLAG THEM
+				
+				typeStatus("> PRIORITY ONE: SPECOPS ENLISTMENT INITIALIZED...", "#ff004c");
+				$('.panel-title').text("ENLIST: OPERATIVE");
+				$('.panel-title').css('color', '#ff004c');
+			}
 
-			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
-			// This is the brain. It decides where users go.
-			
-			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
+			// --- 4. THE GOD MODE ROUTER (FINAL VERSION) ---
 			async function routeUser(user) {
 				typeStatus("> VERIFYING BIOMETRICS...", "#FFD700");
-				
+
 				try {
-					const userRef = doc(db, "users", user.uid); 
+					// Updated Path to match your Database Structure
+					const userRef = doc(db, "artifacts", "mhstudios-836", "users", user.uid);
 					const userSnap = await getDoc(userRef);
 
-					// A. GOD MODE CHECK
-					if (user.email === "mhjerjawi836@gmail.com") {
-						typeStatus("> COMMANDER RECOGNIZED. OVERRIDING PROTOCOLS...", "#ff004c");
-						await setDoc(userRef, {
-							uid: user.uid, email: user.email, role: 'admin', rank: 'GENERAL', lastLogin: serverTimestamp(), is_banned: false
-						}, { merge: true });
-						setTimeout(() => window.location.href = 'Admin_Room.html', 1000);
-						return;
-					}
-
-					// B. EXISTING USER CHECK (Returning Users)
+					// A. EXISTING USER CHECK
 					if (userSnap.exists()) {
 						const data = userSnap.data();
 						const role = data.role || 'student';
-						const cp = data.checkpoint || 1;
+						const cp = data.checkpoint || 1; 
 
 						typeStatus(`> CLEARANCE LEVEL: ${role.toUpperCase()}`, "#00ff41");
-						
+
 						setTimeout(() => {
 							if (role === 'admin') window.location.href = 'Admin_Room.html';
-							else if (role === 'contractor') window.location.href = 'Contractor_Room.html'; 
-							else if (role === 'freelancer') window.location.href = 'Freelancers_Room.html';
-							else if (cp < 4) window.location.href = 'User_Registeration_Form.html';
-							else window.location.href = 'Student_Room.html';
+							else if (role === 'operative') window.location.href = 'Operative_Room.html';
+							
+							else if (role === 'contractor') {
+								if(data.status === 'ACTIVE') window.location.href = 'Contractor_Room.html';
+								else window.location.href = 'Contractor_Application.html';
+							}
+							
+							else if (role === 'freelancer') {
+								 if(cp < 4) window.location.href = 'Freelancer_Application.html';
+								 else window.location.href = 'Freelancers_Room.html';
+							}
+							
+							else { // Student
+								if(cp < 4) window.location.href = 'User_Registeration_Form.html';
+								else window.location.href = 'Student_Room.html';
+							}
 						}, 1000);
 
 					} else {
-						// C. NEW RECRUIT (The Logic Fix)
+						// B. NEW RECRUIT (CREATION LOGIC)
+						
 						if (selectedRole === "") {
 							typeStatus("> ERROR: DESIGNATION MISSING.", "#ff004c");
-							alert("HALT! YOU MUST SELECT A DESIGNATION (Student/Freelancer/Contractor).");
+							alert("HALT! YOU MUST SELECT A DESIGNATION.");
 							await signOut(auth);
 							return;
 						}
 
-						// Create the Dossier
+						// CHECK FOR SPECOPS FLAG
+						const isSpecOps = sessionStorage.getItem('target_tier') === 'OPERATIVE';
+						
+						// PREPARE DOSSIER
 						let dossier = {
 							uid: user.uid,
 							email: user.email,
-							name: user.displayName || "Recruit",
-							role: selectedRole, 
+							first_name: user.displayName ? user.displayName.split(' ')[0] : "Recruit",
+							last_name: user.displayName ? (user.displayName.split(' ').slice(1).join(' ') || "") : "",
+							
+							role: selectedRole, // 'student', 'freelancer', 'contractor'
+							
+							// IF SPEC OPS, MARK THEM
+							tier: isSpecOps ? 'OPERATIVE' : (selectedRole === 'freelancer' ? 'MERCENARY' : 'STUDENT'),
+							upgrade_requested: isSpecOps ? true : false,
+
 							wallet_balance: 0,
 							createdAt: serverTimestamp(),
-							checkpoint: 1,
-							is_banned: false
+							is_banned: false,
+							checkpoint: 1, 
+							status: 'INCOMPLETE' 
 						};
 
-						// Fast Track Mercenary/Contractor Logic (Set default status)
-						if (selectedRole === 'freelancer' || selectedRole === 'contractor') {
-							dossier.status = 'PENDING';
-							dossier.checkpoint = 4; // Skip basic form
+						// GOD MODE BACKDOOR
+						if (user.email === "mhjerjawi836@gmail.com") {
+							dossier.role = 'admin';
+							dossier.rank = 'GENERAL';
 						}
 
-						// CHANGE THE REDIRECT LOGIC HERE:
-						typeStatus("> DOSSIER CREATED. INITIATING ONBOARDING...", "#00ff41");
+						await setDoc(userRef, dossier);
+
+						typeStatus(`> DOSSIER INITIALIZED. STARTING INDUCTION...`, "#00ff41");
+						
+						// C. REDIRECT TO APPLICATION
 						setTimeout(() => {
-							if (selectedRole === 'student') {
+							if (dossier.role === 'admin') {
+								window.location.href = 'Admin_Room.html';
+							} else if (selectedRole === 'student') {
 								window.location.href = 'User_Registeration_Form.html';
 							} else if (selectedRole === 'contractor') {
-								// NOW we send them to the Gold Form
 								window.location.href = 'Contractor_Application.html';
 							} else {
-								// Freelancers
-								window.location.href = 'Freelancer_Application.html';
+								// FREELANCER / SPECOPS PIPELINE
+								const mode = isSpecOps ? 'specops' : 'standard';
+								window.location.href = `Freelancer_Application.html?mode=${mode}`;
 							}
 						}, 1000);
 					}
@@ -904,13 +917,12 @@ permalink: /DoD_Login_Style.html
 
 			// --- 5. EVENT LISTENERS ---
 
-			// A. GOOGLE LOGIN (Unified Handler)
+			// A. GOOGLE LOGIN
 			const handleGoogle = async () => {
 				const provider = new GoogleAuthProvider();
 				typeStatus("> CONTACTING SATELLITE...", "#FFD700");
 				try {
 					const result = await signInWithPopup(auth, provider);
-					// Pass the user to the Router to decide what to do
 					await routeUser(result.user);
 				} catch (err) {
 					typeStatus("> UPLINK FAILED: " + err.message, "#ff004c");
@@ -939,9 +951,8 @@ permalink: /DoD_Login_Style.html
 			if(regForm) {
 				regForm.addEventListener('submit', async (e) => {
 					e.preventDefault();
-					// Ensure we have a role from the clicks
 					if(selectedRole === "") {
-						alert("HALT! YOU MUST CLICK A ROLE (Student / Freelancer / Contractor) BEFORE REGISTERING.");
+						alert("HALT! SELECT A DESIGNATION FIRST.");
 						return;
 					}
 
@@ -952,7 +963,6 @@ permalink: /DoD_Login_Style.html
 					try {
 						const cred = await createUserWithEmailAndPassword(auth, email, pass);
 						await updateProfile(cred.user, { displayName: name });
-						// Route User will handle the DB creation logic since we set selectedRole
 						await routeUser(cred.user); 
 					} catch (err) {
 						typeStatus("> REGISTRATION FAILED: " + err.message, "#ff004c");
@@ -963,9 +973,7 @@ permalink: /DoD_Login_Style.html
 			// Connect Buttons
 			document.getElementById('google-btn')?.addEventListener('click', handleGoogle);
 			document.getElementById('google-reg-btn')?.addEventListener('click', handleGoogle);
-			document.getElementById('btn-google-reg')?.addEventListener('click', handleGoogle);
-			
-			// Connect Tabs
+			document.getElementById('btn-login')?.addEventListener('click', () => switchTab('login'));
 			document.getElementById('btn-signup')?.addEventListener('click', () => switchTab('register'));
 
 		</script>
