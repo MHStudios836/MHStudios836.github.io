@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<title>MH STUDIOS | EXECUTIVE COMMAND</title>
+		<title>MH COMMAND | SPECOPS DIVISION</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<meta name="description" content="Corporate Client Dashboard for MH Studios." />
+		<meta name="description" content="Elite Operative Dashboard for MH Studios." />
 		
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -12,30 +12,50 @@
 		
 		<style>
 			/* ==========================================================================
-			   THEME: TITAN GOLD (EXECUTIVE CLASS)
+			   THEME: TITAN OMEGA (RED + GOLD SPECOPS)
 			   ========================================================================== */
 			:root {
-				--mh-gold: #FFD700;
-				--mh-gold-dim: rgba(255, 215, 0, 0.15);
-				--mh-dark: #05070a;
-				--mh-panel: rgba(13, 17, 23, 0.95);
-				--mh-text: #e0e0e0;
-				--mh-red: #ff004c;
+				--ops-red: #ff004c;           /* Aggression / Alert */
+				--ops-red-dim: rgba(255, 0, 76, 0.15);
+				--ops-gold: #FFD700;          /* Elite Status */
+				--ops-dark: #050505;          /* Void */
+				--ops-panel: rgba(11, 13, 16, 0.85); /* Semi-Transparent for Video Effect */
+				--ops-text: #e0e0e0;
 			}
 
 			body {
 				background-color: #000;
-				color: var(--mh-text);
+				color: var(--ops-text);
 				font-family: 'Uni Sans', sans-serif;
 				overflow-x: hidden;
 				margin: 0;
 			}
 
+			/* --- 0. TV STATIC & VIDEO LAYERS (IMPORTED FROM DOD) --- */
+			#video-layer {
+				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+				z-index: -5;
+				object-fit: cover;
+				opacity: 0.5;
+				/* TACTICAL FILTER: Turns the blue video into Red/Gold/Dark style */
+				filter: grayscale(100%) sepia(100%) hue-rotate(320deg) saturate(3) contrast(1.2);
+			}
+
+			#mesh-layer {
+				position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+				z-index: -4;
+				background-image: 
+					linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+					linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(255, 0, 0, 0.02));
+				background-size: 100% 2px, 3px 100%;
+				pointer-events: none;
+			}
+
 			/* --- SCROLLBAR --- */
 			::-webkit-scrollbar { width: 8px; }
 			::-webkit-scrollbar-track { background: #000; }
-			::-webkit-scrollbar-thumb { background: var(--mh-gold); border-radius: 4px; }
-			::-webkit-scrollbar-thumb:hover { background: #fff; }
+			::-webkit-scrollbar-thumb { background: var(--ops-red); border-radius: 4px; }
+			::-webkit-scrollbar-thumb:hover { background: var(--ops-gold); }
 
 			/* --- GLOBAL UTILITIES --- */
 			a { text-decoration: none; transition: 0.3s; }
@@ -53,11 +73,11 @@
 				text-transform: uppercase;
 				color: #fff;
 				margin: 0;
-				text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+				text-shadow: 0 0 20px rgba(255, 0, 76, 0.4);
 			}
 			.section-header span {
 				font-family: 'Courier New', monospace;
-				color: var(--mh-gold);
+				color: var(--ops-red);
 				font-size: 0.9em;
 				letter-spacing: 3px;
 				display: block;
@@ -65,34 +85,37 @@
 			}
 			.section-header::after {
 				content: ''; display: block; width: 80px; height: 4px;
-				background: var(--mh-gold); margin: 20px auto 0;
-				box-shadow: 0 0 10px var(--mh-gold);
+				background: var(--ops-red); margin: 20px auto 0;
+				box-shadow: 0 0 10px var(--ops-red);
 			}
 
-			/* --- 1. NAVIGATION (STICKY HUD) --- */
+			/* --- 1. NAVIGATION (TACTICAL HUD) --- */
 			#tactical-nav {
 				position: fixed; top: 0; left: 0; width: 100%;
 				padding: 15px 30px;
 				z-index: 999;
 				display: flex; justify-content: space-between; align-items: center;
-				background: rgba(5, 7, 10, 0.95);
-				backdrop-filter: blur(15px);
-				border-bottom: 2px solid var(--mh-gold);
-				box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+				background: rgba(5, 5, 5, 0.9);
+				backdrop-filter: blur(10px);
+				border-bottom: 2px solid var(--ops-red);
+				box-shadow: 0 5px 20px rgba(255, 0, 76, 0.1);
 			}
 
 			.brand-link {
 				display: flex; align-items: center; gap: 15px;
 				color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; letter-spacing: 2px; font-size: 1.2em;
 			}
-			.brand-link img { height: 48px; filter: drop-shadow(0 0 5px var(--mh-gold)); }
+			.brand-link img { height: 48px; filter: drop-shadow(0 0 5px var(--ops-red)); }
 
 			/* --- BIOMETRIC SCANNER (Avatar) --- */
-			.corp-profile-widget {
+			.ops-profile-widget {
 				position: relative;
 				display: flex; align-items: center; gap: 15px;
 				border-right: 1px solid #333; padding-right: 20px; margin-right: 20px;
 			}
+			.ops-info { text-align: right; }
+			.ops-codename { display: block; color: var(--ops-gold); font-weight: bold; letter-spacing: 1px; font-size: 0.9em; }
+			.ops-rank { display: block; color: #888; font-size: 0.7em; font-family: 'Courier New', monospace; }
 
 			.avatar-wrapper {
 				position: relative;
@@ -100,30 +123,14 @@
 				cursor: pointer;
 				border-radius: 50%;
 				overflow: hidden;
-				border: 2px solid var(--mh-gold);
+				border: 2px solid var(--ops-red);
 				transition: 0.3s;
 			}
-
 			.avatar-wrapper:hover {
-				box-shadow: 0 0 15px var(--mh-gold);
+				box-shadow: 0 0 15px var(--ops-red);
 				border-color: #fff;
 			}
-
-			.corp-avatar {
-				width: 100%; height: 100%; object-fit: cover;
-			}
-
-			/* The "SCAN" Overlay */
-			.avatar-overlay {
-				position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-				background: rgba(0,0,0,0.7);
-				display: flex; justify-content: center; align-items: center;
-				opacity: 0; transition: 0.3s;
-			}
-
-			.avatar-wrapper:hover .avatar-overlay { opacity: 1; }
-
-			.avatar-overlay i { color: var(--mh-gold); font-size: 1.2em; }
+			.ops-avatar { width: 100%; height: 100%; object-fit: cover; }
 
 			/* Hidden Input */
 			#biometric-upload { display: none; }
@@ -134,14 +141,14 @@
 				display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
 			}
 			.menu-trigger:hover {
-				background: var(--mh-gold); border-color: var(--mh-gold); color: #000; box-shadow: 0 0 15px var(--mh-gold);
+				background: var(--ops-red); border-color: var(--ops-red); color: #fff; box-shadow: 0 0 15px var(--ops-red);
 			}
 
 			/* --- 2. MENU OVERLAY --- */
 			#menu-overlay {
 				position: fixed; top: 0; right: -100%; width: 400px; height: 100%;
 				background: rgba(5, 7, 10, 0.98);
-				border-left: 2px solid var(--mh-gold);
+				border-left: 2px solid var(--ops-red);
 				z-index: 1000;
 				padding: 40px;
 				display: flex; flex-direction: column;
@@ -149,20 +156,21 @@
 			}
 			#menu-overlay.active { right: 0; }
 			.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
-			.menu-close:hover { color: var(--mh-red); }
+			.menu-close:hover { color: var(--ops-red); }
 			.menu-links a {
 				display: flex; align-items: center; justify-content: space-between;
 				font-size: 1.2em; color: #fff; padding: 15px 0;
 				border-bottom: 1px solid rgba(255,255,255,0.1);
 				text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
 			}
-			.menu-links a:hover { color: var(--mh-gold); padding-left: 10px; border-bottom-color: var(--mh-gold); }
+			.menu-links a:hover { color: var(--ops-red); padding-left: 10px; border-bottom-color: var(--ops-red); }
 
-			/* --- 3. DASHBOARD HERO (GOLD) --- */
+			/* --- 3. DASHBOARD HERO (RED ALERT) --- */
 			#dashboard-hero {
 				padding: 150px 20px 80px;
-				background: radial-gradient(circle at top right, rgba(255, 215, 0, 0.1), transparent 60%), #05070a;
-				border-bottom: 1px solid #222;
+				/* Translucent Background to see the video */
+				background: linear-gradient(180deg, rgba(5, 7, 10, 0.7) 0%, rgba(5, 7, 10, 0.4) 100%);
+				border-bottom: 1px solid rgba(255,255,255,0.1);
 			}
 			
 			.dashboard-grid {
@@ -170,110 +178,127 @@
 			}
 
 			.welcome-card {
-				background: rgba(255,255,255,0.03); border: 1px solid #333; padding: 40px;
+				background: rgba(10, 10, 10, 0.6); /* Glass */
+				border: 1px solid #333; padding: 40px;
 				position: relative; overflow: hidden;
-			}
-			.welcome-card::before {
-				content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--mh-gold);
+				border-left: 4px solid var(--ops-red);
+				backdrop-filter: blur(5px);
 			}
 			.welcome-title { font-size: 2.5em; font-weight: 900; margin: 0 0 10px 0; color: #fff; text-transform: uppercase; }
-			.welcome-sub { color: #888; font-family: 'Courier New', monospace; font-size: 1.1em; }
-
+			.welcome-sub { color: #aaa; font-family: 'Courier New', monospace; font-size: 1.1em; }
+			
 			.balance-card {
 				background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0,0,0,0.8));
-				border: 1px solid var(--mh-gold); padding: 30px; text-align: center;
+				border: 1px solid var(--ops-gold); padding: 30px; text-align: center;
 				display: flex; flex-direction: column; justify-content: center; align-items: center;
 				box-shadow: 0 0 30px rgba(255, 215, 0, 0.05);
+				backdrop-filter: blur(5px);
 			}
 			.balance-val { font-size: 3em; font-weight: 900; color: #fff; margin: 10px 0; }
-			.balance-label { color: var(--mh-gold); letter-spacing: 2px; font-size: 0.8em; font-weight: bold; }
+			.balance-label { color: var(--ops-gold); letter-spacing: 2px; font-size: 0.8em; font-weight: bold; }
 
-			/* --- 4. ACTION BAR --- */
+			/* --- 4. ACTION BAR (TACTICAL) --- */
 			.action-bar {
 				max-width: 1400px; margin: 30px auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 0 20px;
 			}
 			.action-btn {
-				background: #111; border: 1px solid #333; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s;
+				background: rgba(20, 20, 20, 0.8); /* Glass */
+				border: 1px solid #333; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s;
+				position: relative; overflow: hidden;
+				backdrop-filter: blur(5px);
 			}
-			.action-btn i { font-size: 2em; color: #666; margin-bottom: 10px; transition: 0.3s; }
+			.action-btn i { font-size: 2em; color: #555; margin-bottom: 10px; transition: 0.3s; }
 			.action-btn span { display: block; font-weight: bold; color: #888; font-size: 0.9em; letter-spacing: 1px; }
-			.action-btn:hover { border-color: var(--mh-gold); background: var(--mh-gold-dim); transform: translateY(-5px); }
-			.action-btn:hover i, .action-btn:hover span { color: var(--mh-gold); }
-			.action-btn.primary { border-color: var(--mh-gold); background: rgba(255, 215, 0, 0.05); }
-			.action-btn.primary i { color: var(--mh-gold); }
 			
-			/* --- 5. ACTIVE CONTRACTS (THE ARMORY STYLE) --- */
-			#contracts-sector { padding: 60px 20px; background: #080a0e; position: relative; }
-			.contract-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; max-width: 1400px; margin: 0 auto; }
+			.action-btn:hover { border-color: var(--ops-red); background: var(--ops-red-dim); transform: translateY(-5px); }
+			.action-btn:hover i, .action-btn:hover span { color: #fff; }
+			
+			.action-btn.gold-tier { border-color: var(--ops-gold); }
+			.action-btn.gold-tier:hover { background: rgba(255, 215, 0, 0.1); }
+			.action-btn.gold-tier:hover i { color: var(--ops-gold); }
+
+			/* --- 5. ACTIVE OPERATIONS (THE FEED) --- */
+			#ops-sector { 
+				padding: 60px 20px; 
+				background: rgba(8, 10, 14, 0.9); /* Semi-Transparent */
+				position: relative; 
+			}
+			.op-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; max-width: 1400px; margin: 0 auto; }
 			
 			.holo-card {
-				background: rgba(20, 24, 30, 0.9); border: 1px solid rgba(255,255,255,0.1); 
+				background: rgba(20, 24, 30, 0.7); /* Glass */
+				border: 1px solid rgba(255,255,255,0.1); 
 				transition: 0.4s; position: relative; overflow: hidden;
 				display: flex; flex-direction: column;
+				backdrop-filter: blur(4px);
 			}
-			.holo-card:hover { border-color: var(--mh-gold); box-shadow: 0 0 30px rgba(255, 215, 0, 0.1); transform: translateY(-5px); }
+			.holo-card:hover { border-color: var(--ops-red); box-shadow: 0 0 30px rgba(255, 0, 76, 0.15); transform: translateY(-5px); }
 			
 			.status-strip { height: 4px; width: 100%; background: #333; }
-			.status-strip.active { background: #00ff41; box-shadow: 0 0 10px #00ff41; }
-			.status-strip.pending { background: var(--mh-gold); box-shadow: 0 0 10px var(--mh-gold); }
+			.status-strip.active { background: var(--ops-red); box-shadow: 0 0 10px var(--ops-red); } /* Active Op */
+			.status-strip.done { background: var(--ops-gold); box-shadow: 0 0 10px var(--ops-gold); } /* Completed */
 			
 			.card-body { padding: 25px; }
 			.c-header { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
 			.c-id { font-family: 'Courier New', monospace; color: #666; font-size: 0.8em; }
-			.c-date { font-size: 0.8em; color: var(--mh-gold); }
+			.c-date { font-size: 0.8em; color: var(--ops-red); }
 			
 			.c-title { font-size: 1.2em; color: #fff; font-weight: bold; margin-bottom: 10px; }
 			.c-desc { font-size: 0.9em; color: #aaa; line-height: 1.5; margin-bottom: 20px; }
 			
 			.c-meta { display: flex; gap: 15px; font-size: 0.8em; color: #888; margin-bottom: 20px; }
-			.c-meta i { color: var(--mh-gold); margin-right: 5px; }
+			.c-meta i { color: var(--ops-gold); margin-right: 5px; }
 
 			.c-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
-			.c-price { font-size: 1.2em; font-weight: 900; color: #fff; }
-			.btn-manage {
-				padding: 8px 15px; background: transparent; border: 1px solid var(--mh-gold); color: var(--mh-gold);
+			.c-payout { font-size: 1.2em; font-weight: 900; color: var(--ops-gold); }
+			.btn-execute {
+				padding: 8px 15px; background: transparent; border: 1px solid var(--ops-red); color: var(--ops-red);
 				font-size: 0.8em; font-weight: bold; cursor: pointer; transition: 0.3s;
 			}
-			.btn-manage:hover { background: var(--mh-gold); color: #000; }
+			.btn-execute:hover { background: var(--ops-red); color: #fff; box-shadow: 0 0 10px var(--ops-red); }
 
 			/* --- 6. FOOTER --- */
-			#tactical-footer { padding: 80px 20px; background: #020202; border-top: 1px solid #111; font-size: 0.9em; color: #666; }
+			#tactical-footer { 
+				padding: 80px 20px; 
+				background: rgba(2, 2, 2, 0.95); 
+				border-top: 1px solid #111; font-size: 0.9em; color: #666; 
+			}
 			.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); max-width: 1200px; margin: 0 auto; gap: 50px; }
-			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--mh-gold); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
+			.footer-col h4 { color: #fff; margin-bottom: 25px; border-left: 3px solid var(--ops-red); padding-left: 15px; font-size: 1.1em; letter-spacing: 1px; }
 			.footer-col ul { list-style: none; padding: 0; }
 			.footer-col li { margin-bottom: 12px; }
 			.footer-col a { color: #666; text-decoration: none; transition: 0.2s; }
-			.footer-col a:hover { color: var(--mh-gold); padding-left: 5px; }
+			.footer-col a:hover { color: var(--ops-red); padding-left: 5px; }
 
 			/* RESPONSIVE */
 			@media (max-width: 900px) {
 				.dashboard-grid, .action-bar { grid-template-columns: 1fr; }
-				.corp-profile-widget { display: none; }
+				.ops-profile-widget { display: none; }
 			}
 		</style>
 	</head>
 	<body>
+	
+		
+		<div id="mesh-layer"></div>
 
 		<nav id="tactical-nav">
 			<div style="display:flex; align-items:center;">
 				<a href="index.html" class="brand-link">
 					<img src="images/Logo_1.png" alt="MH LOGO">
-					MH STUDIOS<span style="color:var(--mh-gold)">//</span>CORP
+					MH COMMAND<span style="color:var(--ops-red)">//</span>SPECOPS
 				</a>
 			</div>
 			
 			<div style="display:flex; align-items:center;">
-				<div class="corp-profile-widget">
-					<div class="corp-info">
-						<span class="corp-name" id="nav-comp-name">INITIALIZING...</span>
-						<span class="corp-role">EXECUTIVE ACCOUNT</span>
+				<div class="ops-profile-widget">
+					<div class="ops-info">
+						<span class="ops-codename" id="nav-codename">INITIALIZING...</span>
+						<span class="ops-rank">TIER 1 OPERATIVE</span>
 					</div>
 					
 					<div class="avatar-wrapper" onclick="document.getElementById('biometric-upload').click()">
-						<img src="images/profile_placeholder.png" class="corp-avatar" id="nav-avatar">
-						<div class="avatar-overlay">
-							<i class="fas fa-camera"></i>
-						</div>
+						<img src="images/profile_placeholder.png" class="ops-avatar" id="nav-avatar">
 					</div>
 					
 					<input type="file" id="biometric-upload" accept="image/*">
@@ -289,11 +314,11 @@
 		<div id="menu-overlay">
 			<div class="menu-close"><i class="fas fa-times"></i></div>
 			<div class="menu-links">
-				<a href="Contractor_Room.html" style="color:var(--mh-gold);"><i class="fas fa-tachometer-alt" style="width:30px;"></i> Dashboard</a>
+				<a href="Operative_Room.html" style="color:var(--ops-red);"><i class="fas fa-crosshairs" style="width:30px;"></i> Mission Control</a>
+				<a href="Freelancers_Room.html"><i class="fas fa-globe" style="width:30px;"></i> Global Intel</a>
+				<a href="Search_Entity.html"><i class="fas fa-search" style="width:30px;"></i> Target Database</a>
 				<a href="Products_Services_Room.html"><i class="fas fa-cube" style="width:30px;"></i> The Armory</a>
-				<a href="Task_Checkout.html"><i class="fas fa-file-invoice-dollar" style="width:30px;"></i> Billing & Invoices</a>
-				<a href="#settings"><i class="fas fa-cog" style="width:30px;"></i> Company Settings</a>
-				<a href="#" id="btn-logout"><i class="fas fa-sign-out-alt" style="width:30px;"></i> Secure Logout</a>
+				<a href="#" id="btn-logout"><i class="fas fa-sign-out-alt" style="width:30px;"></i> Abort Session</a>
 			</div>
 		</div>
 
@@ -301,56 +326,56 @@
 			<div class="dashboard-grid">
 				
 				<div class="welcome-card">
-					<h1 class="welcome-title">COMMAND CENTER</h1>
+					<h1 class="welcome-title">OPERATIVE DASHBOARD</h1>
 					<div class="welcome-sub">
-						WELCOME BACK, <span id="hero-user-name" style="color:var(--mh-gold);">EXECUTIVE</span>.
-						<br>COMPANY: <span id="hero-comp-name">---</span>
+						WELCOME BACK, AGENT <span id="hero-codename" style="color:var(--ops-red);">---</span>.
+						<br>CLEARANCE: <span style="color:#fff;">TOP SECRET</span>
 					</div>
 					<div style="margin-top:20px; font-size:0.9em; color:#666;">
-						<i class="fas fa-shield-alt" style="color:var(--mh-gold);"></i> CLEARANCE LEVEL: <span style="color:#fff;">TIER 1 (VERIFIED)</span>
+						<i class="fas fa-satellite-dish" style="color:var(--ops-red);"></i> UPLINK STATUS: <span style="color:#00ff41;">SECURE</span>
 					</div>
 				</div>
 
 				<div class="balance-card">
-					<i class="fas fa-coins" style="font-size:2em; color:var(--mh-gold); opacity:0.5;"></i>
+					<i class="fas fa-trophy" style="font-size:2em; color:var(--ops-gold); margin-bottom:10px;"></i>
 					<span class="balance-val" id="wallet-balance">$0.00</span>
-					<span class="balance-label">ESCROW BALANCE</span>
+					<span class="balance-label">BOUNTY COLLECTED</span>
 					<button style="margin-top:15px; background:transparent; border:1px solid #444; color:#888; font-size:0.7em; padding:5px 10px; cursor:pointer;">
-						<i class="fas fa-plus"></i> ADD FUNDS
+						<i class="fas fa-history"></i> PAYOUT LOGS
 					</button>
 				</div>
 			</div>
 		</section>
 
 		<div class="action-bar">
-			<div class="action-btn primary" onclick="window.location.href='Student_Room.html?mode=create_mission'">
-				<i class="fas fa-plus-circle"></i>
-				<span>POST NEW CONTRACT</span>
+			<div class="action-btn" onclick="window.location.href='Freelancers_Room.html'">
+				<i class="fas fa-binoculars"></i>
+				<span>FIND CONTRACTS</span>
 			</div>
-			<div class="action-btn" onclick="alert('FEATURE LOCKED: INVOICE ARCHIVE')">
-				<i class="fas fa-file-invoice"></i>
-				<span>INVOICE HISTORY</span>
+			<div class="action-btn" onclick="document.getElementById('ops-sector').scrollIntoView({behavior:'smooth'})">
+				<i class="fas fa-crosshairs" style="color:var(--ops-red)"></i>
+				<span style="color:#fff">ACTIVE OPERATIONS</span>
 			</div>
-			<div class="action-btn" onclick="alert('FEATURE LOCKED: TALENT SEARCH')">
-				<i class="fas fa-users"></i>
-				<span>SCOUT OPERATIVES</span>
+			<div class="action-btn gold-tier" onclick="window.location.href='Search_Entity.html'">
+				<i class="fas fa-database"></i>
+				<span>INTEL DATABASE</span>
 			</div>
-			<div class="action-btn" onclick="alert('CONNECTING TO VIP SUPPORT...')">
-				<i class="fas fa-headset"></i>
-				<span>PRIORITY SUPPORT</span>
+			<div class="action-btn" onclick="alert('CONNECTING TO BLACK BOX...')">
+				<i class="fas fa-comment-alt"></i>
+				<span>SECURE COMMS</span>
 			</div>
 		</div>
 
-		<section id="contracts-sector">
+		<section id="ops-sector">
 			<div class="section-header">
-				<h2>ACTIVE CONTRACTS</h2>
-				<span>OPERATIONAL STATUS</span>
+				<h2>ACTIVE OPERATIONS</h2>
+				<span>ASSIGNED CONTRACTS</span>
 			</div>
 			
-			<div class="contract-grid" id="mission-feed">
+			<div class="op-grid" id="mission-feed">
 				<div style="grid-column: 1/-1; text-align: center; color: #666; padding: 40px;">
 					<i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>
-					SYNCING CORPORATE DATABASE...
+					DECRYPTING ASSIGNMENT DATA...
 				</div>
 			</div>
 		</section>
@@ -358,15 +383,15 @@
 		<footer id="tactical-footer">
 			<div class="footer-grid">
 				<div class="footer-col">
-					<h4>MH STUDIOS™</h4>
-					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
+					<h4>MH COMMAND</h4>
+					<p>Special Operations Division. Authorized Personnel Only.</p>
 					<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
 				</div>
 				<div class="footer-col">
 					<h4>SECTORS</h4>
 					<ul>
 						<li><a href="Products_Services_Room.html">The Armory</a></li>
-						<li><a href="Packages.html">Service Packages</a></li>
+						<li><a href="Freelancers_Room.html">Global Intel</a></li>
 						<li><a href="#">The Guild</a></li>
 					</ul>
 				</div>
@@ -383,7 +408,6 @@
 		</footer>
 
 		<script src="assets/js/jquery.min.js"></script>
-		<script type="module" src="assets/js/titan-reactor.js"></script>
 		
 		<script type="module">
 			import { auth, db, dbID } from './assets/js/firebase-init.js';
@@ -392,32 +416,37 @@
 			import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
 			const storage = getStorage();
-			let currentUserData = null; // Stores full user object for Serial Number generation
+			let currentUserData = null;
 
 			// =================================================================
 			// 1. MAIN SYSTEM INITIALIZATION
 			// =================================================================
 			onAuthStateChanged(auth, (user) => {
 				if (user) {
-					console.log("EXECUTIVE ID:", user.uid);
+					console.log("OPERATIVE RECOGNIZED:", user.uid);
 					
-					// A. LISTEN FOR PROFILE UPDATES (Real-time)
-					// This replaces 'loadCorporateProfile' to ensure we always have the latest data
+					// A. LOAD PROFILE
 					onSnapshot(doc(db, "users", user.uid), (docSnap) => {
 						if (docSnap.exists()) {
 							currentUserData = docSnap.data();
+							
+							// Check Clearance
+							if(currentUserData.role !== 'operative' && currentUserData.role !== 'admin') {
+								alert("ACCESS DENIED. INSUFFICIENT CLEARANCE.");
+								window.location.href = 'index.html';
+								return;
+							}
 							updateInterface(currentUserData);
 						}
 					});
 
-					// B. LOAD MISSION FEED
-					loadCorporateMissions(user.uid);
+					// B. LOAD ASSIGNED MISSIONS
+					loadAssignedOps(user.uid);
 
-					// C. ACTIVATE BIOMETRIC SCANNER
+					// C. SETUP BIO SCAN
 					setupBiometricUpload(user.uid);
 
 				} else {
-					// Security Bounce
 					window.location.href = "DoD_Login_Style.html";
 				}
 			});
@@ -426,27 +455,22 @@
 			// 2. UI UPDATE MATRIX
 			// =================================================================
 			function updateInterface(data) {
-				// Safe Data Extraction
-				const fullName = (data.first_name || "") + " " + (data.last_name || "");
-				const compName = data.company_name || data.company || "INDEPENDENT";
+				// Use Codename if available, else First Name
+				const codename = data.operative_data?.codename || data.first_name || "AGENT";
 				
-				// Update Nav & Hero
-				document.getElementById('nav-comp-name').innerText = compName.toUpperCase();
-				document.getElementById('hero-user-name').innerText = fullName.toUpperCase();
-				document.getElementById('hero-comp-name').innerText = compName.toUpperCase();
+				document.getElementById('nav-codename').innerText = codename.toUpperCase();
+				document.getElementById('hero-codename').innerText = codename.toUpperCase();
 				
-				// Update Avatar (If exists)
 				if(data.photoURL) {
 					document.getElementById('nav-avatar').src = data.photoURL;
 				}
 				
-				// Update Wallet
 				const balance = data.wallet_balance || 0;
 				document.getElementById('wallet-balance').innerText = "$" + balance.toLocaleString();
 			}
 
 			// =================================================================
-			// 3. BIOMETRIC UPLOAD SYSTEM (The Entity Logic)
+			// 3. BIOMETRIC UPLOAD SYSTEM
 			// =================================================================
 			function setupBiometricUpload(uid) {
 				const input = document.getElementById('biometric-upload');
@@ -455,60 +479,41 @@
 					const file = e.target.files[0];
 					if (!file) return;
 
-					// Visual Feedback
 					const avatarImg = document.getElementById('nav-avatar');
 					avatarImg.style.opacity = "0.5"; 
 
 					try {
-						// A. GENERATE SERIAL NUMBER
-						// Format: IMG-[LAST_6_OF_ID]-V[TIMESTAMP]
-						const serialSuffix = (currentUserData.titanId || uid).slice(-6).toUpperCase();
-						const imgSerial = `IMG-${serialSuffix}-V${Date.now()}`; 
+						// Format: IMG-[ID]-OPS[TIME]
+						const imgSerial = `IMG-${uid.slice(0,4)}-OPS${Date.now()}`; 
 						
-						// B. UPLOAD TO STORAGE
 						const storageRef = ref(storage, `avatars/${uid}/${imgSerial}`);
 						await uploadBytes(storageRef, file);
 						const downloadUrl = await getDownloadURL(storageRef);
 
-						// C. PREPARE THE "ENTITY" DATA PACKET
-						const entityUpdate = {
-							photoURL: downloadUrl, // Standard
-							
-							// CUSTOM ENTITY LOG
-							entity_img: imgSerial, 
-							entity_img_url: downloadUrl, 
-							entity_last_update: serverTimestamp(),
-							
-							// Enforcing Corporate Standard
-							entity_type: "CON",
-							entity_acad_typ: "CORP" 
-						};
-
-						// D. UPDATE DATABASE
 						const userRef = doc(db, "users", uid);
-						await updateDoc(userRef, entityUpdate);
+						await updateDoc(userRef, { photoURL: downloadUrl });
 
-						console.log("BIOMETRIC UPDATE COMPLETE. SERIAL:", imgSerial);
+						console.log("BIO-SCAN COMPLETE.");
 						avatarImg.style.opacity = "1";
 
 					} catch (error) {
 						console.error("UPLOAD FAILED:", error);
-						alert("BIOMETRIC SCAN FAILED: " + error.message);
+						alert("SCAN FAILED: " + error.message);
 						avatarImg.style.opacity = "1";
 					}
 				});
 			}
 
 			// =================================================================
-			// 4. MISSION FEED (Active Contracts)
+			// 4. LOAD ASSIGNED OPERATIONS (My Jobs)
 			// =================================================================
-			function loadCorporateMissions(uid) {
+			function loadAssignedOps(uid) {
 				const feed = document.getElementById('mission-feed');
 				
-				// Query: Missions created by ME (studentUid == uid)
+				// Query: Missions where I am the freelancer (freelancerUid == uid)
 				const q = query(
 					collection(db, 'artifacts', dbID, 'missions'),
-					where("studentUid", "==", uid),
+					where("freelancerUid", "==", uid),
 					orderBy("createdAt", "desc")
 				);
 
@@ -518,10 +523,10 @@
 					if (snapshot.empty) {
 						feed.innerHTML = `
 							<div style="grid-column:1/-1; text-align:center; padding:50px; border:1px dashed #333; color:#666;">
-								<i class="fas fa-folder-open" style="font-size:3em; margin-bottom:20px;"></i><br>
-								NO ACTIVE CONTRACTS FOUND.<br>
-								<button class="action-btn primary" style="margin-top:20px; display:inline-block;" onclick="window.location.href='Student_Room.html?mode=create'">
-									POST FIRST CONTRACT
+								<i class="fas fa-ban" style="font-size:3em; margin-bottom:20px; color:var(--ops-red);"></i><br>
+								NO ACTIVE OPERATIONS.<br>
+								<button class="action-btn" style="margin-top:20px; display:inline-block;" onclick="window.location.href='Freelancers_Room.html'">
+									FIND CONTRACTS
 								</button>
 							</div>
 						`;
@@ -530,34 +535,29 @@
 
 					snapshot.forEach(doc => {
 						const data = doc.data();
-						const statusClass = (data.status === 'OPEN') ? 'active' : 'pending';
-						const date = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : "N/A";
+						const statusClass = (data.status === 'ACTIVE') ? 'active' : 'done';
+						const date = data.acceptedAt ? new Date(data.acceptedAt.toDate()).toLocaleDateString() : "PENDING";
 						
-						// Priority Indicator
-						let borderStyle = "border:1px solid rgba(255,255,255,0.1);";
-						if(data.priority === 'HIGH') borderStyle = "border:1px solid var(--mh-red);";
-						if(data.status === 'COMPLETED') borderStyle = "border:1px solid #00ff41;";
-
 						const html = `
-							<div class="holo-card" style="${borderStyle}">
+							<div class="holo-card">
 								<div class="status-strip ${statusClass}"></div>
 								<div class="card-body">
 									<div class="c-header">
-										<span class="c-id">ID: ${doc.id.substring(0,6).toUpperCase()}</span>
+										<span class="c-id">OP-ID: ${doc.id.substring(0,6).toUpperCase()}</span>
 										<span class="c-date">${date}</span>
 									</div>
 									<div class="c-title">${data.title}</div>
-									<div class="c-desc">${data.description.substring(0, 100)}...</div>
+									<div class="c-desc">${data.description ? data.description.substring(0, 100) : "Classified Details..."}...</div>
 									
 									<div class="c-meta">
-										<span><i class="fas fa-tag"></i> ${data.category || 'General'}</span>
-										<span><i class="fas fa-flag"></i> ${data.status}</span>
+										<span><i class="fas fa-crosshairs"></i> ${data.category || 'General'}</span>
+										<span><i class="fas fa-signal"></i> ${data.status}</span>
 									</div>
 
 									<div class="c-footer">
-										<div class="c-price">$${data.budget || data.price || '0'}</div>
-										<button class="btn-manage" onclick="window.location.href='Mission_Review.html?id=${doc.id}'">
-											MANAGE <i class="fas fa-chevron-right"></i>
+										<div class="c-payout">$${data.budget || data.price || '0'}</div>
+										<button class="btn-execute" onclick="window.location.href='Mission_Review.html?id=${doc.id}'">
+											EXECUTE <i class="fas fa-chevron-right"></i>
 										</button>
 									</div>
 								</div>
@@ -571,19 +571,13 @@
 			// =================================================================
 			// 5. GLOBAL EVENT LISTENERS
 			// =================================================================
-			
-			// LOGOUT
 			document.getElementById('btn-logout').addEventListener('click', () => {
 				signOut(auth).then(() => window.location.href = 'index.html');
 			});
 
-			// MENU TOGGLE
-			$('#menu-btn').on('click', function() {
-				$('#menu-overlay').addClass('active');
-			});
-			$('.menu-close').on('click', function() {
-				$('#menu-overlay').removeClass('active');
-			});
+			$('#menu-btn').on('click', function() { $('#menu-overlay').addClass('active'); });
+			$('.menu-close').on('click', function() { $('#menu-overlay').removeClass('active'); });
+
 		</script>
 	</body>
 </html>

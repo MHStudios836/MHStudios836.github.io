@@ -271,6 +271,16 @@ permalink: /Privacy_Policy.html
             <h3><i class="fas fa-shield-alt"></i> 5. DEFENSE SYSTEMS (Security)</h3>
             <p>We employ <strong>SSL Encryption</strong> and <strong>Level-4 Firewalls</strong> to protect your data. While no system is impenetrable, we adhere to industry-standard <a href="PCI_DSS_Compliance.html" style="color:var(--mh-cyan);">PCI-DSS Protocols</a> to minimize risk.</p>
         </div>
+		
+		<div id="induction-controls" style="display:none; text-align:center; margin-bottom:30px; border-top:1px solid #333; padding-top:20px;">
+            <label style="color:#aaa; display:block; margin-bottom:15px;">
+                <input type="checkbox" id="privacy-check" onchange="togglePrivacy()"> 
+                I acknowledge the data surveillance protocols.
+            </label>
+            <button id="btn-privacy-next" class="return-btn" style="border-color:var(--mh-green); color:var(--mh-green);" onclick="acceptPrivacy()" disabled>
+                ACKNOWLEDGE & PROCEED <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
 
         <div class="return-btn-container">
             <a href="index.html" class="return-btn"><i class="fas fa-chevron-left"></i> Return to Base</a>
@@ -323,6 +333,57 @@ permalink: /Privacy_Policy.html
             // else loadLanguage('EN');
             console.log("LANGUAGE SWITCH PROTOCOL INITIATED...");
             alert("LANGUAGE MODULE: PENDING JSON INTEGRATION");
+        }
+		
+		onAuthStateChanged(auth, (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+
+            // LOGIC: IF INDUCTION -> SHOW CHECKBOX, HIDE RETURN
+            if (user && mode === 'contractor_induction') {
+                currentUser = user;
+                document.getElementById('induction-controls').style.display = 'block';
+                document.querySelector('.return-btn-container').style.display = 'none'; // HIDE RETURN
+            }
+            
+            // LOGIC: IF VISITOR (Default) -> DO NOTHING 
+            // (The HTML defaults to showing the Return Button and hiding the Checkbox)
+        });
+    </script>
+	<script type="module">
+        import { auth, db } from './assets/js/firebase-init.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+
+            if (user && mode === 'contractor_induction') {
+                currentUser = user;
+                // SHOW BUTTONS ONLY FOR INDUCTION
+                document.getElementById('induction-controls').style.display = 'block';
+                document.querySelector('.return-btn-container').style.display = 'none'; // Hide "Return"
+            }
+        });
+
+        window.togglePrivacy = function() {
+            const chk = document.getElementById('privacy-check');
+            const btn = document.getElementById('btn-privacy-next');
+            btn.disabled = !chk.checked;
+            btn.style.opacity = chk.checked ? "1" : "0.5";
+        }
+
+        window.acceptPrivacy = async function() {
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    checkpoint: 4, // ADVANCE STEP
+                    privacy_accepted: true
+                });
+                window.location.href = 'PCI_DSS_Compliance.html?mode=contractor_induction';
+            } catch (e) { alert("ERROR: " + e.message); }
         }
     </script>
 

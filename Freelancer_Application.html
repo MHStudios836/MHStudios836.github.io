@@ -317,102 +317,103 @@ permalink: /Freelancer_Application.html
     </div>
 
 	<script type="module">
-		import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-		import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-		import { getFirestore, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+			import { auth, db, storage } from './assets/js/firebase-init.js';
+			import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+			import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+			import { generateTitanID } from './assets/js/id-generator.js';
 
-		// CONFIGURATION
-		const firebaseConfig = {
-			apiKey: "YOUR_API_KEY",
-			authDomain: "mhstudios-836.firebaseapp.com",
-			projectId: "mhstudios-836",
-			storageBucket: "mhstudios-836.appspot.com",
-			messagingSenderId: "YOUR_SENDER_ID",
-			appId: "YOUR_APP_ID"
-		};
+			let currentUid = null;
+			let isSpecOpsMode = false;
 
-		const app = initializeApp(firebaseConfig);
-		const auth = getAuth(app);
-		const db = getFirestore(app);
-		
-		let currentUid = "";
-
-		// 1. AUTH CHECK
-		onAuthStateChanged(auth, (user) => {
-			if (user) {
-				currentUid = user.uid;
-				console.log("APPLICANT IDENTIFIED:", currentUid);
-			} else {
-				window.location.href = "DoD_Login_Style.html";
-			}
-		});
-
-		// 2. SUBMISSION LOGIC
-		document.getElementById('btn-submit-app').addEventListener('click', async (e) => {
-			e.preventDefault();
-			const btn = document.getElementById('btn-submit-app');
-			btn.innerText = "TRANSMITTING ENCRYPTED DATA...";
-			btn.disabled = true;
-
-			try {
-				// A. DETERMINE TIER
-				// You need radio buttons in your HTML with name="contract_tier"
-				// Value="MERCENARY" (Standard) or "OPERATOR" (Elite)
-				const tierInput = document.querySelector('input[name="contract_tier"]:checked');
-				const selectedTier = tierInput ? tierInput.value : 'MERCENARY';
-
-				// B. DETERMINE STATUS
-				// Mercenaries get instant access. Operators must be vetted.
-				let initialStatus = 'ACTIVE';
-				let clearanceLevel = 'T1';
-				
-				if (selectedTier === 'OPERATOR') {
-					initialStatus = 'REVIEW_PENDING'; // Locks them out until Admin approves
-					clearanceLevel = 'PROBATION';
-				}
-
-				// C. BUILD THE OPERATOR PROFILE
-				const dossier = {
-					first_name: document.getElementById('app-fname').value,
-					last_name: document.getElementById('app-lname').value,
-					phone: document.getElementById('app-phone').value,
+			// 1. INITIALIZATION & RECALL
+			onAuthStateChanged(auth, async (user) => {
+				if (user) {
+					currentUid = user.uid;
 					
-					operational_data: {
-						codename: document.getElementById('app-codename').value,
-						specialty: document.getElementById('app-specialty').value,
-						years_experience: document.getElementById('app-years').value,
-						previous_affiliations: document.getElementById('app-affiliations').value,
-						payment_id: document.getElementById('app-payment').value
-					},
-					
-					tier: selectedTier,
-					status: initialStatus,
-					clearance: clearanceLevel,
-					checkpoint: 4, // Application Submitted
-					updated_at: serverTimestamp()
-				};
+					// CHECK URL PARAM (Did they come from the Red Link?)
+					const urlParams = new URLSearchParams(window.location.search);
+					isSpecOpsMode = urlParams.get('mode') === 'specops';
 
-				// D. UPDATE MAINFRAME
-				const userRef = doc(db, "users", currentUid);
-				await updateDoc(userRef, dossier);
+					if(isSpecOpsMode) {
+						document.title = "MH STUDIOS | SPECOPS ENLISTMENT";
+						document.querySelector('h2').innerText = "OPERATIVE PROTOCOLS";
+						document.querySelector('h2').style.color = "#ff004c";
+					}
 
-				// E. ROUTING
-				if (selectedTier === 'OPERATOR') {
-					alert("APPLICATION RECEIVED. STATUS: PENDING COMMAND APPROVAL.\n\nYou will be notified upon verification.");
-					// Redirect to a 'Standby' page or back to index
-					window.location.href = "index.html"; 
+					// RECALL DATA
+					const docSnap = await getDoc(doc(db, "users", currentUid));
+					if (docSnap.exists()) {
+						const data = docSnap.data();
+						document.getElementById('app-fname').value = data.first_name || "";
+						document.getElementById('app-lname').value = data.last_name || "";
+						// Auto-set tier based on previous flag
+						if(data.tier === 'OPERATIVE') isSpecOpsMode = true;
+					}
 				} else {
-					alert("WELCOME TO THE SYNDICATE, MERCENARY.");
-					window.location.href = "Freelancers_Room.html";
+					window.location.href = "DoD_Login_Style.html";
 				}
+			});
 
-			} catch (error) {
-				console.error("TRANSMISSION ERROR:", error);
-				btn.innerText = "RETRY UPLOAD";
-				btn.disabled = false;
-				alert("ERROR: " + error.message);
-			}
-		});
-	</script>
-</body>
+			// 2. SUBMISSION LOGIC (BRAIN)
+			document.getElementById('btn-submit-app').addEventListener('click', async (e) => {
+				e.preventDefault();
+				const btn = document.getElementById('btn-submit-app');
+				btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> PROCESSING INTEL...';
+				btn.disabled = true;
+
+				try {
+					// A. GENERATE ID (The Dynamic Brain)
+					// If SpecOps -> "OPS-XXXX", If Freelancer -> "FR-XXXX"
+					const idPayload = {
+						role: 'freelancer',
+						tier: isSpecOpsMode ? 'OPERATIVE' : 'MERCENARY',
+						nationality: 'JO',
+						university: 'N/A'
+					};
+					
+					// Use your existing id-generator.js logic here
+					const newSerial = generateTitanID(idPayload); 
+
+					// B. COMPILE DOSSIER
+					const dossier = {
+						titanId: newSerial,
+						phone: document.getElementById('app-phone').value,
+						
+						operational_data: {
+							codename: document.getElementById('app-codename').value,
+							specialty: document.getElementById('app-specialty').value,
+							years_experience: document.getElementById('app-years').value,
+							previous_affiliations: document.getElementById('app-affiliations').value,
+							payment_id: document.getElementById('app-payment').value
+						},
+
+						// STATE MACHINE UPDATE
+						checkpoint: 2, // Application Done
+						status: isSpecOpsMode ? 'PENDING_APPROVAL' : 'PENDING_LEGAL', 
+						// SpecOps go to Admin Queue (Recruitment Center).
+						// Regular Freelancers go to Legal Chain (and then Active). // Move to Legal Chain
+						tier: isSpecOpsMode ? 'OPERATIVE' : 'MERCENARY',
+						updated_at: serverTimestamp()
+					};
+
+					// C. SAVE TO FIREBASE
+					await updateDoc(doc(db, "users", currentUid), dossier);
+
+					// D. THE ROUTE (Induction Chain)
+					alert(`IDENTITY CONFIRMED: [${newSerial}]\n\nPROCEED TO LEGAL BRIEFING.`);
+					
+					// Re-use the "contractor_induction" mode for now so the Legal Pages show the "Next" buttons
+					// Or update Legal Pages to accept 'induction' as a generic term. 
+					// For safety:
+					window.location.href = "Terms_Conditions.html?mode=contractor_induction"; 
+
+				} catch (error) {
+					console.error("APP ERROR:", error);
+					alert("SYSTEM FAILURE: " + error.message);
+					btn.innerHTML = "RE-INITIALIZE";
+					btn.disabled = false;
+				}
+			});
+		</script>
+	</body>
 </html>

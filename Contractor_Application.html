@@ -281,14 +281,28 @@ permalink: /Contractor_Application.html
         let currentUid = "";
 
         // 1. AUTH CHECK
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUid = user.uid;
-                console.log("CORPORATE ID DETECTED:", currentUid);
-            } else {
-                window.location.href = "DoD_Login_Style.html";
-            }
-        });
+        onAuthStateChanged(auth, async (user) => {
+			if (user) {
+				currentUid = user.uid;
+				
+				// --- LOGIC 1: AUTO-FILL (The "Recall" Feature) ---
+				// We fetch the basic info we just saved in Login
+				const userDoc = await getDoc(doc(db, "users", currentUid));
+				if (userDoc.exists()) {
+					const data = userDoc.data();
+					
+					// FILL INPUTS AUTOMATICALLY
+					if(document.getElementById('rep-name')) {
+						document.getElementById('rep-name').value = (data.first_name + " " + data.last_name).trim();
+					}
+					if(document.getElementById('rep-email')) {
+						document.getElementById('rep-email').value = data.email;
+					}
+				}
+			} else {
+				window.location.href = "DoD_Login_Style.html";
+			}
+		});
 
         // 2. NAVIGATION LOGIC
         window.nextStep = (current) => {
@@ -312,56 +326,17 @@ permalink: /Contractor_Application.html
             }
         };
 
-        // 3. SUBMISSION LOGIC
+        // 3. SUBMISSION LOGIC (MERGED & UPGRADED)
         document.getElementById('btn-submit-corp').addEventListener('click', async (e) => {
             e.preventDefault();
+            
+            // A. VISUALS
             const btn = document.getElementById('btn-submit-corp');
             btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> SECURING AGREEMENT...';
             btn.disabled = true;
-			
-			const idPayload = {
-            role: 'contractor',
-            gender: 'Male', // Default for Corp Entity or add a dropdown if needed
-            nationality: 'Jordan', // Default or extract from HQ location
-            university: 'Corporate', // Special flag for ID generator
-            education_level: 'N/A'
-            };
-			
-			const newSerial = generateTitanID(idPayload);
-                console.log("GENERATED CONTRACTOR ID:", newSerial);
-
-                // C. GATHER PROFILE DATA
-                const contractorProfile = {
-                role: 'contractor',
-                tier: 'CORPORATE',
-                status: 'PENDING_VERIFICATION',
-                    
-                // Rep Details
-                first_name: document.getElementById('rep-name').value.split(" ")[0],
-                last_name: document.getElementById('rep-name').value.split(" ")[1] || "",
-                phone: document.getElementById('rep-phone').value,
-                job_title: document.getElementById('rep-title').value,
-                    
-                // Company Details
-                company_name: document.getElementById('comp-name').value,
-                company_hq: document.getElementById('comp-hq').value,
-                industry: document.getElementById('comp-industry').value,
-                website: document.getElementById('comp-web').value,
-                est_budget: document.getElementById('comp-budget').value,
-                billing_method: document.getElementById('comp-billing').value,
-                    
-                // Meta
-                verification_doc: docUrl,
-                titanId: newSerial, // <--- SAVING THE REAL ID
-                updated_at: serverTimestamp()
-                };
-
-                // D. UPDATE DB
-                const userRef = doc(db, "users", currentUid);
-                await updateDoc(userRef, contractorProfile);
 
             try {
-                // A. UPLOAD FILE (If exists)
+                // B. UPLOAD FILE (PRESERVED LOGIC)
                 let docUrl = "";
                 const fileInput = document.getElementById('comp-docs');
                 if (fileInput.files.length > 0) {
@@ -371,12 +346,29 @@ permalink: /Contractor_Application.html
                     docUrl = await getDownloadURL(storageRef);
                 }
 
-                // B. GATHER DATA
+                // C. THE BRAIN: GENERATE TITAN ID
+                const idPayload = {
+                    role: 'contractor',
+                    gender: 'Male', // Default or fetch from dropdown if added
+                    nationality: 'JO', // Default or fetch from 'comp-hq'
+                    university: 'CORP', 
+                    education_level: 'BIZ'
+                };
+
+                const newSerial = generateTitanID(idPayload); 
+                console.log("GENERATED CONTRACTOR ID:", newSerial);
+
+                // D. GATHER DATA & SET INDUCTION STATE
                 const contractorProfile = {
-                    role: 'contractor', // Forces the role change
+                    role: 'contractor',
                     tier: 'CORPORATE',
-                    status: 'PENDING_VERIFICATION', // Admin must approve High Value Clients
                     
+                    // --- THE STATE MACHINE ---
+                    status: 'PENDING_LEGAL', // Moved from 'PENDING_VERIFICATION' to 'LEGAL'
+                    checkpoint: 2,           // Step 2 Complete
+                    titanId: newSerial,      // Assign the generated ID
+                    // -------------------------
+
                     // Rep Details
                     first_name: document.getElementById('rep-name').value.split(" ")[0],
                     last_name: document.getElementById('rep-name').value.split(" ")[1] || "",
@@ -393,17 +385,18 @@ permalink: /Contractor_Application.html
                     
                     // Meta
                     verification_doc: docUrl,
-                    titanId: "CON-" + Date.now().toString().slice(-6), // Temp ID
                     updated_at: serverTimestamp()
                 };
 
-                // C. UPDATE DB
+                // E. UPDATE DATABASE
                 const userRef = doc(db, "users", currentUid);
                 await updateDoc(userRef, contractorProfile);
 
-                // D. SUCCESS
-                alert("AGREEMENT SUBMITTED.\n\nMH STUDIOS COMMAND WILL REVIEW YOUR CORPORATE CREDENTIALS.\nEXPECT CONTACT WITHIN 24 HOURS.");
-                window.location.href = "index.html"; // Or a 'Pending' page
+                // F. THE ROUTE (CHAIN REACTION)
+                alert(`APPLICATION LOGGED.\nID ASSIGNED: ${newSerial}\n\nINITIATING LEGAL PROTOCOLS...`);
+                
+                // Redirect to the next link in the chain
+                window.location.href = "Terms_Conditions.html?mode=contractor_induction";
 
             } catch (error) {
                 console.error("CORPORATE SYNC ERROR:", error);

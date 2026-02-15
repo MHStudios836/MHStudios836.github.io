@@ -740,7 +740,7 @@ permalink: /Freelancers_Room.html
 		<div class="mo-profile-box" style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px;">
 			
 			<div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 2px solid var(--mh-orange); position: relative; cursor: pointer;" title="Change Profile Photo">
-				<img src="images/default_merc.png" style="width: 100%; height: 100%; object-fit: cover;">
+				<img src="images/LT.jpg" style="width: 100%; height: 100%; object-fit: cover;">
 				
 				<div style="position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 2px 0;">
 					<i class="fas fa-camera"></i>
@@ -781,7 +781,7 @@ permalink: /Freelancers_Room.html
 				<div class="profile-banner"></div>
 				
 				<div class="profile-avatar-container" title="Click to Change Profile Picture">
-					<img src="images/default_merc.png" alt="Mercenary Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+					<img src="images/LT.jpg" alt="Mercenary Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
 					
 					<div style="position:absolute; bottom:0; right:0; background:var(--mh-orange); color:#000; padding:2px 6px; border-radius:50%; font-size:12px;">
 						<i class="fas fa-camera"></i>
@@ -796,7 +796,7 @@ permalink: /Freelancers_Room.html
 						<i class="fas fa-cog"></i> EDIT PROFILE
 					</button>
 
-					<div id="operator-upgrade-container" style="display: none; margin-top: 15px; margin-bottom: 15px; text-align: center;">
+					<div id="operator-upgrade-container" onclick="requestUpgrade()" style="display: none; margin-top: 15px; margin-bottom: 15px; text-align: center;">
 						<a href="Freelancer_Application.html?mode=upgrade" class="btn-glow-gold" style="display: block; padding: 10px; border: 1px solid var(--mh-orange); color: var(--mh-orange); text-decoration: none; font-weight: bold; background: rgba(255, 174, 0, 0.1);">
 							<i class="fas fa-medal"></i> APPLY FOR OPERATOR
 						</a>
@@ -1165,6 +1165,7 @@ permalink: /Freelancers_Room.html
     </footer>
 
     <script src="assets/js/jquery.min.js"></script>
+	<script type="module" src="assets/js/titan-reactor.js"></script>
     <script>
         // --- TAB SWITCHING SYSTEM ---
         window.switchTab = function(panelId) {
@@ -1244,6 +1245,50 @@ permalink: /Freelancers_Room.html
 				}
 			});
 		});
+		
+		// --- INSIDE YOUR MAIN SCRIPT MODULE ---
+
+		// 1. THE UPGRADE CHECKER (Method B)
+		async function checkOperativeEligibility(userCnt, userData) {
+			const completedTasks = userData.completed_tasks || 0;
+			const currentTier = userData.tier || 'MERCENARY';
+
+			// TRIGGER: > 10 Tasks AND not yet an Operative
+			if (completedTasks > 10 && currentTier !== 'OPERATIVE') {
+				
+				// A. UNLOCK BUTTON
+				const upgradeBtn = document.getElementById('btn-upgrade-ops');
+				if(upgradeBtn) {
+					upgradeBtn.style.display = 'block';
+					upgradeBtn.classList.add('pulse-animation'); // Make it glow
+				}
+			}
+		}
+
+		// 2. THE UPGRADE HANDLER (Click Event)
+		window.requestUpgrade = async function() {
+			if(!confirm("CONFIRM: Request Promotion to SPECOPS (OPERATIVE)?\n\nThis will trigger a command review.")) return;
+
+			try {
+				// A. UPDATE DB (Send Request)
+				const userRef = doc(db, "users", auth.currentUser.uid);
+				
+				// Send a card to "Recruitment_Center.html" by creating a 'service_request' or flagging the user
+				await updateDoc(userRef, {
+					upgrade_requested: true,
+					upgrade_request_date: serverTimestamp(),
+					status: 'PENDING_PROMOTION' // Flags them for Admin Review
+				});
+
+				alert("REQUEST TRANSMITTED.\nCOMMAND WILL REVIEW YOUR COMBAT LOGS.");
+				
+				// Hide button after request
+				document.getElementById('btn-upgrade-ops').style.display = 'none';
+
+			} catch (e) {
+				alert("TRANSMISSION ERROR: " + e.message);
+			}
+		}
 		
 		initHUDSync();
 	</script>

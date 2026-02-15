@@ -53,6 +53,24 @@ export async function depositFunds(uid, amount, method, cardLast4) {
     }
 }
 
+export async function requestWithdrawal(userId, amount) {
+    const userRef = doc(db, 'artifacts', dbID, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    const data = userDoc.data();
+
+    // [NEW] RULE: THE TRUST PROTOCOL
+    if (data.role === 'freelancer') {
+        const completed = data.stats?.tasks_completed || 0;
+        if (completed < 10) {
+            alert(`ACCESS DENIED.\n\nTRUST PROTOCOL ACTIVE.\nYou have completed ${completed}/10 Missions.\n\nFunds are secure but locked until trust is established.`);
+            throw new Error("TRUST_PROTOCOL_LOCK");
+        }
+    }
+
+    // ... Proceed with withdrawal logic ...
+    console.log("TRUST VERIFIED. INITIATING TRANSFER...");
+}
+
 /**
  * MISSION ESCROW (The "Freeze")
  * Deducts money from Student and holds it until mission complete.
@@ -380,4 +398,26 @@ export async function executeStorePurchase(buyerUid, itemData) {
         console.error("TRANSACTION FAILED:", error);
         throw error; // Throw it back to the UI to handle
     }
+}
+
+/**
+ * WITHDRAW FUNDS (Trust Protocol Active)
+ */
+export async function requestWithdrawal(uid, amount) {
+    const userRef = doc(db, `${DB_PATH}/users/${uid}`);
+    const userDoc = await getDoc(userRef);
+    const data = userDoc.data();
+
+    // [NEW] PROTOCOL 2: TRUST LOCK
+    if (data.role === 'freelancer') {
+        const completed = data.stats?.tasks_completed || 0;
+        if (completed < 10) {
+            alert(`ACCESS DENIED: TRUST PROTOCOL ACTIVE.\n\nYou have completed ${completed}/10 Missions.\nFunds are secure but locked until trust is established.`);
+            throw new Error("TRUST_PROTOCOL_LOCK");
+        }
+    }
+
+    // If passed, proceed with standard withdrawal logic (Cloud Function or Manual Request)
+    console.log("TRUST VERIFIED. PROCESSING WITHDRAWAL...");
+    return true; 
 }

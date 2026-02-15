@@ -27,3 +27,9 @@ export const storage = getStorage(app);
 // This is the variable everyone must use.
 export const dbID = "mh_database_v1";
 export const DB_PATH = 'artifacts/mhstudios-836';
+
+// --- APPEND TO BOTTOM OF assets/js/firebase-init.js ---
+
+// THE MASTER KEY (Exports for other files)
+export const dbID = "mhstudios-836"; 
+export const DB_PATH = "artifacts/mhstudios-836";

@@ -66,7 +66,7 @@ export function renderTaskCard(data, id, mode = 'public') {
 
     // C. GENERATE HTML
     return `
-    <div class="titan-task-card" id="card-${id}">
+    <div class="titan-task-card ${themeClass}">
         
         <div class="ttc-header">
             <span>Posted ${postedTime}</span>
@@ -135,3 +135,25 @@ window.togglePanel = function(id, type, iconElement) {
         panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
 };
+
+// Inside renderTaskCard function...
+export function renderTaskCard(data, mode) {
+    
+    // [NEW] RULE: VIP GOLD TREATMENT
+    let themeClass = "theme-standard";
+    if (data.ownerRole === 'contractor') {
+        themeClass = "theme-gold"; // You need to add this CSS class
+    }
+
+    return `
+    <div class="titan-task-card ${themeClass}" ... >
+        </div>`;
+}
+
+// [NEW] PROTOCOL 3A: VIP GOLD THEME
+    // Assumes your mission data includes 'ownerRole' or you fetch it. 
+    // If not, we default to standard.
+    let themeClass = "";
+    if (data.ownerRole === 'contractor') {
+        themeClass = "theme-gold"; // Ensure you have CSS for .titan-task-card.theme-gold { border-color: gold; }
+    }
