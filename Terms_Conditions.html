@@ -298,6 +298,82 @@
 			}, 1500);
 		}
 	</script>
+	<script type="module">
+        // 1. IMPORT FIREBASE
+        import { auth, db } from './assets/js/firebase-init.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { doc, updateDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
+        let currentUser = null;
+
+        // 2. AUTH CHECK & MODE DETECTION
+		window.onload = function() {
+			const urlParams = new URLSearchParams(window.location.search);
+			const mode = urlParams.get('mode');
+
+            // VISITOR MODE (No Logic, Just Read)
+			if (mode === 'visitor') {
+				document.getElementById('recruit-controls').style.display = 'none';
+				document.getElementById('visitor-controls').style.display = 'block';
+			} 
+            // INDUCTION MODE (Logic Active)
+            else {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        console.log("OPERATIVE IDENTIFIED: " + user.uid);
+                    } else {
+                        // If not logged in but trying to induct -> Login
+                        window.location.href = "DoD_Login_Style.html";
+                    }
+                });
+            }
+		};
+
+        // 3. UI TOGGLE
+		window.toggleButton = function() {
+			const checkBox = document.getElementById('terms-check');
+			const btn = document.getElementById('btn-confirm');
+			
+			if (checkBox.checked) {
+				btn.disabled = false;
+				btn.classList.add('active');
+			} else {
+				btn.disabled = true;
+				btn.classList.remove('active');
+			}
+		}
+
+		// 4. THE EXECUTION (Update DB -> Next Page)
+		window.finishInduction = async function() {
+            if (!currentUser) return;
+
+			const btn = document.getElementById('btn-confirm');
+			btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ENCRYPTING SIGNATURE...';
+            btn.disabled = true;
+			
+            try {
+                // A. UPDATE DATABASE
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, {
+                    checkpoint: 3, // ADVANCE STEP
+                    terms_accepted: true,
+                    terms_timestamp: serverTimestamp()
+                });
+
+                // B. ROUTE TO NEXT STAGE
+                setTimeout(() => {
+                    // Send to Privacy Policy with same mode
+                    window.location.href = 'Privacy_Policy.html?mode=contractor_induction';
+                }, 1000);
+
+            } catch (error) {
+                console.error("SIGNATURE FAILED:", error);
+                btn.innerHTML = "ERROR - RETRY";
+                btn.disabled = false;
+                alert("CONNECTION ERROR: " + error.message);
+            }
+		}
+	</script>
 </body>
 </html>

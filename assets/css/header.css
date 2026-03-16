@@ -1,0 +1,215 @@
+/* ==========================================================================
+   SECTOR 5: NAVIGATION SYSTEM (Global Command Header)
+   ========================================================================== */
+
+/* 1. THE NAVBAR STRIP */
+#tactical-nav {
+    position: fixed; top: 0; left: 0; width: 100%;
+    padding: 15px 30px;
+    z-index: 9999; /* Highest Priority */
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(5, 7, 10, 0.9); /* Default Dark Glass */
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    height: auto; /* Allow content to define height */
+}
+
+/* Scrolled State (JS Toggles This) */
+#tactical-nav.scrolled {
+    padding: 10px 30px;
+    background: rgba(0, 0, 0, 0.98);
+    border-bottom: 1px solid var(--mh-blue);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+/* 2. BRANDING */
+.brand-link {
+    display: flex; align-items: center; gap: 15px;
+    color: #fff; font-family: 'Uni Sans', sans-serif; 
+    font-weight: 400; letter-spacing: 2px; font-size: 1.2em; 
+    text-decoration: none; cursor: pointer;
+}
+
+.brand-link img { 
+    height: 40px; 
+    filter: drop-shadow(0 0 5px rgba(0,128,255,0.5)); 
+    transition: 0.3s;
+}
+
+.brand-link:hover { color: var(--mh-cyan); }
+.brand-link:hover img { 
+    filter: drop-shadow(0 0 10px var(--mh-cyan)); 
+    transform: scale(1.05); 
+}
+
+/* 3. MENU TRIGGER BUTTON */
+.menu-trigger {
+    color: #fff; font-family: 'Uni Sans', sans-serif; font-weight: 400; cursor: pointer;
+    padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
+    font-size: 0.9em; transition: 0.3s;
+}
+
+.menu-trigger:hover {
+    background: var(--mh-blue); border-color: var(--mh-blue); 
+    color: #000; box-shadow: 0 0 15px var(--mh-blue);
+}
+
+/* 4. THE MENU OVERLAY (The Vault) */
+#menu-overlay {
+    position: fixed; top: 0; right: -100%; width: 450px; height: 100%;
+    background: rgba(5, 7, 10, 0.98);
+    border-left: 2px solid var(--mh-blue);
+    z-index: 10000; /* Above Nav */
+    padding: 40px;
+    display: flex; flex-direction: column;
+    transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#menu-overlay.active { right: 0; }
+
+.menu-close { 
+    align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; 
+    margin-bottom: 20px; transition: 0.3s; 
+}
+.menu-close:hover { color: #fff; transform: rotate(90deg); }
+
+/* 5. LINKS & DROPDOWNS */
+.menu-links a, .menu-dropdown-btn {
+    display: flex; align-items: center; 
+    font-size: 1.1em; color: #fff; padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-transform: uppercase; letter-spacing: 2px; cursor: pointer; 
+    text-decoration: none; transition: 0.3s;
+}
+
+.menu-links a i, .menu-dropdown-btn i { 
+    width: 30px; text-align: center; margin-right: 10px; color: #888; transition: 0.3s; 
+}
+
+.menu-links a:hover, .menu-dropdown-btn:hover { 
+    color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan); 
+}
+.menu-links a:hover i { color: var(--mh-cyan); }
+
+.menu-dropdown-btn { justify-content: space-between; }
+
+.dropdown-container {
+    display: none; background: rgba(255,255,255,0.03); 
+    padding-left: 20px; border-left: 1px solid var(--mh-blue);
+}
+.dropdown-container a { font-size: 0.9em; color: #aaa; border-bottom: none; }
+.dropdown-container a:hover { color: #fff; }
+
+/* 6. BOTTOM AREA (Auth & Lang) */
+.menu-bottom { margin-top: auto; padding-top: 30px; text-align: center; }
+
+.nav-auth-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+.nav-auth-grid .titan-btn { 
+    padding: 12px 20px; min-width: auto; font-size: 0.9em; 
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+.nav-auth-grid i { margin-right: 10px; }
+
+/* 7. LANGUAGE GRID */
+.lang-grid { 
+    display: flex; justify-content: center; gap: 15px; padding-top: 20px; 
+    border-top: 1px solid rgba(255,255,255,0.1); 
+}
+.lang-btn { 
+    width: 40px; height: 30px; opacity: 0.4; transition: 0.3s; 
+    padding: 2px; border: 1px solid transparent; 
+}
+.lang-btn img { width: 100%; height: auto; display: block; }
+.lang-btn:hover, .lang-btn.active { opacity: 1; border-color: var(--mh-cyan); transform: scale(1.1); }
+
+/* MOBILE RESPONSIVE OVERRIDES */
+@media (max-width: 768px) {
+    #menu-overlay { width: 100%; }
+    .brand-link span { display: none; } /* Optional: Hide text on very small screens */
+    .brand-link img { height: 35px; }
+}
+
+/* ==========================================================================
+   SECTOR 6: WARGAME HEADER OVERRIDE (Project: IRONCLAD)
+   USAGE: <body class="theme-wargame">
+   ========================================================================== */
+
+/* 1. WARGAME IDENTITY VARIABLES */
+body.theme-wargame {
+    --mh-olive: #5a6340;
+    --mh-dark-olive: #1a1c12;
+    --mh-orange: #ffae00; /* Alert Color */
+    --mh-cyan: #00e5ff;
+    --mh-red: #ff004c; 
+    cursor: crosshair; /* Tactical Cursor */
+}
+
+/* 2. NAV STRIP OVERRIDE */
+body.theme-wargame #tactical-nav {
+    background: rgba(5, 5, 5, 0.95);
+    border-bottom: 2px solid var(--mh-orange); /* Orange Border */
+    box-shadow: 0 5px 30px rgba(0,0,0,0.8);
+}
+
+/* Scanline Overlay Effect on Header */
+body.theme-wargame #tactical-nav::before {
+    content:''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent 50%, rgba(255,174,0,0.05) 50%);
+    background-size: 4px 100%; pointer-events: none;
+    z-index: -1; /* Behind content */
+}
+
+/* 3. BRANDING OVERRIDE */
+body.theme-wargame .brand-link img {
+    filter: drop-shadow(0 0 5px var(--mh-orange));
+}
+body.theme-wargame .brand-link:hover { color: var(--mh-cyan); }
+
+/* 4. POLYGON MENU TRIGGER (The "Cut" Corner Button) */
+body.theme-wargame .menu-trigger {
+    color: var(--mh-orange); 
+    font-family: 'Courier New', monospace; 
+    font-weight: 700; 
+    padding: 8px 20px; 
+    border: 1px solid var(--mh-orange); 
+    background: rgba(255,174,0,0.1);
+    /* The Cool Polygon Shape */
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+    letter-spacing: 2px;
+}
+
+body.theme-wargame .menu-trigger:hover {
+    background: var(--mh-orange); 
+    color: #000; 
+    box-shadow: none; /* Remove standard blue glow */
+}
+
+/* 5. MENU OVERLAY (Tactical Grid) */
+body.theme-wargame #menu-overlay {
+    background: #0a0a0a;
+    border-left: 4px solid var(--mh-orange);
+    /* CRT Scanline Background */
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, #111 1px, #111 2px);
+}
+
+body.theme-wargame .menu-links a, 
+body.theme-wargame .menu-dropdown-btn {
+    color: #888; border-bottom: 1px dashed #333; letter-spacing: 3px;
+}
+
+body.theme-wargame .menu-links a:hover, 
+body.theme-wargame .menu-dropdown-btn:hover {
+    color: var(--mh-orange); border-bottom-style: solid; padding-left: 15px;
+}
+
+body.theme-wargame .dropdown-container {
+    background: rgba(255,174,0,0.05); border-left: 2px solid var(--mh-orange);
+}
+
+body.theme-wargame .menu-close { color: var(--mh-red); }

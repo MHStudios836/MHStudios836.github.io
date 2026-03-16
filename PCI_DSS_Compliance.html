@@ -234,10 +234,18 @@ permalink: /PCI_DSS_Compliance.html
 
         </div>
 
-        <div style="text-align:center; margin-top:40px;">
+        <div id="visitor-nav" style="text-align:center; margin-top:40px;">
             <a href="index.html" style="color:var(--mh-blue); text-decoration:none; border:1px solid var(--mh-blue); padding:10px 20px; border-radius:4px; transition:0.3s;">
                 <i class="fas fa-chevron-left"></i> RETURN TO BASE
             </a>
+        </div>
+		
+		<div id="final-controls" style="display:none; text-align:center; margin:40px 0; background:rgba(0,255,65,0.05); padding:20px; border:1px solid var(--mh-green);">
+            <h3 style="color:var(--mh-green); margin-top:0;">FINAL SECURITY CLEARANCE</h3>
+            <p style="color:#aaa; font-size:0.9em;">By clicking below, you verify your entity is ready for encrypted financial operations.</p>
+            <button onclick="activateOperative()" class="intel-card" style="margin:0 auto; cursor:pointer; background:var(--mh-green); color:#000; font-weight:bold; border:none; padding:15px 30px;">
+                <i class="fas fa-fingerprint"></i> ACTIVATE CONTRACTOR ACCOUNT
+            </button>
         </div>
 
     </div>
@@ -278,6 +286,85 @@ permalink: /PCI_DSS_Compliance.html
             </div>
         </div>
     </footer>
+	
+	<script>
+		function switchLanguage() {
+				// Placeholder for your future JSON logic
+				// Example:
+				// if (currentLang === 'EN') loadLanguage('AR');
+				// else loadLanguage('EN');
+				console.log("LANGUAGE SWITCH PROTOCOL INITIATED...");
+				alert("LANGUAGE MODULE: PENDING JSON INTEGRATION");
+			}
+			
+			onAuthStateChanged(auth, (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+
+            // LOGIC: IF INDUCTION -> SHOW ACTIVATE, HIDE RETURN
+            if (user && mode === 'contractor_induction') {
+                currentUser = user;
+                document.getElementById('final-controls').style.display = 'block';
+                document.getElementById('visitor-nav').style.display = 'none'; // HIDE RETURN
+            }
+             // LOGIC: IF VISITOR -> VISITOR NAV STAYS VISIBLE
+        });
+	</script>
+	
+	<script type="module">
+        import { auth, db } from './assets/js/firebase-init.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (user && urlParams.get('mode') === 'contractor_induction') {
+                currentUser = user;
+                document.getElementById('final-controls').style.display = 'block';
+            }
+        });
+
+        window.activateOperative = async function() {
+            if(!currentUser) return;
+            const btn = document.querySelector('#final-controls button');
+            btn.innerHTML = "ESTABLISHING UPLINK...";
+			
+			// ... inside activateOperative ...
+			const userSnap = await getDoc(doc(db, "users", currentUser.uid));
+			const currentStatus = userSnap.data().status;
+
+			let finalStatus = 'ACTIVE';
+			if (currentStatus === 'PENDING_APPROVAL') {
+				finalStatus = 'PENDING_APPROVAL'; // Keep them in queue
+				alert("PROTOCOLS COMPLETE.\n\nAWAITING FINAL COMMAND AUTHORIZATION (SPECOPS CLEARANCE).");
+			} else {
+				alert("ACCESS GRANTED. WELCOME TO THE NETWORK.");
+			}
+
+			await updateDoc(doc(db, "users", currentUser.uid), {
+				checkpoint: 5,
+				status: finalStatus,
+				pci_cleared: true
+			});
+            
+            try {
+                // THE FINAL ACTIVATION
+                await updateDoc(doc(db, "users", currentUser.uid), {
+                    checkpoint: 5,       // Chain Complete
+                    status: 'ACTIVE',    // UNLOCK DASHBOARD
+                    pci_cleared: true,
+                    activated_at: serverTimestamp()
+                });
+
+                alert("ACCESS GRANTED.\n\nWELCOME TO THE NETWORK, CONTRACTOR.");
+                window.location.href = 'Contractor_Room.html'; // HOME
+            } catch (e) {
+                alert("ACTIVATION FAILED: " + e.message);
+            }
+        }
+    </script>
 
 </body>
 </html>

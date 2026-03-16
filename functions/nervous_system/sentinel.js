@@ -25,7 +25,8 @@ exports.interceptFaultyChat = async (snap, context, db) => {
         });
 
         // 3. Action: Warn the User
-        const userRef = db.collection('users').doc(userId);
+        // FIX: Point to the Artifact Path, not the root collection
+        const userRef = db.doc(`artifacts/mhstudios-836/users/${userId}`);
         
         // We use a transaction to safely increment the warning counter
         await db.runTransaction(async (t) => {

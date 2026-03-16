@@ -7,19 +7,23 @@ const db = admin.firestore();
 // Import the Lobes
 const sentinel = require('./nervous_system/sentinel');
 const overseer = require('./nervous_system/overseer');
+const banker = require('./nervous_system/banker');
+
+// !!! THE GOLDEN PATH !!!
+const DB_PATH = 'artifacts/mhstudios-836';
 
 // --- EXPORTED FUNCTIONS (The Nerves) ---
 
 // 1. SECURITY: Watch Chat Messages
 exports.monitorChat = functions.firestore
-    .document('chats/{chatId}/messages/{messageId}')
+    .document(`${DB_PATH}/chats/{chatId}/messages/{messageId}`)
     .onCreate((snap, context) => {
         return sentinel.interceptFaultyChat(snap, context, db);
     });
 
 // 2. LOGIC: Watch User Stats for Promotions
 exports.monitorStats = functions.firestore
-    .document('users/{userId}')
+    .document(`${DB_PATH}/users/{userId}`)
     .onUpdate((change, context) => {
         return overseer.checkPromotion(change, context, db);
     });
@@ -30,6 +34,13 @@ exports.dailyReport = functions.pubsub.schedule('every 24 hours').onRun((context
     // Logic to summarize data goes here
     return null;
 });
+
+// 4. ECONOMY: Watch New Missions (Updated Path)
+exports.validateMissionFunds = functions.firestore
+    .document(`${DB_PATH}/missions/{missionId}`)
+    .onCreate((snap, context) => {
+        return banker.validateMissionFunds(snap, context, db);
+    });
 
 /* functions/index.js */
 const functions = require("firebase-functions");

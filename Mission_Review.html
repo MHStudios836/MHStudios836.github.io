@@ -1,217 +1,227 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <title>MH STUDIOS | MISSION DEBRIEF</title>
+    <title>MH STUDIOS | ACTIVE OPERATIONS</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="icon" type="image/x-icon" href="images/Logo_1.png">
+    <link rel="icon" type="image/x-icon" href="images/Logo_1.png" />
     
-    <script type="module" src="assets/js/auth-router.js"></script>
+    <script type="module" src="assets/js/firebase-init.js"></script>
 
     <style>
         body { background: #05070a; color: #ccc; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Uni Sans', sans-serif; }
         
-        .review-card {
-            width: 100%;
-            max-width: 650px;
+        .ops-container {
+            width: 95%; max-width: 1100px;
+            display: grid; grid-template-columns: 1fr 350px; gap: 20px;
+            height: 85vh;
+        }
+
+        /* LEFT PANEL: COMMS */
+        .ops-comms {
             background: rgba(13, 17, 23, 0.95);
             border: 1px solid #333;
             border-top: 3px solid var(--mh-blue, #0080ff);
-            padding: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            position: relative;
-        }
-
-        .rc-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
-        .rc-title { font-size: 1.5em; color: #fff; letter-spacing: 2px; }
-        .rc-subtitle { color: var(--mh-blue, #0080ff); font-size: 0.9em; text-transform: uppercase; }
-
-        /* ASSET PREVIEW */
-        .asset-box {
-            background: rgba(0, 128, 255, 0.05);
-            border: 1px solid var(--mh-blue, #0080ff);
+            display: flex; flex-direction: column;
             padding: 20px;
-            border-radius: 6px;
-            text-align: center;
-            margin-bottom: 30px;
         }
-        .ab-icon { font-size: 3em; color: #fff; margin-bottom: 10px; }
-        .ab-name { font-family: monospace; color: #ddd; display: block; margin-bottom: 15px; }
 
-        .btn-download {
-            background: transparent;
-            border: 1px solid #fff;
-            color: #fff;
-            padding: 8px 20px;
-            text-decoration: none;
-            font-size: 0.8em;
-            transition: 0.3s;
+        .chat-feed {
+            flex: 1; overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 15px; margin-bottom: 15px;
+            border: 1px solid #222;
         }
-        .btn-download:hover { background: #fff; color: #000; }
 
-        /* ACTION BUTTONS */
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        .btn-approve {
-            background: #00ff41; /* Green */
-            color: #000;
-            border: none;
-            padding: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            transition: 0.3s;
+        /* RIGHT PANEL: ACTIONS */
+        .ops-actions {
+            background: rgba(13, 17, 23, 0.95);
+            border: 1px solid #333;
+            border-top: 3px solid var(--mh-orange, #ffae00);
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
         }
-        .btn-approve:hover { box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); transform: translateY(-2px); }
 
-        .btn-revision {
-            background: #ff4444; /* Red */
-            color: #fff;
-            border: none;
-            padding: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            opacity: 0.7;
-            transition: 0.3s;
+        /* MESSAGES */
+        .msg-row { margin-bottom: 10px; display: flex; }
+        .msg-me { justify-content: flex-end; }
+        .msg-target { justify-content: flex-start; }
+        .msg-bubble { 
+            max-width: 70%; padding: 10px; border-radius: 4px; font-size: 0.9em; 
+            border-left: 3px solid #555; background: #111;
         }
-        .btn-revision:hover { opacity: 1; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
+        .msg-me .msg-bubble { border-color: var(--mh-cyan, #00e5ff); background: rgba(0, 229, 255, 0.1); }
+        .msg-meta { font-size: 0.7em; color: #666; margin-bottom: 4px; }
 
-        /* INFO GRID */
-        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #888; font-size: 0.9em; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        .info-val { color: #fff; font-family: monospace; }
+        /* DELIVERABLES */
+        .file-item { 
+            background: #111; padding: 10px; border: 1px solid #333; margin-bottom: 5px; font-size: 0.8em;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .file-item a { color: var(--mh-cyan, #00e5ff); text-decoration: none; }
+
+        /* BUTTONS */
+        .btn-pay { width: 100%; background: #00ff41; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; }
+        .btn-upload { width: 100%; background: #ffae00; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; }
+        .btn-send { background: var(--mh-blue, #0080ff); color: #fff; border: none; padding: 0 20px; cursor: pointer; }
+        input[type="text"] { background: #000; border: 1px solid #333; color: #fff; padding: 10px; flex: 1; }
+
+        /* ROLE VISIBILITY TOGGLES */
+        .student-only { display: none; }
+        .freelancer-only { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="review-card">
-        <div class="rc-header">
-            <div class="rc-title">MISSION DEBRIEF</div>
-            <div class="rc-subtitle" id="mission-id-display">OP-LOADING...</div>
-        </div>
-
-        <div style="margin-bottom: 30px;">
-            <div class="info-row">
-                <span>CONTRACTOR</span>
-                <span class="info-val" id="merc-name">Loading...</span>
-            </div>
-            <div class="info-row">
-                <span>STATUS</span>
-                <span class="info-val" id="mission-status" style="color:var(--mh-blue)">CHECKING...</span>
-            </div>
-            <div class="info-row">
-                <span>ESCROW LOCKED</span>
-                <span class="info-val" id="mission-price">$...</span>
-            </div>
-        </div>
-
-        <div id="payload-container" style="display:none;">
-            <div class="asset-box">
-                <i class="fas fa-file-archive ab-icon"></i>
-                <span class="ab-name" id="file-name">mission_assets.zip</span>
-                <a href="#" id="download-link" class="btn-download" target="_blank">
-                    <i class="fas fa-download"></i> INSPECT PAYLOAD
-                </a>
-            </div>
-
-            <div class="action-grid">
-                <button class="btn-revision" onclick="requestRevision()">
-                    <i class="fas fa-undo"></i> REJECT / REVISE
-                </button>
-                <button class="btn-approve" id="btn-approve">
-                    <i class="fas fa-check-double"></i> APPROVE & RELEASE FUNDS
-                </button>
-            </div>
-        </div>
-
-        <div id="waiting-message" style="text-align:center; padding:30px; color:#666; display:none;">
-            <i class="fas fa-satellite fa-spin" style="font-size:2em; margin-bottom:15px;"></i><br>
-            AWAITING CONTRACTOR DELIVERY...
-        </div>
+    <div class="ops-container">
         
-        <div style="text-align:center; margin-top:20px;">
-            <a href="Student_Room.html" style="color:#666; text-decoration:none; font-size:0.8em;">RETURN TO COMMAND</a>
+        <div class="ops-comms">
+            <h3 style="margin-top:0;"><i class="fas fa-satellite-dish"></i> TACTICAL FEED</h3>
+            
+            <div id="chat-history" class="chat-feed">
+                <div style="text-align:center; color:#444; margin-top:50px;">ESTABLISHING UPLINK...</div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="chat-input" placeholder="Type message...">
+                <button id="btn-send-chat" class="btn-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+			</div>
+
+			<div class="ops-actions">
+				<div style="border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+    
+				<h2 id="m-title" style="margin:0; font-size:1.4em; color:#fff; text-transform:uppercase; letter-spacing:1px;">LOADING...</h2>
+				
+				<div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+					<span id="m-status" style="font-size:0.8em; font-weight:bold;">LOADING STATUS...</span>
+					<span style="font-family:'Courier New', monospace; color:#666; font-size:0.8em;">SECURE CHANNEL</span>
+				</div>
+			</div>
+
+			<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 20px; background:#0b0e11; padding:10px; border:1px solid #222;">
+    
+			<div style="border-right:1px solid #333;">
+				<div style="font-size:0.6em; color:#666; letter-spacing:1px;">CLIENT DESIGNATION</div>
+				
+				<div id="client-id-display" 
+					 onclick="copyID(this)" 
+					 title="CLICK TO COPY SERIAL"
+					 style="color:#444; font-family:'Courier New', monospace; font-weight:bold; cursor:pointer; font-size:1.1em; transition:0.3s;">
+					<i class="fas fa-spinner fa-spin"></i> FETCHING...
+				</div>
+				
+				<div id="client-name-display" style="font-size:0.8em; color:#ccc;">---</div>
+				</div>
+
+				<div style="padding-left:10px;">
+					<div style="font-size:0.6em; color:#666; letter-spacing:1px;">OPERATIVE ASSIGNED</div>
+					
+					<div id="merc-id-display" 
+						 onclick="copyID(this)" 
+						 title="CLICK TO COPY SERIAL"
+						 style="color:#444; font-family:'Courier New', monospace; font-weight:bold; cursor:pointer; font-size:1.1em; transition:0.3s;">
+						<i class="fas fa-spinner fa-spin"></i> SEARCHING...
+					</div>
+					
+					<div id="merc-name-display" style="font-size:0.8em; color:#ccc;">---</div>
+				</div>
+
+			</div>
+			
+			<script>
+				function copyID(el) {
+					const text = el.innerText;
+					if(text.includes("...") || text === "PENDING") return;
+					
+					navigator.clipboard.writeText(text).then(() => {
+						const originalColor = el.style.color;
+						el.innerText = "COPIED TO CLIPBOARD";
+						el.style.color = "#fff";
+						
+						setTimeout(() => {
+							el.innerText = text;
+							el.style.color = originalColor;
+						}, 1000);
+					});
+				}
+			</script>
+
+            <hr style="border-color:#333; width:100%;">
+
+            <div>
+                <h4><i class="fas fa-box"></i> SUPPLY DROP (FILES)</h4>
+                <div id="deliverable-list"></div>
+            </div>
+
+            <div id="zone-freelancer" class="freelancer-only">
+                <hr style="border-color:#333;">
+                <input type="file" id="file-upload-input" style="color:#ccc; margin-bottom:10px;">
+                <button id="btn-upload-file" class="btn-upload">
+                    <i class="fas fa-upload"></i> UPLOAD ASSETS
+                </button>
+            </div>
+
+            <div id="zone-student" class="student-only">
+				<hr style="border-color:#333;">
+				
+				<div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+					<span style="font-size:0.8em; color:#aaa;">
+						<i class="fas fa-info-circle"></i> Review assets before approving.
+					</span>
+					<span id="rev-counter" style="font-size:0.8em; color:var(--mh-orange); font-weight:bold;">
+						REVISIONS: 0/3
+					</span>
+				</div>
+
+				<button id="btn-approve" class="btn-pay" style="margin-bottom: 10px;">
+					<i class="fas fa-check-double"></i> APPROVE & PAY
+				</button>
+
+				<button id="btn-revise" class="btn-revise" style="width:100%; background:#333; color:#ccc; border:1px solid #555; padding:10px; cursor:pointer;">
+					<i class="fas fa-sync-alt"></i> REQUEST REVISION
+				</button>
+			</div>
+
+            <div style="margin-top:auto; text-align:center;">
+                <a href="#" onclick="history.back()" style="color:#444; text-decoration:none; font-size:0.8em;">EXIT OPERATIONS</a>
+            </div>
         </div>
     </div>
 
+    <script type="module" src="assets/js/active-mission-core.js"></script>
+
     <script type="module">
-        import { db, auth } from './assets/js/firebase-init.js';
-        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-        import { processMissionPayout } from './assets/js/transaction-siphon.js'; // The Money Engine
+        import { auth, db, dbID } from './assets/js/firebase-init.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-        const params = new URLSearchParams(window.location.search);
-        const missionId = params.get('id');
-
-        // 1. LOAD MISSION DATA
         onAuthStateChanged(auth, async (user) => {
-            if (!user) window.location.href = 'DoD_Login_Style.html';
-            
-            const docSnap = await getDoc(doc(db, `artifacts/mhstudios-836/missions/${missionId}`));
-            
-            if (docSnap.exists()) {
-                const data = docSnap.data();
+            if(user) {
+                const docSnap = await getDoc(doc(db, `artifacts/${dbID}/users/${user.uid}`));
+                const role = docSnap.data().role;
                 
-                // Render Details
-                document.getElementById('mission-id-display').innerText = `OP-${missionId.substring(0,6).toUpperCase()}`;
-                document.getElementById('merc-name').innerText = data.freelancerName || "Unknown Operative";
-                document.getElementById('mission-price').innerText = `$${data.price}`;
-                document.getElementById('mission-status').innerText = data.status;
+                // MATH: IF Student -> Show Payment. IF Freelancer -> Show Upload.
+                if(role === 'student') {
+                    document.getElementById('zone-student').style.display = 'block';
+                    
+                    // Link Payment Button
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const mid = urlParams.get('id');
+                    // We need to fetch price to pass it, or let checkout fetch it. 
+                    // Simpler: Send ID to checkout, let checkout do the work.
+                    document.getElementById('btn-approve').onclick = () => {
+                        window.location.href = `Task_Checkout.html?id=${mid}`;
+                    };
 
-                // LOGIC: Is it delivered?
-                if (data.status === 'DELIVERED') {
-                    document.getElementById('payload-container').style.display = 'block';
-                    document.getElementById('file-name').innerText = data.deliverableName || "Unknown File";
-                    document.getElementById('download-link').href = data.deliverableUrl;
-                } else if (data.status === 'COMPLETED') {
-                     document.querySelector('.review-card').innerHTML = `<h2 style="text-align:center; color:#00ff41;">MISSION CLOSED</h2><p style="text-align:center;">Funds Released.</p><div style="text-align:center;"><a href="Student_Room.html" style="color:#fff;">Back</a></div>`;
-                } else {
-                    document.getElementById('waiting-message').style.display = 'block';
+                } else if (role === 'freelancer' || role === 'contractor') {
+                    document.getElementById('zone-freelancer').style.display = 'block';
                 }
             }
         });
-
-        // 2. APPROVE BUTTON (THE MONEY TRIGGER)
-        document.getElementById('btn-approve').addEventListener('click', async () => {
-            const btn = document.getElementById('btn-approve');
-            
-            if(!confirm("CONFIRM AUTHORIZATION:\n\nThis will release funds from Escrow directly to the Freelancer. This action cannot be undone.")) return;
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> PROCESSING TRANSFER...';
-
-            try {
-                // CALL THE CLOUD FUNCTION (The Banker)
-                await processMissionPayout(missionId);
-
-                // UI Success
-                alert("TRANSFER COMPLETE.\n\nFunds Released: 100%\nMercenary Paid.\nAdmin Tax Collected.");
-                window.location.href = 'Student_Room.html';
-            } catch (error) {
-                console.error(error);
-                alert("BANKING ERROR: " + error.message);
-                btn.disabled = false;
-                btn.innerHTML = "RETRY AUTHORIZATION";
-            }
-        });
-
-        // 3. REVISION LOGIC (Simple Status Revert)
-        window.requestRevision = async () => {
-            const reason = prompt("State reason for revision request:");
-            if(!reason) return;
-
-            await updateDoc(doc(db, `artifacts/mhstudios-836/missions/${missionId}`), {
-                status: 'IN_PROGRESS', // Send it back to active
-                revision_requested: true,
-                revision_reason: reason
-            });
-            alert("ORDER UPDATED. Contractor notified for revision.");
-            location.reload();
-        };
     </script>
+
 </body>
 </html>

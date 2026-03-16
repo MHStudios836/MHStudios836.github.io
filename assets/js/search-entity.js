@@ -3,7 +3,7 @@ import { db, dbID } from './firebase-init.js';
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 // DOM ELEMENTS
-const searchInput = document.getElementById('entity-search');
+const searchInput = document.getElementById('search-input');
 const scanBtn = document.getElementById('btn-scan');
 const resultPanel = document.getElementById('result-display');
 const emptyState = document.getElementById('empty-state');
@@ -19,6 +19,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function executeScan() {
+	
+	// [NEW] PROTOCOL 4A: SECURITY CLEARANCE CHECK
+    const user = auth.currentUser;
+    // We need to fetch the role quickly (or store it in localStorage on login)
+    // For now, assuming you have the role:
+    const userRef = doc(db, 'artifacts', dbID, 'users', user.uid); 
+    const snap = await getDoc(userRef);
+    const myRole = snap.data().role;
+
+    if (myRole !== 'admin' && myRole !== 'operative') {
+        alert("SECURITY ALERT: UNAUTHORIZED ACCESS.");
+        scanBtn.disabled = false;
+        return;
+    }
+	
     const input = searchInput.value.trim();
     if(!input) return;
 
@@ -93,12 +108,38 @@ async function executeScan() {
         scanBtn.innerHTML = 'RETRY SCAN';
         scanBtn.disabled = false;
     }
-}
+	
+	// Inside executeScan...
 
-// Global Redirect Function
-window.viewDossier = () => {
-    if(window.targetUid) {
-        // Redirect to a detailed profile view (Intel Center)
-        window.location.href = `Intel_Center.html?uid=${window.targetUid}`;
-    }
+	// [NEW] RULE: OPERATIVE CLEARANCE
+	const user = auth.currentUser;
+	const userDoc = await getDoc(doc(db, 'artifacts', dbID, 'users', user.uid));
+	const myRole = userDoc.data().role;
+
+	// RESTRICT ACCESS
+	if (myRole !== 'admin' && myRole !== 'operative') {
+		alert("SECURITY ALERT: YOU ARE NOT AUTHORIZED TO USE THE LOCATOR.");
+		return;
+	}
+
+	// RESTRICT DATA VIEW (Operatives see less than Admins)
+	// [NEW] PROTOCOL 4B: FINANCIAL CENSORSHIP
+	let walletDisplay = "ENCRYPTED";
+	if (myRole === 'admin') {
+		walletDisplay = `$${(data.wallet_balance || 0).toFixed(2)}`;
+	} else {
+		// Operatives only see solvency status
+		walletDisplay = (data.wallet_balance > 0) ? "SOLVENT" : "INSOLVENT";
+	}
+
+	// Update the HTML string to use walletDisplay
+	<div>WALLET: ${walletDisplay}</div>
+	}
+
+	// Global Redirect Function
+	window.viewDossier = () => {
+		if(window.targetUid) {
+			// Redirect to a detailed profile view (Intel Center)
+			window.location.href = `Intel_Center.html?uid=${window.targetUid}`;
+		}
 };

@@ -24,7 +24,7 @@ exports.checkPromotion = async (change, context, db) => {
             console.log(`[OVERSEER] Student ${userId} has evolved! Unlocking Freelancer option.`);
             
             // Update the Database: Unlock the capability
-            await db.collection('users').doc(userId).update({
+            await db.doc(`artifacts/mhstudios-836/users/${userId}`).update({
                 "unlocked_features.become_freelancer": true,
                 "notifications": admin.firestore.FieldValue.arrayUnion({
                     title: "Level Up!",
@@ -46,7 +46,7 @@ exports.checkPromotion = async (change, context, db) => {
             console.log(`[OVERSEER] Merc ${userId} is ready for Operator Status.`);
 
             // Update the Database: Unlock the button
-            await db.collection('users').doc(userId).update({
+            await db.doc(`artifacts/mhstudios-836/users/${userId}`).update({
                 "unlocked_features.apply_operator": true,
                 "notifications": admin.firestore.FieldValue.arrayUnion({
                     title: "Promotion Available",

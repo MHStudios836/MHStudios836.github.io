@@ -217,6 +217,8 @@ permalink: /Recruitment_Center.html
 
         </main>
     </div>
+	
+	<script type="module" src="assets/js/titan-reactor.js"></script>
 
 	<script type="module">
 		// 1. IMPORTS
@@ -364,46 +366,41 @@ permalink: /Recruitment_Center.html
 
 		// 6. JUDGMENT (Approve/Reject)
 		window.processApplication = async (verdict) => {
-			if (!selectedUserId) return;
-			
-			const confirmMsg = verdict === 'APPROVE' ? "AUTHORIZE OPERATIVE?" : "TERMINATE APPLICATION?";
-			if (!confirm(confirmMsg)) return;
+		if (!selectedUserId) return;
+		
+		const confirmMsg = verdict === 'APPROVE' ? "AUTHORIZE OPERATIVE?" : "TERMINATE APPLICATION?";
+		if (!confirm(confirmMsg)) return;
 
-			const btn = document.activeElement; // The button clicked
-			if(btn) btn.disabled = true;
+		// PATH MUST MATCH TITAN REACTOR
+		const userRef = doc(db, 'artifacts', 'mhstudios-836', 'users', selectedUserId);
 
-			const userRef = doc(db, "users", selectedUserId);
-
-			try {
-				if (verdict === 'APPROVE') {
-					await updateDoc(userRef, {
-						status: 'ACTIVE',
-						clearance: 'T1',
-						approved_at: serverTimestamp()
-					});
-					alert("OPERATIVE ACTIVATED.");
-				} else {
-					await updateDoc(userRef, {
-						status: 'REJECTED',
-						clearance: 'REVOKED',
-						rejected_at: serverTimestamp()
-					});
-					alert("APPLICATION REJECTED.");
-				}
-
-				// Reset View
-				const emptyState = document.getElementById('empty-state');
-				const intelDisplay = document.getElementById('intel-display');
-				if(emptyState) emptyState.style.display = 'block';
-				if(intelDisplay) intelDisplay.style.display = 'none';
-				selectedUserId = null;
-
-			} catch (e) {
-				console.error(e);
-				alert("SYSTEM ERROR: " + e.message);
-				if(btn) btn.disabled = false;
+		try {
+			if (verdict === 'APPROVE') {
+				await updateDoc(userRef, {
+					status: 'ACTIVE',
+					role: 'freelancer', // REACTOR LISTENS FOR THIS TO CHANGE THEME
+					rank: 'OPERATIVE',  // REACTOR UPDATES THE BADGE
+					clearance: 'T1',
+					approved_at: serverTimestamp(),
+					upgrade_requested: false 
+				});
+				alert("OPERATIVE ACTIVATED. SYSTEM SYNCED.");
+			} else {
+				await updateDoc(userRef, {
+					status: 'REJECTED',
+					upgrade_requested: false
+				});
+				alert("APPLICATION REJECTED.");
 			}
-		};
+			
+			// Refresh the list (assuming you have a load function)
+			location.reload(); 
+
+		} catch (e) {
+			console.error(e);
+			alert("DB ERROR: " + e.message);
+		}
+	}
 	</script>
 </body>
 </html>
