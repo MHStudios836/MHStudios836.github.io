@@ -1,0 +1,241 @@
+START
+  │
+  ├── [ PAGE: index.html / Landing ]
+  │    └── Action: Click "Login"
+  │
+  ├── [ PAGE: Packages.html ] (Subscriptions)
+  │    │── [JS]: subscription-manager.js
+  │    │── [LOGIC]: User selects Tier (Starter/Pro/Elite)
+  │    └── [ROUTE] ➤ Payment_Gateway.html?package=Elite&price=99
+  │
+  └── [ PAGE: Products_Services_Room.html ] (The Armory)
+       │── [JS]: shop-catalog.js + firebase-data-service.js
+       │── [LOGIC]: Fetch 'products' collection
+       │── [ACTION]: Click Product
+       └── [ROUTE] ➤ Product_Room.html?id=XYZ
+            │── [JS]: shop-detail.js
+            └── [ACTION]: "Buy Now" ➤ Payment_Gateway.html?id=XYZ
+
+
+  │
+  ├── [ PAGE: DoD_Login_Style.html ] (The Gatekeeper)
+  │    │
+  │    ├── [JS]: login-core.js
+  │    │    └── FUNCTION: routeUser(user)
+  │    │
+  │    ├── [JS]: auth-router.js
+  │    │    └── LOGIC: Check Firestore 'users/{uid}.role'
+  │    │
+  │    ├── [DECISION MATRIX]
+  │    │    ├── IF Role == "student" ────➤ GO TO ZONE 2
+  │    │    ├── IF Role == "freelancer" ─➤ GO TO ZONE 3
+  │    │    ├── IF Role == "admin" ──────➤ GO TO ZONE 4
+  │    │    └── IF Role == undefined ────➤ [ PAGE: User_Registeration_Form.html ]
+  │    │                                      │── [JS]: auth-router.js
+  │    │                                      └── [WRITE]: Create Profile ➤ Redirect
+  │    │
+  │    └── [REJECT]: IF Password Fail ➤ Show Red Error Toast
+  │
+  └── [ PAGE: Freelancer_Application.html ] (Enlistment)
+       │── [JS]: freelancer-logic.js
+       │── [WRITE]: Update User { status: 'PENDING', cv: data }
+       └── [ROUTE] ➤ DoD_Login_Style.html (Wait for Admin Approval)
+
+
+ZONE 2: STUDENT_HQ
+  │
+  ├── [ PAGE: Student_Room.html ] (Field Command)
+  │    │── [JS]: student-core.js
+  │    │── [JS]: hud-sync.js (Real-time Wallet Watcher)
+  │    │
+  │    ├── [ACTION: "DEPLOY MISSION"]
+  │    │    │── [MODAL INPUT]: Title, Budget, File(PDF)
+  │    │    │── [JS]: task-core.js ➤ deployMission()
+  │    │    │── [CALC]: No cost yet (Money held in wallet)
+  │    │    └── [WRITE]: 'missions' collection { status: 'OPEN' }
+  │    │
+  │    ├── [ACTION: "ADD FUNDS"]
+  │    │    └── [ROUTE] ➤ Payment_Gateway.html (See Zone 5)
+  │    │
+  │    └── [EVENT: "MISSION COMPLETED"] (Notification Received)
+  │         └── [ROUTE] ➤ Mission_Review.html
+  │
+  └── [ PAGE: Mission_Review.html ] (The Debrief)
+       │── [JS]: student-core.js
+       │── [DISPLAY]: Download 'deliveryUrl' (The ZIP file)
+       │
+       └── [DECISION]
+            ├── [BUTTON: "AUTHORIZE RELEASE"]
+            │    │── [JS]: finance-core.js
+            │    │── [CALC]: Buyer_Wallet - Bounty = New_Balance
+            │    │── [CALC]: Freelancer_Wallet + Bounty = New_Balance
+            │    └── [WRITE]: Mission Status ➤ 'COMPLETED'
+            │
+            └── [BUTTON: "REJECT/REVISE"]
+                 └── [WRITE]: Mission Status ➤ 'ACTIVE' (Sent back to Merc)
+
+
+ZONE 3: FREELANCER_HQ
+  │
+  ├── [ PAGE: Broadcast_Station.html ] (The Radar)
+  │    │── [JS]: broadcast-core.js
+  │    │── [QUERY]: WHERE status == 'OPEN'
+  │    │── [VISUAL]: Cyan/Orange/Red Borders based on Priority
+  │    └── [ACTION] ➤ Click "INSPECT" ➤ [ROUTE] ➤ Freelancers_Room.html
+  │
+  ├── [ PAGE: Freelancers_Room.html ] (Forward Base)
+  │    │── [JS]: freelancer-logic.js
+  │    │── [JS]: chat-core.js (Sidebar Comms)
+  │    │
+  │    ├── [ACTION: "ACCEPT CONTRACT"]
+  │    │    └── [ROUTE] ➤ Contract_Form.html
+  │    │         │── [JS]: contract-manager.js
+  │    │         │── [LOGIC]: Atomic Transaction
+  │    │         │    1. Check if still OPEN
+  │    │         │    2. Set FreelancerUID = Me
+  │    │         │    3. Set Status = 'ACTIVE'
+  │    │         └── [RESULT]: Mission moves to "Active Ops" list
+  │    │
+  │    └── [ACTION: "DELIVER PROJECT"] (On Active Card)
+  │         └── [ROUTE] ➤ Mission_Deliverables.html
+  │              │── [JS]: task-core.js
+  │              │── [UPLOAD]: ZIP File ➤ Storage Bucket
+  │              └── [WRITE]: Status ➤ 'DELIVERED' (Triggers Student Alert)
+  │
+  └── [ PAGE: Scoreboard.html ] (Ranking)
+       │── [JS]: scoreboard-logic.js
+       └── [CALC]: Sort Users by 'combat_xp' DESC
+
+
+ZONE 4: ADMIN_HQ
+  │
+  ├── [ PAGE: Mission_Control.html ] (The Bridge)
+  │    │── [JS]: admin-dashboard.js
+  │    │── [JS]: admin-crm.js (Live Counters)
+  │    │── [JS]: mission-control.js (God Mode Radar)
+  │    │
+  │    ├── [TOOL: "SIGNAL INTERCEPT"]
+  │    │    │── [JS]: signal-intercept.js
+  │    │    └── [ACTION]: Click "SPY" ➤ Chat_Viewer.html?uid=TARGET_ID
+  │    │
+  │    ├── [TOOL: "DATA CENTER"]
+  │    │    └── [ROUTE] ➤ Admin_Data_Center.html
+  │    │         │── [JS]: admin-datacenter.js
+  │    │         └── [CAPABILITY]: Edit/Delete ANY document in Firestore
+  │    │
+  │    ├── [TOOL: "RECRUITMENT"]
+  │    │    └── [ROUTE] ➤ Recruitment_Center.html
+  │    │         │── [JS]: admin-ops.js
+  │    │         └── [ACTION]: Approve 'PENDING' Users ➤ Status 'ACTIVE'
+  │    │
+  │    └── [TOOL: "BLACK BOX"]
+  │         └── [ROUTE] ➤ Admin_Logs.html
+  │              └── [DISPLAY]: All system events (Logins, Pay, Bans)
+  │
+  └── [ PAGE: Intel_Center.html ] (Dossier View)
+       │── [JS]: intel-center-logic.js
+       └── [ACTION]: "Freeze Asset" (Bans User)
+
+
+ZONE 5: FINANCE
+  │
+  └── [ PAGE: Payment_Gateway.html ]
+       │
+       ├── [JS]: payment-handler.js (UI Logic)
+       ├── [JS]: finance-core.js (The Engine)
+       │
+       ├── [SCENARIO A: DEPOSIT] (From Student Room)
+       │    │── [INPUT]: $ Amount
+       │    │── [LOGIC]: Simulate Bank API Delay
+       │    └── [WRITE]: User.wallet_balance += Amount
+       │
+       └── [SCENARIO B: PURCHASE] (From Product Room/Subscription)
+            │── [INPUT]: Product ID + Price
+            │── [CHECK]: IF User.wallet >= Price
+            │── [WRITE]: User.wallet -= Price
+            │── [WRITE]: System.Vault += Price
+            │── [WRITE]: Create 'order' document
+            └── [OUTPUT]: Redirect to Success Page
+			
+			
+ZONE 6: THE NERVOUS SYSTEM (Background Services)
+These scripts run invisibly across multiple pages.
+
+firebase-init.js: The Heart. Connects to Google Cloud.
+
+auth-guard.js: The Sentry. Kicks you out if you aren't logged in.
+
+notification-hub.js: The Voice. Pops up "Mission Updated" toasts.
+
+global-alert-ticker.js: The News Feed. Scrolls alerts at the top of the screen.
+
+hud-sync.js: The Eyes. Keeps the Wallet $$ in the header updated instantly.
+
+upgrade_firebase.py: The Doctor. Fixes version mismatches in the code.
+
+
+ZONE 7: CLOUD_INFRASTRUCTURE (The "Nervous System")
+  │
+  ├── [ NODE: index.js ] ( The Central Cortex )
+  │    │── [ROLE]: Trigger Manager
+  │    │── [LOGIC]: Imports Sentinel, Overseer, and Banker.
+  │    │── [CRON]: exports.dailyReport (Runs every 24h)
+  │    └── [ROUTING]:
+  │         ├── On Chat Message ─────➤ Trigger [SENTINEL]
+  │         ├── On User Update ──────➤ Trigger [OVERSEER]
+  │         └── On Mission Create ───➤ Trigger [BANKER]
+  │
+  ├── [ NODE: sentinel.js ] ( The AI Security Guard )
+  │    │── [TRIGGER]: onCreate('chats/{id}/messages/{msgId}')
+  │    │── [LOGIC]:
+  │    │    1. Scan text for BANNED_WORDS ["scam", "whatsapp", "stupid"]
+  │    │    2. IF VIOLATION DETECTED:
+  │    │       ├── [WRITE]: Message Text = "🚫 [REDACTED]"
+  │    │       ├── [WRITE]: User.stats.warnings += 1
+  │    │       └── [DECISION]:
+  │    │            └── IF Warnings >= 3 ➤ Set User.is_banned = TRUE
+  │    └── [OUTPUT]: Clean Chat Stream / Auto-Banned Users
+  │
+  ├── [ NODE: overseer.js ] ( The HR Manager )
+  │    │── [TRIGGER]: onUpdate('users/{uid}')
+  │    │── [LOGIC]: Compare Old_Stats vs New_Stats
+  │    │    ├── [PATH A]: STUDENT EVOLUTION
+  │    │    │    └── IF tasks_created hits 50 
+  │    │    │        └── [WRITE]: unlocked_features.become_freelancer = TRUE
+  │    │    │
+  │    │    └── [PATH B]: MERCENARY PROMOTION
+  │    │         └── IF tasks_completed hits 10 
+  │    │             └── [WRITE]: unlocked_features.apply_operator = TRUE
+  │    └── [OUTPUT]: Send Notification ("PROMOTION AVAILABLE")
+  │
+  └── [ NODE: banker.js ] ( The Escrow Agent )
+       │── [TRIGGER]: onCreate('missions/{id}') or onUpdate
+       │── [LOGIC]: Audit the Mission Price
+       │    1. Check Student's Wallet Balance
+       │    2. IF Balance < Price ➤ Cancel Mission / Throw Error
+       │    3. IF Balance >= Price:
+       │       ├── [TRANSACTION]: Wallet -= Price
+       │       ├── [TRANSACTION]: System_Vault += Price
+       │       └── [WRITE]: Mission.payment_status = 'ESCROW_SECURED'
+       └── [OUTPUT]: Mission goes live to Broadcast_Station.html
+	   
+	   
+UPDATED FUNCTION DIRECTORY (Add to Chapter 7)
+
+nervous_system/sentinel.js
+
+Function: interceptFaultyChat
+
+Purpose: Automated moderation. Detects toxicity and platform circumvention.
+
+nervous_system/overseer.js
+
+Function: checkPromotion
+
+Purpose: Gamification engine. Automates rank ups (Student -> Freelancer -> Operator).
+
+nervous_system/banker.js
+
+Function: validateMissionFunds
+
+Purpose: Financial security. Prevents "fake" missions by ensuring funds are secured in escrow before publication.

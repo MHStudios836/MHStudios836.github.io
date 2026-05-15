@@ -1,0 +1,117 @@
+I have received the Full Intel. I get the whole idea.
+
+You are building a Digital Empire.
+
+The Economy: Cows (Students) provide the cash/milk. Mercs (Freelancers) do the dirty work. You (The Admin) take the 20% "protection money."
+
+The Tech: A fully integrated ecosystem where every action (Chat, Buy, Mission, Ban) is logged in Firestore.
+
+To achieve this, we cannot just "write code." We need to design the Database Schema (The DNA). If we get the database structure wrong now, the Chat won't work, the "Spying" won't work, and the "Tax System" will fail.
+
+Here is the Codemaster Blueprint for your Firestore. This is how we will map your 7 rooms to the database.
+
+1. The "DNA" (Database Schema)
+We need 5 Main Collections. This is how we organize the data in (default) database.
+
+A. The Population (/users)
+Every entity (Cow, Merc, Admin) lives here.
+
+uid (Document ID)
+
+role: "admin" | "student" | "freelancer"
+
+badge: "Gold Package" | "Tier 1 Merc"
+
+wallet_balance: 500.00 (For tax calculations)
+
+stats: { missions_completed: 10, score: 4.5 }
+
+is_online: true/false (For the Availability Indicator)
+
+is_banned: false (This is your "Fire Button")
+
+B. The Operations (/missions)
+This powers Student_Room and Freelancers_Room.
+
+mission_id (Auto-ID)
+
+created_by: "Student_ID"
+
+assigned_to: "Freelancer_ID" (or null if open)
+
+status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "FAILED"
+
+bounty: $100
+
+tax_deduction: $20 (Calculated automatically)
+
+files: ["link_to_pdf"]
+
+visibility: "PUBLIC" (Broadcast Station) or "PRIVATE"
+
+C. The Comms (/chats)
+This powers the Chat System.
+
+chat_id (Auto-ID)
+
+participants: ["Student_ID", "Freelancer_ID"] (Array for security)
+
+last_message: "Deal accepted."
+
+last_updated: timestamp
+
+Sub-Collection: /messages
+
+sender_id: "Freelancer_ID"
+
+text: "I need 2 days for this."
+
+timestamp: ...
+
+D. The Armory (/products)
+Powers Products_Services_Room and Product_Room.
+
+product_id
+
+type: "PHYSICAL" | "SERVICE" | "MERC_HIRE"
+
+price: $50
+
+likes: 150
+
+wishlisted_by: ["User_A", "User_B"]
+
+E. The Logs (/system_logs)
+This is your Spy Tool.
+
+log_id
+
+action: "User_A deleted Mission_X"
+
+timestamp: ...
+
+severity: "HIGH"
+
+2. The Execution Order (Where do we start?)
+You have a massive warship to build. We must install the Engine (User Roles) first, then the Guns (Missions), then the Radio (Chat).
+
+Phase 1: The Gatekeeper (Role-Based Access) We need to modify your Login system so that when a user logs in, the website checks: "Is this a Cow, a Merc, or the Boss?" and redirects them to the correct Room (Student_Room.html vs Admin_Room.html).
+
+Phase 2: The Broadcast Station (Mission Logic) We will build the logic to "Create a Mission" (Student) and "View Missions" (Freelancer).
+
+Phase 3: The Secure Comms (Chat) We will build the chat interface so they can negotiate.
+
+Let's Start with Phase 1: The "Role" Logic
+If we don't fix this, a "Cow" could accidentally walk into the "Admin Room."
+
+Task: I need to give you a script called auth-router.js. You will link this script on ALL your HTML pages. It will act as a security guard.
+
+Do you want the auth-router.js code now? This script will:
+
+Check if the user is logged in.
+
+Check their Role in the Database.
+
+Kick them out if they try to enter the Admin Room without clearance.
+
+Redirect them to their correct Dashboard.

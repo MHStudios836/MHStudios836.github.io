@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<title>MA Studios™ | Tactical Multimedia & E-Solutions</title>
+		<title>MH Studios™ | Tactical Multimedia & E-Solutions</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<meta name="description" content="Advanced digital assets, university academic support, and elite freelance operations." />
@@ -367,8 +367,38 @@
 		<nav id="tactical-nav">
 			<a href="index.html" class="brand-link">
 				<img src="images/Logo_1.png" alt="MH LOGO">
-				MA STUDIOS™
+				MH STUDIOS™
 			</a>
+			
+			<div id="auth-state-container" style="margin: 50px 0; width: 100%;">
+	
+				<div id="dynamic-auth-buttons" style="display: flex; gap: 40px; justify-content: center; align-items: center; flex-wrap: wrap;">
+					<a href="DoD_Login_Style.html" class="titan-btn titan-login">
+						<i class="fas fa-fingerprint" style="margin-right:15px;"></i> OPERATIVE LOGIN
+					</a>
+					<a href="DoD_Login_Style.html" class="titan-btn titan-access">
+						<i class="fas fa-user-plus" style="margin-right:15px;"></i> REQUEST ACCESS
+					</a>
+				</div>
+
+				<div id="operative-profile-section" style="display: none; flex-direction: column; align-items: center; gap: 20px;">
+					<div style="text-align: center; color: var(--mh-cyan); font-family: 'Courier New', monospace;">
+						<i class="fas fa-user-shield" style="font-size: 2.5em; margin-bottom: 15px; color: var(--mh-blue); text-shadow: 0 0 15px var(--mh-blue);"></i>
+						<div style="font-size: 1.2em; font-weight: bold; letter-spacing: 2px;">STATUS: ACTIVE</div>
+						<div id="operative-id" style="color: #fff; font-size: 0.9em; margin-top: 5px;">ID: UNKNOWN</div>
+					</div>
+					
+					<div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+						<a href="Admin_Room.html" id="dashboard-route" class="btn-main btn-blue" style="padding: 12px 25px;">
+							<i class="fas fa-terminal"></i> COMMAND CENTER
+						</a>
+						<button id="btn-terminate-uplink" class="btn-main btn-hollow" style="padding: 12px 25px; cursor: pointer;">
+							<i class="fas fa-sign-out-alt"></i> TERMINATE UPLINK
+						</button>
+					</div>
+				</div>
+
+			</div>
 			
 			<div class="menu-trigger" id="menu-btn">
 				<span>MENU</span>
@@ -402,16 +432,7 @@
 			</div>
 			
 			<div class="menu-bottom" style="padding:20px; text-align:center;">
-				
-				<div id="dynamic-auth-buttons" style="
-					display: flex; 
-					gap: 40px; 
-					justify-content: center; 
-					align-items: center;
-					width: 100%; 
-					margin: 50px 0; 
-					flex-wrap: wrap; 
-				">
+			
 					<a href="DoD_Login_Style.html" class="titan-btn titan-login">
 						<i class="fas fa-fingerprint" style="margin-right:15px;"></i> OPERATIVE LOGIN
 					</a>
@@ -643,7 +664,7 @@
 		<footer id="tactical-footer">
 			<div class="footer-grid">
 				<div class="footer-col">
-					<h4>MA STUDIOS™</h4>
+					<h4>MH STUDIOS™</h4>
 					<p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
 					<p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
 				</div>
@@ -679,7 +700,63 @@
 
 		<script src="assets/js/jquery.min.js"></script>
 		<script type="module" src="assets/js/black-box.js"></script>
-		
+		<script type="module">
+	import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+	import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+	// 1. INJECT YOUR FIREBASE CONFIG HERE
+	const firebaseConfig = {
+		apiKey: "YOUR_API_KEY",
+		authDomain: "YOUR_AUTH_DOMAIN",
+		projectId: "YOUR_PROJECT_ID",
+		storageBucket: "YOUR_STORAGE_BUCKET",
+		messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+		appId: "YOUR_APP_ID"
+	};
+
+	// 2. INITIALIZE SECURE CONNECTION
+	const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+	const auth = getAuth(app);
+
+	// 3. TARGET DOM ELEMENTS
+	const authButtonsOut = document.getElementById('dynamic-auth-buttons');
+	const authProfileIn = document.getElementById('operative-profile-section');
+	const operativeIdSpan = document.getElementById('operative-id');
+	const terminateBtn = document.getElementById('btn-terminate-uplink');
+
+	// 4. LISTEN FOR CLEARANCE LEVEL CHANGES
+	onAuthStateChanged(auth, (user) => {
+		if (user) {
+			// OPERATIVE DETECTED: Hide login, show profile
+			authButtonsOut.style.display = 'none';
+			authProfileIn.style.display = 'flex';
+			
+			// Extract a codename (Display Name, or the first part of their email)
+			const codename = user.displayName || user.email.split('@')[0].toUpperCase();
+			operativeIdSpan.innerText = `OP-ID: ${codename}`;
+			
+			console.log(`[SYS] Operative ${codename} authenticated.`);
+		} else {
+			// GHOST: Show login, hide profile
+			authButtonsOut.style.display = 'flex';
+			authProfileIn.style.display = 'none';
+			console.log("[SYS] No active operative detected.");
+		}
+	});
+
+	// 5. TERMINATE UPLINK (LOGOUT)
+	if (terminateBtn) {
+		terminateBtn.addEventListener('click', () => {
+			signOut(auth).then(() => {
+				console.log("[SYS] Uplink terminated successfully.");
+				// Optional: Force them out of the menu overlay
+				document.getElementById('menu-overlay').classList.remove('active');
+			}).catch((error) => {
+				console.error("[ERROR] Failed to sever connection:", error);
+			});
+		});
+	}
+</script>
 		<script>
 			// --- MENU LOGIC ---
 			$('#menu-btn').on('click', function() {

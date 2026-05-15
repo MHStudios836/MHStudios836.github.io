@@ -1,0 +1,20 @@
+Well, we need more than that!
+.
+if you please help me to put products, packages, Users (to make them Chat, Yes I want to Create a Chat System where People (if they're Registered), can talk to whom they want in my Platform)
+According to the "Dir_S.txt" and "Tree_F.txt" files i sent Previously, The Files that needs Access to the Database Continuously are:
+.
+1. Admin_Room.html - Description: it is the Control Panel, Directory, Central Nerve, Command HQ Post - More Functions: I can Fire Whom I want, I can Spy on whom i want, Control Payment, Add Employees, Delete Employees in it, I also can Delete, Create, Insert Tasks Committed/Created/Uncreated By Students!
+
+2. Student_Room.html - Description: it is the Barnyard, where Cows, Goats, Horses, and other entities can be Milked! and creates Tasks/Missions and Upload "Project/Service Request Description pdf/word/text" - More Functions: they can Chat (With Mercs "Freelancers"), They can View Dashboard (Based on their Initiated Tasks/Missions, Missions Created and Completed), They can Create Tasks/Missions, they Can Edit Task/Missions, they have Access to a Global Dashboard Called "Broadcast_Station.html" (They Can View Globally the Freelancers and others Students Created Tasks/Missions), They Can View Freelancers Info (Username, ID No., Name, Score no., Badge (Icons), Availability (Online/Offline Indicator), Tasks Completed, Tasks Failed)
+
+3. Freelancers_Room.html - Description: it is the SpecOps/Mercs Room, They Do the Tasks and Dirty Stuff (The Black Missions)! and can Finish the Missions, Every Task They Complete, I get a 20% Percent of it Called "Mandatory Tax" - More Functions: they can Chat (With Cows "Students"), They can View Dashboard (Based on their Accepted Tasks/Missions, Failed Missions and Completed Missions), They Can Drop/Abort Down Missions, They Can Negotiate with (Students), They Can Upload Files (Maximum ~ 2.5 GB), they have Access to a Global Dashboard Called "Broadcast_Station.html" (They Can View Globally the Freelancers and others Students Created Tasks/Missions), They Can View Students Info (Username, ID No., Name, Score no., Badge (Icons), Availability (Online/Offline Indicator), Tasks Created, Tasks Deleted (if the Student created it and Published it on the "Broadcast_Station.html" and then Deleted it))
+
+4. Products_Services_Room.html - Description: Named "The Armory", it holds "Physical Products", "Services Products", "Hires Mercs (Top "Tier 1" - Freelancers)"
+
+5. Product_Room.html - Description: it has the Product Room or Page, Users can Interact by Likes, Shares, Comment, Buy, Add to Wishlist and Report! - More Functions: I can Load, Insert, Select, Create New Item in this Page if I was Logged in, but no User can edit it!
+
+6. Packages_Room.html - Description: it has a "Full Subscription Packages System", anyone Buys/Subscribe to it, The Platform will automatically put the "Badge/Type" of the selected Package in his profile and will be seen with the Selected "Package" in the "Broadcast_Station.html"
+
+7. Payment_Gateway.html - Description: will be the Unified Payment Checkout Page of the MH Studios Platform! I will create another one for Contractors/Agencies/Companies! meaning there will be "Corporates_Room.html"
+.
+Did you get the Whole Idea?

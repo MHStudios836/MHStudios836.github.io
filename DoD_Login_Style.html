@@ -4,7 +4,7 @@ permalink: /DoD_Login_Style.html
 <!DOCTYPE HTML>
 <html lang="en">
 	<head>
-		<title>MA Studios™ | Operative Access</title>
+		<title>MH Studios™ | Operative Access</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		
@@ -500,7 +500,7 @@ permalink: /DoD_Login_Style.html
 					<div class="brand-lockup">
 						<a href="index.html" class="brand-link">
 							<img src="images/Logo_1.png" alt="MH LOGO">
-							MA Studios™
+							MH Studios™
 						</a>
 					</div>
 					<div class="sys-info">
@@ -818,62 +818,78 @@ permalink: /DoD_Login_Style.html
 				typeStatus("> VERIFYING BIOMETRICS...", "#FFD700");
 
 				try {
-					// Updated Path to match your Database Structure
+					// Target the exact path in your database
 					const userRef = doc(db, "artifacts", "mhstudios-836", "users", user.uid);
 					const userSnap = await getDoc(userRef);
 
-					// A. EXISTING USER CHECK
+					// ==========================================
+					// A. EXISTING PERSONNEL (LOGIN)
+					// ==========================================
 					if (userSnap.exists()) {
 						const data = userSnap.data();
 						const role = data.role || 'student';
+						
+						// Using your checkpoint system (assuming < 4 means application not finished)
 						const cp = data.checkpoint || 1; 
+						const status = data.status || 'INCOMPLETE';
 
 						typeStatus(`> CLEARANCE LEVEL: ${role.toUpperCase()}`, "#00ff41");
 
 						setTimeout(() => {
-							if (role === 'admin') window.location.href = 'Admin_Room.html';
-							else if (role === 'operative') window.location.href = 'Operative_Room.html';
-							
-							else if (role === 'contractor') {
-								if(data.status === 'ACTIVE') window.location.href = 'Contractor_Room.html';
-								else window.location.href = 'Contractor_Application.html';
+							// 1. ADMIN OVERRIDE
+							if (role === 'admin') {
+								window.location.href = 'Admin_Room.html';
+							} 
+							// 2. FULL OPERATIVE
+							else if (role === 'operative') {
+								window.location.href = 'Operative_Room.html';
 							}
-							
+							// 3. CONTRACTOR
+							else if (role === 'contractor') {
+								if(cp < 4 || status !== 'ACTIVE') window.location.href = 'Contractor_Application.html';
+								else window.location.href = 'Contractor_Room.html';
+							}
+							// 4. FREELANCER (And SpecOps in Custody)
 							else if (role === 'freelancer') {
-								 if(cp < 4) window.location.href = 'Freelancer_Application.html';
+								 if(cp < 4 || status !== 'ACTIVE') window.location.href = 'Freelancer_Application.html';
 								 else window.location.href = 'Freelancers_Room.html';
 							}
-							
-							else { // Student
-								if(cp < 4) window.location.href = 'User_Registeration_Form.html';
+							// 5. STUDENT
+							else { 
+								if(cp < 4 || status !== 'ACTIVE') window.location.href = 'User_Registeration_Form.html';
 								else window.location.href = 'Student_Room.html';
 							}
-						}, 1000);
+						}, 1500);
 
-					} else {
-						// B. NEW RECRUIT (CREATION LOGIC)
+					} 
+					// ==========================================
+					// B. NEW RECRUIT (REGISTRATION)
+					// ==========================================
+					else {
 						
-						if (selectedRole === "") {
+						// Failsafe: Ensure they clicked a role card before creating the DB profile
+						if (!selectedRole || selectedRole === "") {
 							typeStatus("> ERROR: DESIGNATION MISSING.", "#ff004c");
-							alert("HALT! YOU MUST SELECT A DESIGNATION.");
-							await signOut(auth);
+							alert("HALT! YOU MUST SELECT A DESIGNATION BEFORE USING GOOGLE/GITHUB OR EMAIL REGISTRATION.");
+							await signOut(auth); // Kick them out so they can try again properly
 							return;
 						}
 
-						// CHECK FOR SPECOPS FLAG
+						// Check for the Honey Pot flag
 						const isSpecOps = sessionStorage.getItem('target_tier') === 'OPERATIVE';
 						
-						// PREPARE DOSSIER
+						// PREPARE THE DOSSIER
 						let dossier = {
 							uid: user.uid,
 							email: user.email,
 							first_name: user.displayName ? user.displayName.split(' ')[0] : "Recruit",
 							last_name: user.displayName ? (user.displayName.split(' ').slice(1).join(' ') || "") : "",
 							
-							role: selectedRole, // 'student', 'freelancer', 'contractor'
+							// Keep SpecOps as "freelancer" role to keep them in custody!
+							role: selectedRole, 
 							
-							// IF SPEC OPS, MARK THEM
-							tier: isSpecOps ? 'OPERATIVE' : (selectedRole === 'freelancer' ? 'MERCENARY' : 'STUDENT'),
+							// Metadata for Admin to review
+							tier: isSpecOps ? 'OPERATIVE_PENDING' : selectedRole.toUpperCase(),
 							upgrade_requested: isSpecOps ? true : false,
 
 							wallet_balance: 0,
@@ -886,14 +902,17 @@ permalink: /DoD_Login_Style.html
 						// GOD MODE BACKDOOR
 						if (user.email === "mhjerjawi836@gmail.com") {
 							dossier.role = 'admin';
-							dossier.rank = 'GENERAL';
+							dossier.tier = 'ALPHA COMMANDER';
+							dossier.checkpoint = 4;
+							dossier.status = 'ACTIVE';
 						}
 
+						// Write to Firestore
 						await setDoc(userRef, dossier);
 
 						typeStatus(`> DOSSIER INITIALIZED. STARTING INDUCTION...`, "#00ff41");
 						
-						// C. REDIRECT TO APPLICATION
+						// C. ROUTE TO THE CORRECT APPLICATION FORM
 						setTimeout(() => {
 							if (dossier.role === 'admin') {
 								window.location.href = 'Admin_Room.html';
@@ -901,12 +920,12 @@ permalink: /DoD_Login_Style.html
 								window.location.href = 'User_Registeration_Form.html';
 							} else if (selectedRole === 'contractor') {
 								window.location.href = 'Contractor_Application.html';
-							} else {
-								// FREELANCER / SPECOPS PIPELINE
+							} else if (selectedRole === 'freelancer') {
+								// Route both standard freelancers and SpecOps to the same form
 								const mode = isSpecOps ? 'specops' : 'standard';
 								window.location.href = `Freelancer_Application.html?mode=${mode}`;
 							}
-						}, 1000);
+						}, 1500);
 					}
 
 				} catch (err) {

@@ -1,0 +1,117 @@
+ROOT: MH_STUDIOS_SYSTEM_CORE
+│
+├── [SECTOR 1] IDENTITY & ACCESS CONTROL
+│   │
+│   ├── NODE: DoD_Login_Style.html (The Gatekeeper)
+│   │   ├── [BRAIN]: login-core.js
+│   │   ├── [ROUTING]: Authenticate -> Route by Role (Admin/Student/Merc)
+│   │
+│   ├── NODE: User_Registeration_Form.html (Dossier Builder)
+│   │   ├── [BRAIN]: auth-router.js
+│   │   ├── [DATA]: Write {uni_major} or {specialty} to 'users/{uid}'
+│   │
+│   ├── NODE: Freelancer_Application.html (Enlistment)
+│   │   ├── [BRAIN]: freelancer-logic.js
+│   │   ├── [LOGIC]: Status = "PENDING" -> Alert Admin
+│   │
+│   └── NODE: Portfolio_CV.html (Tactical Resume)
+│       ├── [BRAIN]: portfolio-logic.js (Inferred)
+│       ├── [DISPLAY]: Visualizes User Skills/XP as a "Tactical Card"
+│       └── [ACCESS]: Public (via Link) OR Linked from Freelancers_Room
+│
+├── [SECTOR 2] THE STUDENT LOOP (Client Operations)
+│   │
+│   ├── NODE: Student_Room.html (Field Command)
+│   │   ├── [BRAIN]: student-core.js
+│   │   ├── [ACTIONS]: Deploy Mission, Review Ops, Add Funds
+│   │   ├── [LINK]: ──────────────> [GOTO: Service_Request_Form.html]
+│   │   └── [LINK]: ──────────────> [GOTO: Products_Services_Room.html]
+│   │
+│   ├── NODE: Service_Request_Form.html (Codemaster Uplink)
+│   │   ├── [BRAIN]: form-handler.js (Inferred)
+│   │   ├── [LOGIC]: Submit Custom Request -> Firestore 'requests' collection
+│   │   └── [ROUTING]: ───────────> [RETURN: Student_Room.html]
+│   │
+│   ├── NODE: Payment_Gateway.html (The Treasury)
+│   │   ├── [BRAIN]: payment-handler.js
+│   │   └── [CALC]: Wallet += Amount
+│   │
+│   └── NODE: Mission_Review.html (Debrief)
+│       ├── [BRAIN]: student-core.js
+│       └── [LOGIC]: Authorize Payout (Escrow -> Freelancer)
+│
+├── [SECTOR 3] THE MARKETPLACE (Global Radar)
+│   │
+│   └── NODE: Broadcast_Station.html (Signal Tower)
+│       ├── [BRAIN]: broadcast-core.js
+│       ├── [LOGIC]: Live Feed of 'OPEN' Missions
+│       └── [LINK]: Inspect ──────> [GOTO: Freelancers_Room.html]
+│
+├── [SECTOR 4] THE FREELANCER LOOP (Mercenary Ops)
+│   │
+│   ├── NODE: Freelancers_Room.html (Forward Base)
+│   │   ├── [BRAIN]: freelancer-logic.js
+│   │   ├── [DISPLAY]: Active Ops, Earnings, Rank
+│   │   ├── [LINK]: View Rank ────> [GOTO: Scoreboard.html]
+│   │   └── [LINK]: Shop ─────────> [GOTO: Products_Services_Room.html]
+│   │
+│   ├── NODE: Scoreboard.html (The Leaderboard)
+│   │   ├── [BRAIN]: scoreboard-logic.js
+│   │   ├── [LOGIC]: Query 'users' -> OrderBy 'combat_xp' DESC
+│   │   └── [CALC]: Map XP to Ranks (Private -> Warlord)
+│   │
+│   ├── NODE: Contract_Form.html (Legal Handshake)
+│   │   └── [LOGIC]: Status 'OPEN' -> 'ACTIVE' (Lock Mission)
+│   │
+│   └── NODE: Mission_Deliverables.html (Drop Zone)
+│       └── [LOGIC]: Upload File -> Status 'DELIVERED'
+│
+├── [SECTOR 5] HIGH COMMAND (Admin Overwatch)
+│   │
+│   ├── NODE: Mission_Control.html (The Bridge)
+│   │   ├── [BRAIN]: admin-dashboard.js
+│   │   ├── [LINKS]: Data Center, Recruitment, Logs, Intel
+│   │
+│   ├── NODE: Admin_Logs.html (Black Box Archive)
+│   │   ├── [BRAIN]: admin-logs.js (Inferred from script)
+│   │   ├── [LOGIC]: Read 'logs' collection -> Render Timeline
+│   │   └── [ACTION]: Export to CSV (Download Audit)
+│   │
+│   ├── NODE: Intel_Center.html (Dossier View)
+│   │   ├── [BRAIN]: intel-center-logic.js
+│   │   ├── [DISPLAY]: Deep User Stats (IP, Bio, History)
+│   │   ├── [ACTION]: "Freeze Asset" -> Set status 'FROZEN'
+│   │   └── [LINK]: Intercept ────> [GOTO: Chat_Viewer.html]
+│   │
+│   ├── NODE: Chat_Viewer.html (Comms Intercept)
+│   │   ├── [BRAIN]: chat-core.js / interceptor.js
+│   │   ├── [LOGIC]: Real-time listen to specific 'messages' threads
+│   │   └── [DISPLAY]: Render Transcript (Target vs System)
+│   │
+│   ├── NODE: Recruitment_Center.html (Vetting)
+│   │   └── [LOGIC]: Approve/Reject 'PENDING' Users
+│   │
+│   └── NODE: Admin_Data_Center.html (God Mode)
+│       └── [LOGIC]: Raw Database Edit/Delete
+│
+├── [SECTOR 6] THE ARMORY (E-Commerce Division)
+│   │
+│   ├── NODE: Products_Services_Room.html (The Storefront)
+│   │   ├── [BRAIN]: shop-catalog.js (Inferred)
+│   │   ├── [LOGIC]: Filter Products (Category/Branch)
+│   │   ├── [ACTION]: "Acquire Asset" -> Create 'order' doc
+│   │   └── [LINK]: Click Item ───> [GOTO: Product_Room.html]
+│   │
+│   └── NODE: Product_Room.html (Asset Terminal)
+│       ├── [BRAIN]: shop-detail.js (Inferred)
+│       ├── [DISPLAY]: Product Details, QR Code
+│       ├── [ACTION]: "Submit Review" -> Update 'products/{id}'
+│       └── [ACTION]: "Report Violation" -> Add to 'reports'
+│
+└── [SECTOR 7] LEGAL & COMPLIANCE (Static Protocols)
+    │
+    ├── NODE: PCI_DSS_Compliance.html
+    │   └── [CONTENT]: Static Security Standards Info
+    │
+    └── NODE: Privacy_Policy.html
+        └── [CONTENT]: Data Handling & User Rights Info

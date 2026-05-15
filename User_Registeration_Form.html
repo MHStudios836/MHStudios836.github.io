@@ -255,87 +255,114 @@ permalink: /User_Registeration_Form.html
 
     </div>
 	<script type="module">
-		// 1. IMPORT CENTRALIZED FIREBASE & GENERATOR
-		import { auth, db, dbID } from './assets/js/firebase-init.js';
-		import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-		import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+		// 1. IMPORTS: FIREBASE V12.7.0 (AUTH, FIRESTORE, & STORAGE)
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+		import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+		import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+		import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+		
+		// Custom ID Generator (Keep your local import)
 		import { generateTitanID } from './assets/js/id-generator.js';
+
+		// 2. CONFIGURATION & INITIALIZATION
+		const firebaseConfig = {
+			apiKey: "YOUR_API_KEY",
+			authDomain: "mhstudios-836.firebaseapp.com",
+			projectId: "mhstudios-836",
+			storageBucket: "mhstudios-836.appspot.com", // CRITICAL FOR FILE UPLOADS
+			messagingSenderId: "YOUR_SENDER_ID",
+			appId: "YOUR_APP_ID"
+		};
+
+		const app = initializeApp(firebaseConfig);
+		const auth = getAuth(app);
+		const db = getFirestore(app);
+		const storage = getStorage(app);
 
 		// GLOBAL INTELLIGENCE
 		let currentUid = "";
-		let currentRole = "";
 
-		// 2. INITIALIZE & DETECT ROLE
+		// 3. SECURITY PERIMETER & UI SETUP
 		onAuthStateChanged(auth, async (user) => {
 			if (user) {
-				console.log("OPERATIVE DETECTED:", user.uid);
+				console.log("[SYS] RECRUIT DETECTED:", user.uid);
 				currentUid = user.uid;
 
-				// A. FETCH THE DOSSIER CREATED BY DOD_LOGIN
-				const userRef = doc(db, "users", currentUid);
+				// Fetch Dossier from the Correct Artifact Path
+				const userRef = doc(db, "artifacts", "mhstudios-836", "users", currentUid);
 				const userSnap = await getDoc(userRef);
 
 				if (userSnap.exists()) {
 					const data = userSnap.data();
-					currentRole = data.role ? data.role.toLowerCase() : "";
-					console.log("ROLE IDENTIFIED:", currentRole);
+					const role = data.role ? data.role.toLowerCase() : "";
 
-					// B. REVEAL THE CORRECT FIELDS AUTOMATICALLY
-					if (currentRole === 'student') {
-						// Update Badge
-						document.getElementById('role-badge').innerText = "STUDENT";
-						// Apply Blue Theme
-						document.querySelector('.dossier-card').classList.add('theme-student');
-						// Show Student Section
-						document.getElementById('section-student').classList.add('active');
-					} 
-					else if (currentRole === 'freelancer') {
-						// Update Badge
-						document.getElementById('role-badge').innerText = "MERCENARY";
-						// Apply Orange Theme
-						const card = document.getElementById('main-card');
-						card.classList.remove('theme-student');
-						card.classList.add('theme-merc');
-						// Show Merc Section
-						document.getElementById('section-merc').classList.add('active');
+					// Failsafe: If a non-student somehow breached this form, warn them.
+					if (role !== 'student' && role !== 'admin') {
+						console.warn("[WARNING] Role mismatch. Expected STUDENT, found:", role.toUpperCase());
 					}
+
+					// FORCE STUDENT UI THEME
+					document.getElementById('role-badge').innerText = "STUDENT";
+					document.querySelector('.dossier-card').classList.add('theme-student');
+					document.getElementById('section-student').classList.add('active');
+
 				} else {
-					console.error("NO DOSSIER FOUND.");
-					// Optional: Force logout if no doc exists
+					console.error("[ERROR] NO DOSSIER FOUND IN DATABASE.");
+					alert("CRITICAL ERROR: Dossier missing. Please return to the main login terminal.");
+					window.location.href = "DoD_Login_Style.html";
 				}
 			} else {
-				// Not logged in? Return to Base
+				// Ghost detected, kick them out
 				window.location.href = "DoD_Login_Style.html";
 			}
 		});
 
-		// 3. THE PAYLOAD: SAVE DATA
-		document.getElementById('btn-submit').addEventListener('click', async (e) => {
-			e.preventDefault(); // Stop page reload
+		// 4. THE PAYLOAD: FORM SUBMISSION & DATA PIPELINE
+		// Fix: We listen to the FORM 'submit' event, NOT the button 'click' event.
+		// This forces HTML5 to validate your "REQUIRED" inputs before running our code.
+		document.getElementById('dossier-form').addEventListener('submit', async (e) => {
+			e.preventDefault(); 
 
 			const btn = document.getElementById('btn-submit');
-			btn.innerText = "ENCRYPTING ID...";
+			btn.innerText = "UPLOADING INTEL...";
 			btn.disabled = true;
 
 			try {
-				// A. COLLECT RAW DATA FOR ID GENERATION
-				// We map the HTML IDs to the generator's expected keys
+				// A. COLLECT RAW DATA
 				const rawData = {
-					role: currentRole,
+					role: 'student',
 					gender: document.getElementById('std-gender').value,
 					nationality: document.getElementById('std-nat').value,
 					university: document.getElementById('std-uni').value,
-					education_level: document.getElementById('std-lvl')?.value || "University"
+					education_level: document.getElementById('std-lvl').value
 				};
 
-				// B. GENERATE THE TITAN SERIAL
+				// B. GENERATE TITAN SERIAL
 				const titanSerial = generateTitanID(rawData);
-				console.log("GENERATED SERIAL:", titanSerial);
+				console.log("[SYS] GENERATED SERIAL:", titanSerial);
 
-				// C. PREPARE THE UPDATE OBJECT
-				// We map the HTML IDs to the Database Fields
+				// C. FILE UPLOAD PROTOCOL (STORAGE)
+				const fileInput = document.getElementById('id-file');
+				let uploadedFileUrl = null;
+
+				if (fileInput.files.length > 0) {
+					btn.innerText = "ENCRYPTING ID FILE...";
+					const file = fileInput.files[0];
+					
+					// Create a secure file path: student_ids/UID_filename.jpg
+					const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, "_");
+					const storageRef = ref(storage, `student_ids/${currentUid}_${cleanFileName}`);
+					
+					// Upload and get URL
+					const uploadTask = await uploadBytes(storageRef, file);
+					uploadedFileUrl = await getDownloadURL(uploadTask.ref);
+					console.log("[SYS] ID UPLOADED SECURELY.");
+				}
+
+				// D. PREPARE FIRESTORE UPDATE OBJECT
+				btn.innerText = "UPDATING MAINFRAME...";
 				let updateData = {
-					titanId: titanSerial, // <--- SAVING THE ID
+					titanId: titanSerial,
 					first_name: document.getElementById('core-fname').value,
 					last_name: document.getElementById('core-lname').value,
 					phone: document.getElementById('core-phone').value,
@@ -345,52 +372,44 @@ permalink: /User_Registeration_Form.html
 					gender: rawData.gender,
 					nationality: rawData.nationality,
 					
-					profile_completed: true,
-					checkpoint: 2,
-					updated_at: serverTimestamp()
-				};
-
-				// D. INJECT ROLE SPECIFIC DATA
-				if (currentRole === 'student') {
-					updateData.education_profile = {
+					// The Academic Profile
+					education_profile: {
 						university: rawData.university,
 						major: document.getElementById('std-major').value,
 						education_level: rawData.education_level
-					};
-					// Save root level for searching
-					updateData.university = rawData.university;
-				} 
-				else if (currentRole === 'freelancer') {
-					// Generate a random contract ID for flavor
-					const opID = "OPS-" + Math.floor(Math.random() * 9000 + 1000);
-					updateData.operational_data = {
-						contract_id: opID,
-						company: document.getElementById('ops-comp').value || "FREELANCE",
-						specialty: document.getElementById('ops-skill').value,
-						education_level: document.getElementById('ops-lvl').value,
-						ops_type: "MERCENARY"
-					};
-				}
+					},
+					university: rawData.university, // Root level for easy querying later
+
+					// Append the File URL if it exists
+					id_verification_url: uploadedFileUrl || "NOT_PROVIDED",
+
+					// CRITICAL LOOP FIX: UPGRADE CLEARANCE TO ACTIVE
+					profile_completed: true,
+					checkpoint: 4,     // <--- Bypasses the application trap
+					status: 'ACTIVE',  // <--- Signals the dispatcher they are ready
+					updated_at: serverTimestamp()
+				};
 
 				// E. EXECUTE DATABASE UPDATE
-				const userRef = doc(db, 'artifacts', dbID, 'users', currentUid);
+				const userRef = doc(db, 'artifacts', 'mhstudios-836', 'users', currentUid);
 				await updateDoc(userRef, updateData);
 
-				alert(`IDENTITY CONFIRMED.\n\nYOUR SERIAL NUMBER ASSIGNED:\n${titanSerial}`);
+				// F. MISSION ACCOMPLISHED
+				alert(`IDENTITY CONFIRMED.\n\nYOUR SERIAL NUMBER ASSIGNED:\n${titanSerial}\n\nClearance granted.`);
 				
-				// F. REDIRECT
-				if (currentRole === 'student') window.location.href = "Terms_Conditions.html?mode=induction";
-				else window.location.href = "Freelancers_Room.html";
+				// Redirect to the Terms/Induction page. When they next hit the dashboard, 
+				// the dispatcher will automatically route them to Student_Room.html
+				window.location.href = "Terms_Conditions.html?mode=induction";
 
-			} catch (e) {
-				console.error(e);
-				alert("ERROR: " + e.message);
+			} catch (error) {
+				console.error("[ERROR] UPLINK FAILED:", error);
+				alert("UPLINK ERROR: " + error.message);
 				btn.innerText = "CONFIRM INTEL";
 				btn.disabled = false;
 			}
 		});
 
-		// Helper for file upload visual
+		// Helper for file upload visual (Keep this outside the submit event)
 		window.updateFileLabel = (input) => {
 			if(input.files && input.files[0]) {
 				document.getElementById('file-label').innerText = "SECURED: " + input.files[0].name;
