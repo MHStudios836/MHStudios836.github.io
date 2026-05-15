@@ -813,6 +813,7 @@ permalink: /DoD_Login_Style.html
 				$('.panel-title').css('color', '#ff004c');
 			}
 
+<<<<<<< Updated upstream
 			// --- 4. THE GOD MODE ROUTER (FINAL VERSION) ---
 			async function routeUser(user) {
 				typeStatus("> VERIFYING BIOMETRICS...", "#FFD700");
@@ -827,11 +828,116 @@ permalink: /DoD_Login_Style.html
 						const data = userSnap.data();
 						const role = data.role || 'student';
 						const cp = data.checkpoint || 1; 
+=======
+			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
+			// This is the brain. It decides where users go.
+			
+			// --- 4. THE GOD MODE ROUTER (UPGRADED) ---
+			// --- 4. THE GOD MODE ROUTER (MERGED & UPGRADED) ---
+			async function routeUser(user) {
+				typeStatus("> VERIFYING BIOMETRICS...", "#FFD700");
+
+				try {
+					const userRef = doc(db, "users", user.uid);
+					const userSnap = await getDoc(userRef);
+					
+					// --- ADD THIS TO YOUR SCRIPT BLOCK ---
+
+					// 1. SPECOPS TRIGGER
+					window.initiateSpecOpsProtocol = function() {
+						// A. Switch to Register Tab
+						$('#btn-signup').click();
+						
+						// B. Auto-Select Freelancer
+						selectDesignation('freelancer');
+						
+						// C. Set Special "SpecOps" Flag in Session
+						sessionStorage.setItem('target_tier', 'OPERATIVE');
+						
+						// D. Visual Feedback
+						typeStatus("> PRIORITY ONE: SPECOPS ENLISTMENT INITIALIZED...", "#ff004c");
+						$('.panel-title').text("ENLIST: OPERATIVE");
+						$('.panel-title').css('color', '#ff004c');
+					}
+
+					// 2. UPDATE THE "NEW RECRUIT" SECTION IN routeUser (MERGED)
+					// Replace the previous "C. NEW RECRUIT" block with this:
+
+					// ... inside routeUser ...
+					// C. NEW RECRUIT (THE LOGIC MERGE)
+					if (selectedRole === "") {
+						typeStatus("> ERROR: DESIGNATION MISSING.", "#ff004c");
+						alert("HALT! YOU MUST SELECT A DESIGNATION.");
+						await signOut(auth);
+						return;
+					}
+
+					// CHECK FOR SPECOPS FLAG
+					const isSpecOps = sessionStorage.getItem('target_tier') === 'OPERATIVE';
+					const tierLabel = isSpecOps ? 'OPERATIVE' : (selectedRole === 'freelancer' ? 'MERCENARY' : 'STUDENT');
+
+					let dossier = {
+						uid: user.uid,
+						email: user.email,
+						first_name: user.displayName ? user.displayName.split(' ')[0] : "Recruit",
+						last_name: user.displayName ? (user.displayName.split(' ').slice(1).join(' ') || "") : "",
+						role: selectedRole,
+						tier: tierLabel, // SAVES 'OPERATIVE' IF CLICKED THE RED LINK
+						wallet_balance: 0,
+						createdAt: serverTimestamp(),
+						is_banned: false,
+						checkpoint: 1, 
+						status: 'INCOMPLETE' 
+					};
+
+					await setDoc(userRef, dossier);
+
+					typeStatus(`> DOSSIER INITIALIZED [${tierLabel}]. STARTING INDUCTION...`, "#00ff41");
+					
+					setTimeout(() => {
+						if (selectedRole === 'student') {
+							window.location.href = 'User_Registeration_Form.html';
+						} else if (selectedRole === 'contractor') {
+							window.location.href = 'Contractor_Application.html';
+						} else {
+							// FREELANCER / SPECOPS PIPELINE
+							// Pass the mode so the next page knows what ID to generate
+							const mode = isSpecOps ? 'specops' : 'standard';
+							window.location.href = `Freelancer_Application.html?mode=${mode}`;
+						}
+					}, 1000);
+
+					// =========================================================
+					// A. GOD MODE CHECK (Backdoor for Commander)
+					// =========================================================
+					if (user.email === "mhjerjawi836@gmail.com") {
+						typeStatus("> COMMANDER RECOGNIZED. OVERRIDING PROTOCOLS...", "#ff004c");
+						await setDoc(userRef, {
+							uid: user.uid,
+							email: user.email,
+							role: 'admin',
+							rank: 'GENERAL',
+							lastLogin: serverTimestamp(),
+							is_banned: false
+						}, { merge: true });
+						setTimeout(() => window.location.href = 'Admin_Room.html', 1000);
+						return;
+					}
+
+					// =========================================================
+					// B. EXISTING USER CHECK (Returning Operatives)
+					// =========================================================
+					if (userSnap.exists()) {
+						const data = userSnap.data();
+						const role = data.role || 'student';
+						const cp = data.checkpoint || 1; // Default to 1 if missing
+>>>>>>> Stashed changes
 
 						typeStatus(`> CLEARANCE LEVEL: ${role.toUpperCase()}`, "#00ff41");
 
 						setTimeout(() => {
 							if (role === 'admin') window.location.href = 'Admin_Room.html';
+<<<<<<< Updated upstream
 							else if (role === 'operative') window.location.href = 'Operative_Room.html';
 							
 							else if (role === 'contractor') {
@@ -853,6 +959,24 @@ permalink: /DoD_Login_Style.html
 					} else {
 						// B. NEW RECRUIT (CREATION LOGIC)
 						
+=======
+							// CONTRACTOR ROUTING: Check if they are fully active
+							else if (role === 'contractor') {
+								if(data.status === 'ACTIVE') window.location.href = 'Contractor_Room.html';
+								else window.location.href = 'Contractor_Application.html'; // Send back to finish app if incomplete
+							}
+							else if (role === 'freelancer') window.location.href = 'Freelancers_Room.html';
+							else if (cp < 4) window.location.href = 'User_Registeration_Form.html';
+							else window.location.href = 'Student_Room.html';
+						}, 1000);
+
+					} else {
+						// =========================================================
+						// C. NEW RECRUIT (THE LOGIC MERGE)
+						// =========================================================
+						
+						// 1. SAFETY CHECK
+>>>>>>> Stashed changes
 						if (selectedRole === "") {
 							typeStatus("> ERROR: DESIGNATION MISSING.", "#ff004c");
 							alert("HALT! YOU MUST SELECT A DESIGNATION.");
@@ -860,6 +984,7 @@ permalink: /DoD_Login_Style.html
 							return;
 						}
 
+<<<<<<< Updated upstream
 						// CHECK FOR SPECOPS FLAG
 						const isSpecOps = sessionStorage.getItem('target_tier') === 'OPERATIVE';
 						
@@ -894,17 +1019,53 @@ permalink: /DoD_Login_Style.html
 						typeStatus(`> DOSSIER INITIALIZED. STARTING INDUCTION...`, "#00ff41");
 						
 						// C. REDIRECT TO APPLICATION
+=======
+						// 2. PREPARE DOSSIER (Your New Brain Logic)
+						// We split names here for "Recall" later in the Application forms
+						let dossier = {
+							uid: user.uid,
+							email: user.email,
+							
+							// Name Split Logic (Robust)
+							first_name: user.displayName ? user.displayName.split(' ')[0] : "Recruit",
+							last_name: user.displayName ? (user.displayName.split(' ').slice(1).join(' ') || "") : "",
+							
+							role: selectedRole,
+							wallet_balance: 0,
+							createdAt: serverTimestamp(),
+							is_banned: false,
+
+							// THE INDUCTION TRACKER (State Machine Start)
+							checkpoint: 1,       // Step 1: Account Created
+							status: 'INCOMPLETE' // Mark as Ghost until chain is finished
+						};
+
+						// 3. SAVE TO FIREBASE
+						await setDoc(userRef, dossier);
+
+						// 4. THE REDIRECT LOGIC (The Route)
+						typeStatus("> DOSSIER INITIALIZED. STARTING INDUCTION...", "#00ff41");
+						
+>>>>>>> Stashed changes
 						setTimeout(() => {
 							if (dossier.role === 'admin') {
 								window.location.href = 'Admin_Room.html';
 							} else if (selectedRole === 'student') {
 								window.location.href = 'User_Registeration_Form.html';
 							} else if (selectedRole === 'contractor') {
+<<<<<<< Updated upstream
 								window.location.href = 'Contractor_Application.html';
 							} else {
 								// FREELANCER / SPECOPS PIPELINE
 								const mode = isSpecOps ? 'specops' : 'standard';
 								window.location.href = `Freelancer_Application.html?mode=${mode}`;
+=======
+								// DIRECT UPLINK TO APPLICATION (Step 2 of Chain)
+								window.location.href = 'Contractor_Application.html';
+							} else {
+								// Freelancer Pipeline
+								window.location.href = 'Freelancer_Application.html';
+>>>>>>> Stashed changes
 							}
 						}, 1000);
 					}
