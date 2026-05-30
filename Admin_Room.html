@@ -4,7 +4,7 @@ permalink: /Admin_Room.html
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <title>MH STUDIOS™ | HIGH COMMAND (TITAN)</title>
+    <title>MA STUDIOS™ | HIGH COMMAND (TITAN)</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <meta name="robots" content="noindex, nofollow">
@@ -29,8 +29,6 @@ permalink: /Admin_Room.html
             --mh-text: #e0e0e0;
             --mh-gold: #FFD700; /* Accents Only */
             --mh-red: #ff004c;  /* Alerts */
-			--mh-void: #05070a;
-			--mh-glow: rgba(0, 128, 255, 0.5);
         }
 
         body {
@@ -46,191 +44,27 @@ permalink: /Admin_Room.html
             background-size: cover;
         }
 
-        /* --- 1. TACTICAL NAV (The Index.html Structure) --- */
-		#tactical-nav {
-			position: fixed; top: 0; left: 0; width: 100%;
-			padding: 15px 30px; 
-			height: 80px; /* Fixed height to match Sidebar offset */
-			box-sizing: border-box; /* Ensures padding doesn't break width */
-			z-index: 9000; /* Superiority over Sidebar */
-			display: flex; justify-content: space-between; align-items: center;
-			background: rgba(5, 7, 10, 0.95); /* Darker for Admin */
-			backdrop-filter: blur(15px);
-			border-bottom: 2px solid rgba(0, 128, 255, 0.2);
-			transition: 0.3s;
-		}
-
-		#tactical-nav.scrolled {
-			background: rgba(0,0,0,0.98);
-			border-bottom-color: var(--mh-blue);
-			box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-		}
-
-		/* --- BRANDING (The Admin Look) --- */
-		.brand-link {
-			display: flex; align-items: center; gap: 15px;
-			text-decoration: none;
-		}
-		
-		.brand-link img { 
-			height: 48px; 
-			filter: drop-shadow(0 0 5px var(--mh-blue));
-			transition: 0.3s;
-		}
-		
-		.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-		.brand-text .main { font-size: 1.4em; font-weight: 700; letter-spacing: 2px; color: #fff; transition: 0.3s; }
-		.brand-text .sub { font-size: 0.7em; color: var(--mh-cyan); letter-spacing: 4px; font-weight: bold; text-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
-
-		.brand-link:hover img { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 15px var(--mh-cyan)); }
-		.brand-link:hover .main { color: var(--mh-cyan); text-shadow: 0 0 15px var(--mh-cyan); }
-
-		/* --- MENU TRIGGER (Your Requested Design) --- */
-		.menu-trigger {
-			background: transparent;
-			border: 1px solid var(--mh-blue);
-			color: var(--mh-blue);
-			padding: 8px 18px;
-			cursor: pointer;
-			transition: 0.3s;
-			font-weight: 900;
-			display: flex; align-items: center; gap: 10px;
-			text-transform: uppercase; letter-spacing: 1px;
-		}
-
-		.menu-trigger:hover, .menu-trigger.active {
-			background: var(--mh-blue);
-			color: #000;
-			box-shadow: 0 0 15px var(--mh-blue);
-			transform: scale(1.05);
-		}
-
-		/* --- MENU OVERLAY (The Vault) --- */
-		#menu-overlay {
-			position: fixed; top: 0; right: -100%; width: 400px; height: 100vh;
-			background: rgba(5, 7, 10, 0.98);
-			border-left: 2px solid var(--mh-blue);
-			z-index: 9999;
-			padding: 40px;
-			display: flex; flex-direction: column;
-			transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-			box-shadow: -20px 0 50px rgba(0,0,0,0.8);
-			overflow-y: auto;
-		}
-		#menu-overlay.active { right: 0; }
-		
-		.menu-close { align-self: flex-end; font-size: 1.5em; color: #666; cursor: pointer; margin-bottom: 40px; }
-		.menu-close:hover { color: var(--mh-red); }
-
-		/* MAIN LINKS */
-		.menu-links a, .menu-dropdown-btn {
-			display: flex; align-items: center; justify-content: space-between;
-			font-size: 1.2em; color: #fff; padding: 15px 0;
-			border-bottom: 1px solid rgba(255,255,255,0.1);
-			text-transform: uppercase; letter-spacing: 2px; cursor: pointer; text-decoration: none;
-		}
-		.menu-links a:hover, .menu-dropdown-btn:hover {
-			color: var(--mh-cyan); padding-left: 10px; border-bottom-color: var(--mh-cyan);
-		}
-
-		/* DROPDOWN */
-		.dropdown-container {
-			display: none; background: rgba(255,255,255,0.03);
-			padding-left: 20px; border-left: 1px solid var(--mh-blue); margin-bottom: 10px;
-		}
-		.dropdown-container a { font-size: 0.9em; color: #aaa; border-bottom: none; padding: 10px 0; }
-		.dropdown-container a:hover { color: var(--mh-gold); padding-left: 10px; }
-		
-		/* --- TITAN BUTTON PROTOCOLS --- */
-			/* Shared Base DNA */
-			.titan-btn {
-				position: relative;
-				display: inline-flex;
-				justify-content: center;
-				align-items: center;
-				font-family: 'Uni Sans', sans-serif; /* Or your main font */
-				font-weight: 900;
-				font-size: 1.1em;
-				letter-spacing: 2px;
-				text-decoration: none;
-				padding: 20px 40px;
-				min-width: 260px; /* Massive Click Target */
-				text-transform: uppercase;
-				transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* The Bouncy Zoom */
-				
-				/* The "Cyber Cut" Corners */
-				clip-path: polygon(
-					15px 0, 100% 0, 
-					100% calc(100% - 15px), 
-					calc(100% - 15px) 100%, 
-					0 100%, 0 15px
-				);
-			}
-
-			/* 1. OPERATIVE LOGIN (The "Power" Button) */
-			.titan-login {
-				background: #0080FF;
-				color: #05070a; /* Dark text on blue for high contrast */
-				border: 0;
-				box-shadow: 0 0 15px rgba(0, 128, 255, 0.4);
-			}
-
-			.titan-login:hover {
-				transform: scale(1.1); /* TACTICAL ZOOM */
-				background: #fff;
-				color: #0080FF;
-				box-shadow: 0 0 40px rgba(0, 128, 255, 0.8), inset 0 0 20px rgba(0, 128, 255, 0.2);
-			}
-
-			/* 2. REQUEST ACCESS (The "Scanner" Button) */
-			.titan-access {
-				background: transparent;
-				color: #0080FF;
-				border: 2px solid rgba(0, 128, 255, 0.5);
-				/* Subtle grid pattern inside */
-				background-image: linear-gradient(rgba(0, 128, 255, 0.05) 1px, transparent 1px);
-				background-size: 10px 10px;
-			}
-
-			.titan-access:hover {
-				transform: scale(1.1); /* TACTICAL ZOOM */
-				border-color: #00e5ff; /* Shifts to Cyan */
-				color: #00e5ff;
-				background-color: rgba(0, 229, 255, 0.1);
-				box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
-				text-shadow: 0 0 8px rgba(0, 229, 255, 0.8);
-			}
-		
-		
-		/* --- E. ANIMATIONS --- */
-        .blink {
-            width: 8px; height: 8px;
-            background: var(--mh-red);
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            animation: pulse-red 1.5s infinite;
+        /* --- 1. TACTICAL NAVBAR (Inherited from Index) --- */
+        #tactical-nav {
+            position: fixed; top: 0; width: 100%; z-index: 9000;
+            background: rgba(5, 7, 10, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 128, 255, 0.15);
+            padding: 15px 0;
+            transition: 0.3s;
         }
-        
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(255, 0, 76, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(255, 0, 76, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 0, 76, 0); }
+        #tactical-nav.scrolled { padding: 10px 0; background: rgba(5, 7, 10, 0.95); }
+
+        .nav-container {
+            max-width: 1400px; margin: 0 auto; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* --- F. LIVE LEDGER --- */
-        #admin-revenue-feed div {
-            padding: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.85em;
-        }
-        #admin-revenue-feed div:last-child { border-bottom: none; }
-		
-		/* LANGUAGE GRID */
-			.lang-grid { display: flex; justify-content: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-			.lang-btn { width: 40px; height: 30px; opacity: 0.4; transition: 0.3s; border: 1px solid transparent; border-radius: 4px; padding: 2px; }
-			.lang-btn img { width: 100%; height: auto; display: block; }
-			.lang-btn:hover, .lang-btn.active { opacity: 1; border-color: var(--mh-cyan); transform: scale(1.1); }
+        .brand-module { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .brand-module img { height: 40px; filter: drop-shadow(0 0 8px var(--mh-blue)); }
+        .brand-text { display: flex; flex-direction: column; line-height: 1; }
+        .brand-text .main { font-size: 1.2rem; font-weight: 900; letter-spacing: 2px; color: #fff; }
+        .brand-text .sub { font-size: 0.65rem; color: var(--mh-cyan); letter-spacing: 3px; }
 
         /* --- 2. COMMAND GRID (The Layout) --- */
         .command-layout {
@@ -308,82 +142,15 @@ permalink: /Admin_Room.html
             border-top: 2px solid var(--mh-cyan); border-left: 2px solid var(--mh-cyan);
         }
 
-        /* --- A. MISSION & CRM STATS (The Colorful Cards) --- */
-        .stats-grid { 
-            display: grid; 
-            gap: 20px; 
-            margin-top: 25px; 
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex; 
-            align-items: center; 
-            gap: 20px;
-            padding: 20px; 
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-box {
+            background: linear-gradient(135deg, rgba(13,17,23,0.9), rgba(0,0,0,0.8));
+            border-bottom: 2px solid var(--mh-blue);
+            text-align: center; padding: 20px;
             border-radius: 4px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
         }
-        
-        .stat-card:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .stat-icon {
-            font-size: 1.8em; 
-            width: 50px; 
-            height: 50px;
-            background: rgba(0,0,0,0.3);
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            border-radius: 50%; 
-            color: #fff;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .stat-info h3 { 
-            margin: 0; 
-            font-size: 0.7em; 
-            color: #888; 
-            letter-spacing: 1px; 
-            font-weight: bold;
-        }
-        
-        .stat-info h1 { 
-            margin: 5px 0 0 0; 
-            font-size: 1.8em; 
-            color: #fff; 
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-        }
-		
-		/* --- C. BADGES & LABELS --- */
-        .badge { 
-            padding: 2px 6px; 
-            border-radius: 3px; 
-            font-size: 0.6em; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px;
-        }
-        
-        .badge.student { 
-            background: rgba(0, 128, 255, 0.15); 
-            color: var(--mh-blue); 
-            border: 1px solid var(--mh-blue); 
-        }
-        
-        .badge.merc { 
-            background: rgba(255, 174, 0, 0.15); 
-            color: var(--mh-gold); 
-            border: 1px solid var(--mh-gold); 
-        }
+        .stat-box h3 { font-size: 2.2em; color: #fff; margin: 10px 0; font-weight: 900; }
+        .stat-box span { color: #666; font-size: 0.75em; letter-spacing: 1px; }
 
         /* --- 6. FORMS & TABLES (Admin Grade) --- */
         .admin-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
@@ -407,62 +174,6 @@ permalink: /Admin_Room.html
         
         .btn-danger { border-color: var(--mh-red); color: var(--mh-red); }
         .btn-danger:hover { background: var(--mh-red); color: #fff; box-shadow: 0 0 15px var(--mh-red); }
-		
-		
-		
-		/* --- B. SPY PANEL (Split Layout) --- */
-        .spy-grid { 
-            display: grid; 
-            grid-template-columns: 300px 1fr; 
-            gap: 0; 
-            padding: 0 !important; /* Overrides default titan-card padding */
-            overflow: hidden; 
-            height: 600px; 
-            border: 1px solid rgba(0, 128, 255, 0.2);
-            background: #000;
-        }
-
-        .spy-list { 
-            background: rgba(10, 10, 10, 0.8); 
-            border-right: 1px solid rgba(255,255,255,0.1); 
-            overflow-y: auto; 
-        }
-
-        .spy-item {
-            padding: 20px; 
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer; 
-            transition: 0.2s;
-        }
-        
-        .spy-item h4 { margin: 0 0 5px 0; font-size: 0.85em; color: #ddd; }
-        .spy-item p { margin: 0; }
-
-        .spy-item:hover { background: rgba(255,255,255,0.05); }
-        
-        .spy-item.active { 
-            background: rgba(0, 229, 255, 0.05); 
-            border-left: 3px solid var(--mh-cyan); 
-        }
-
-        .spy-feed { 
-            display: flex; 
-            flex-direction: column; 
-            background: radial-gradient(circle at center, #111 0%, #000 100%); 
-            position: relative;
-        }
-        
-        /* Scanline effect for Spy Feed */
-        .spy-feed::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
 
         /* --- 7. CHAT & TERMINAL --- */
         .terminal-window {
@@ -474,48 +185,12 @@ permalink: /Admin_Room.html
         .terminal-body { flex: 1; overflow-y: auto; padding: 15px; color: #0f0; font-size: 0.9em; }
         .terminal-input-row { display: flex; border-top: 1px solid #333; }
         .terminal-input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px; font-family: inherit; }
-		
-		/* --- D. TOGGLE SWITCH (Lockdown) --- */
-        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        
-        .slider { 
-            position: absolute; cursor: pointer; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            background-color: #333; 
-            transition: .4s; 
-            border-radius: 24px; 
-        }
-        
-        .slider:before { 
-            position: absolute; content: ""; 
-            height: 16px; width: 16px; 
-            left: 4px; bottom: 4px; 
-            background-color: white; 
-            transition: .4s; 
-            border-radius: 50%; 
-        }
-        
-        input:checked + .slider { background-color: var(--mh-red); box-shadow: 0 0 10px var(--mh-red); }
-        input:checked + .slider:before { transform: translateX(26px); }
 
         /* --- 8. MOBILE RESPONSIVENESS --- */
         @media (max-width: 900px) {
             .command-layout { grid-template-columns: 1fr; }
-            .sidebar-deck {
-				position: fixed;
-				left: -280px; /* Hide off-screen to the left */
-				top: 80px;
-				width: 280px;
-				transition: 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-				z-index: 8000;
-				display: flex; /* Override the 'none' you had before */
-			}
-            /* When the JS adds the .active class */
-			.sidebar-deck.active {
-				left: 0;
-				box-shadow: 20px 0 50px rgba(0, 128, 255, 0.3);
-			}
+            .sidebar-deck { display: none; position: fixed; top: 80px; left: 0; width: 100%; z-index: 8000; }
+            .sidebar-deck.active { display: flex; }
             .stat-grid { grid-template-columns: 1fr 1fr; }
         }
         
@@ -532,91 +207,26 @@ permalink: /Admin_Room.html
 </head>
 <body>
 
-		<nav id="tactical-nav">
-			<a href="index.html" class="brand-link">
-				<img src="images/Logo_1.png" alt="MH LOGO">
-				<div class="brand-text">
-					<span class="main">MH COMMAND</span>
-					<span class="sub">HIGH COUNCIL</span>
-				</div>
-			</a>
-			
-			<div class="menu-trigger" id="menu-btn">
-				<span>MENU</span>
-				<i class="fas fa-bars"></i>
-			</div>
-		</nav>
+    <nav id="tactical-nav">
+        <div class="nav-container">
+            <a href="index.html" class="brand-module">
+                <img src="images/Logo_1.png" alt="MH LOGO">
+                <div class="brand-text">
+                    <span class="main">MH COMMAND</span>
+                    <span class="sub">HIGH COUNCIL</span>
+                </div>
+            </a>
+            
+            <button class="btn-action" id="mobile-menu-btn" onclick="toggleSidebar()" style="display:none;">
+                <i class="fas fa-bars"></i> MENU
+            </button>
 
-		<div id="menu-overlay">
-			<div class="menu-close"><i class="fas fa-times"></i></div>
-
-			<div class="menu-links">
-				<a href="index.html"><i class="fas fa-home" style="width:30px;"></i> Command Center</a>
-				<a href="Products_Services_Room.html"><i class="fas fa-cube" style="width:30px;"></i> The Armory</a>
-				<a href="Packages.html"><i class="fas fa-tags" style="width:30px;"></i> Clearance Levels</a>
-				
-				<div class="menu-dropdown-btn">
-					<span><i class="fas fa-layer-group" style="width:30px;"></i> PAGES</span>
-					<i class="fas fa-chevron-down"></i>
-				</div>
-				<div class="dropdown-container">
-					<a href="About_Us.html">About MH Studios</a>
-					<a href="Video_Design.html">Video Design</a>
-					<a href="Graphic_Design.html">Creative Arts® (Graphic)</a>
-					<a href="Web_Design.html">MH E-Services™ (Web)</a>
-					<a href="Translation_Design.html">Translation Ops</a>
-					<a href="Audio_Design.html">MH Sounds™ (Audio)</a>
-					<a href="Game_Design.html">MH Games™ (Project Ironclade)</a>
-				</div>
-
-				<a href="#black-box"><i class="fas fa-envelope" style="width:30px;"></i> Secure Comms</a>
-			
-			
-			<a href="Recruitment_Center.html" style="
-					display: flex; justify-content: space-between; align-items: center;
-					background: #000; border: 1px solid #333; color: #fff;
-					padding: 15px; margin-bottom: 10px; text-decoration: none;
-					border-left: 3px solid #ffae00; transition:0.3s;"
-					onmouseover="this.style.background='#111'" onmouseout="this.style.background='#000'">
-					
-					<span><i class="fas fa-users-cog"></i> Recruits</span>
-					
-					<span id="vetting-badge" style="
-						background:var(--mh-red); color:#fff; font-size:0.7em; 
-						padding:2px 8px; border-radius:4px; display:none;">
-						0
-					</span>
-				</a>
-			</div>
-			
-			<div class="menu-bottom" style="padding:20px; text-align:center;">
-				
-				<div id="dynamic-auth-buttons" style="
-					display: flex; 
-					gap: 40px; 
-					justify-content: center; 
-					align-items: center;
-					width: 100%; 
-					margin: 50px 0; 
-					flex-wrap: wrap; 
-				">
-					<a href="DoD_Login_Style.html" class="titan-btn titan-login">
-						<i class="fas fa-fingerprint" style="margin-right:15px;"></i> OPERATIVE LOGIN
-					</a>
-
-					<a href="DoD_Login_Style.html" class="titan-btn titan-access">
-						<i class="fas fa-user-plus" style="margin-right:15px;"></i> REQUEST ACCESS
-					</a>
-				</div>
-
-				<div class="lang-grid">
-					<a href="#" class="lang-btn active" title="English"><img src="images/GB.png" alt="GB"></a>
-					<a href="#" class="lang-btn" title="Arabic"><img src="images/Ar.png" alt="AR"></a>
-					<a href="#" class="lang-btn" title="Dutch"><img src="images/Du.png" alt="NL"></a>
-					<a href="#" class="lang-btn" title="Russian"><img src="images/Ru.png" alt="RU"></a>
-				</div>
-			</div>
-		</div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <div id="sys-clock" style="color:var(--mh-cyan); font-family:monospace; font-size:0.9em;">00:00:00 UTC</div>
+                <button class="btn-danger" id="admin-logout"><i class="fas fa-power-off"></i> LOGOUT</button>
+            </div>
+        </div>
+    </nav>
 
     <div class="command-layout">
 
@@ -630,7 +240,6 @@ permalink: /Admin_Room.html
             </div>
 
             <div class="nav-menu">
-				
                 <div class="nav-label">OPERATIONS</div>
                 <div class="nav-btn active" onclick="switchPanel('panel-dashboard')">
                     <i class="fas fa-chart-line"></i> DASHBOARD
@@ -667,42 +276,22 @@ permalink: /Admin_Room.html
 
                 <div class="stat-grid">
                     <div class="stat-box" style="border-color:var(--mh-gold);">
-                        <span>TOTAL REVENUE</span>
                         <h3 id="vault-display" style="color:var(--mh-gold);">$0.00</h3>
+                        <span>TOTAL REVENUE</span>
                     </div>
                     <div class="stat-box">
-                        <span>OPERATIVES</span>
                         <h3 id="stat-users">0</h3>
+                        <span>OPERATIVES</span>
                     </div>
                     <div class="stat-box">
-                        <span>ACTIVE MISSIONS</span>
                         <h3 style="color:var(--mh-cyan);">85</h3>
+                        <span>ACTIVE MISSIONS</span>
                     </div>
                     <div class="stat-box" style="border-color:var(--mh-red);">
-                        <span>ALERTS</span>
                         <h3 style="color:var(--mh-red);">3</h3>
+                        <span>ALERTS</span>
                     </div>
                 </div>
-				
-				<div class="panel-container" style="border-top: 2px solid var(--mh-red); margin-top: 20px;">
-					<div class="panel-header">
-						<h3><i class="fas fa-biohazard"></i> SYSTEM OPERATIONS</h3>
-					</div>
-					<div class="panel-body">
-						
-						<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#111; padding:15px; border-radius:4px;">
-							<div>
-								<strong style="color:var(--mh-red); letter-spacing:1px;">SYSTEM LOCKDOWN</strong>
-								<div style="font-size:0.7em; color:#666;">DISABLE ACCESS FOR ALL NON-ADMINS</div>
-							</div>
-							<label class="switch">
-								<input type="checkbox" id="defcon-toggle" onchange="toggleLockdown(this)">
-								<span class="slider round"></span>
-							</label>
-						</div>
-
-					</div>
-				</div>
 
                 <div class="titan-card">
                     <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -756,50 +345,6 @@ permalink: /Admin_Room.html
                         </table>
                     </div>
                 </div>
-				
-				<div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;">
-					<div class="stat-card" style="border-left: 4px solid #0080FF; background:#111; padding:15px;">
-						<div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
-						<div class="stat-info">
-							<h3>STUDENTS</h3>
-							<h1 id="crm-count-student">0</h1>
-						</div>
-					</div>
-
-					<div class="stat-card" style="border-left: 4px solid #ffae00; background:#111; padding:15px;">
-						<div class="stat-icon"><i class="fas fa-user-shield"></i></div>
-						<div class="stat-info">
-							<h3>MERCENARIES</h3>
-							<h1 id="crm-count-merc">0</h1>
-						</div>
-					</div>
-
-					<div class="stat-card" style="border-left: 4px solid #ff004c; background:#111; padding:15px;">
-						<div class="stat-icon"><i class="fas fa-skull"></i></div>
-						<div class="stat-info">
-							<h3>OPERATORS</h3>
-							<h1 id="crm-count-operator">0</h1> </div>
-					</div>
-				</div>
-
-				<div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 15px;">
-					<div class="stat-card" style="background:#111; padding:15px;">
-						<h3>OPEN BOUNTIES</h3>
-						<h1 id="crm-task-open" style="color: #00e5ff;">0</h1>
-					</div>
-					<div class="stat-card" style="background:#111; padding:15px;">
-						<h3>ACTIVE OPS</h3>
-						<h1 id="crm-task-active" style="color: #ffae00;">0</h1>
-					</div>
-					<div class="stat-card" style="background:#111; padding:15px;">
-						<h3>COMPLETED</h3>
-						<h1 id="crm-task-completed" style="color: #00ff41;">0</h1>
-					</div>
-					<div class="stat-card" style="background:#111; padding:15px;">
-						<h3>ACTIVE VALUE</h3>
-						<h1 id="crm-task-value" style="color: #ffd700;">$0.00</h1>
-					</div>
-				</div>
             </section>
 
             <section id="panel-users" class="panel">
@@ -897,63 +442,16 @@ permalink: /Admin_Room.html
                         <button type="submit" class="btn-action" style="width:100%; margin-top:10px;">EXECUTE TRANSFER</button>
                     </form>
                 </div>
-				
-				<div class="admin-card" style="background:#111; padding:20px; border:1px solid #333; margin-top:20px;">
-					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-						<h4 style="color: #fff; margin:0;"><i class="fas fa-list-alt"></i> LIVE LEDGER</h4>
-						<span style="font-size: 0.7em; color: var(--mh-green);"><i class="fas fa-circle"></i> ONLINE</span>
-					</div>
-					
-					<div id="admin-revenue-feed" style="height: 200px; overflow-y: auto; font-family: monospace; border-top: 1px solid #333; padding-top: 10px;">
-						<div style="padding: 20px; text-align: center; color: #666;">
-							CONNECTING TO BANKING SATELLITE...
-						</div>
-					</div>
-				</div>
             </section>
             
-			<section id="panel-spy" class="panel">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-				<h2><i class="fas fa-satellite-dish"></i> SIGNAL INTERCEPT</h2>
-				<button class="btn-red" onclick="alert('ALL CHANNELS TERMINATED')">KILL SWITCH (ALL)</button>
-			</div>
-
-			<div class="card spy-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; height: 500px;">
-				<div class="spy-list" style="background: #111; padding: 10px; overflow-y: auto;">
-					<div class="spy-item active" style="padding: 10px; border-bottom: 1px solid #333;">
-						<h4><span class="badge student">STUDENT</span> User_99 <i class="fas fa-arrows-alt-h"></i> <span class="badge merc">MERC</span> Coder_X</h4>
-						<p style="color:#666; font-size:0.8em;">Last Activity: Just now</p>
-					</div>
-					<div class="spy-item" style="padding: 10px; border-bottom: 1px solid #333;">
-						<h4><span class="badge student">STUDENT</span> Sarah_J <i class="fas fa-arrows-alt-h"></i> <span class="badge merc">MERC</span> Design_V</h4>
-						<p style="color:#666; font-size:0.8em;">Last Activity: 5 mins ago</p>
-					</div>
-				</div>
-
-				<div class="spy-feed" style="background: #000; display: flex; flex-direction: column; border: 1px solid #333;">
-					<div style="padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
-						<span class="text-red"><i class="fas fa-circle blink"></i> LIVE MONITORING</span>
-						<button class="btn-red" style="padding:2px 8px; font-size:0.7em;">TERMINATE SESSION</button>
-					</div>
-
-					<div style="flex:1; padding:20px; overflow-y:auto; color:#ccc; font-family:monospace;">
-						<div style="margin-bottom:10px;">
-							<span style="color:#0080FF;">[User_99]:</span> Hello, I need the file by tomorrow.
-						</div>
-						<div style="margin-bottom:10px;">
-							<span style="color:#ffae00;">[Coder_X]:</span> Affirmative. Uploading initial draft now.
-						</div>
-						<div style="margin-bottom:10px;">
-							<span style="color:#555;">[SYSTEM]:</span> File "draft_v1.zip" uploaded.
-						</div>
-					</div>
-
-					<div style="padding:10px; border-top:1px solid #333;">
-						<input type="text" class="tac-input" placeholder="Inject Admin Message..." style="width:100%; margin:0; border-color:#555; color:#fff; background:#111; padding:10px;">
-					</div>
-				</div>
-			</div>
-			</section>
+            <section id="panel-spy" class="panel">
+                <div class="titan-card" style="height:600px;">
+                   <h4 style="color:var(--mh-red);">SIGNAL INTERCEPT</h4>
+                   <p style="color:#666;">Live chat monitoring feed...</p>
+                   <div class="spy-list" style="height:100%;">
+                       </div>
+                </div>
+            </section>
 
             <section id="panel-console" class="panel">
                 <div class="terminal-window">
@@ -977,7 +475,7 @@ permalink: /Admin_Room.html
     <footer id="tactical-footer">
         <div class="footer-grid">
             <div class="footer-col">
-                <h4>MH STUDIOS™</h4>
+                <h4>MA STUDIOS™</h4>
                 <p>Advanced multimedia and academic solutions provider. Operating globally since 2023.</p>
                 <p style="color:#444;">&copy; 2025 ALL RIGHTS RESERVED.</p>
             </div>
@@ -1011,121 +509,32 @@ permalink: /Admin_Room.html
     </footer>
 
     <script src="assets/js/jquery.min.js"></script>
+    <script>
+        // 1. CLOCK
+        setInterval(() => {
+            document.getElementById('sys-clock').innerText = new Date().toISOString().split('T')[1].split('.')[0] + " UTC";
+        }, 1000);
 
-	<script src="assets/js/jquery.scrolly.min.js"></script>
-	<script src="assets/js/jquery.scrollex.min.js"></script>
-	<script type="module" src="assets/js/titan-reactor.js"></script>
+        // 2. SIDEBAR TOGGLE (Mobile)
+        if(window.innerWidth < 900) {
+            document.getElementById('mobile-menu-btn').style.display = 'block';
+        }
+        function toggleSidebar() {
+            document.getElementById('admin-sidebar').classList.toggle('active');
+        }
 
-	<script>
-		$(document).ready(function() {
-			/* =========================================
-			   1. MENU & OVERLAY LOGIC (Direct from Index)
-			   ========================================= */
-			$('#menu-btn').on('click', function() {
-				$('#menu-overlay').addClass('active');
-				$(this).addClass('active'); // Cyan Glow
-			});
-
-			$('.menu-close, .menu-links a').on('click', function() {
-				// Don't close if clicking the dropdown button itself
-				if(!$(this).hasClass('menu-dropdown-btn')) {
-					$('#menu-overlay').removeClass('active');
-					$('#menu-btn').removeClass('active');
-				}
-			});
-
-			// Dropdown Logic
-			$('.menu-dropdown-btn').on('click', function() {
-				$(this).toggleClass('active');
-				$(this).next('.dropdown-container').slideToggle(300);
-			});
-
-			/* =========================================
-			   2. ADMIN PANEL SWITCHING (Merged)
-			   ========================================= */
-			window.switchPanel = function(panelId) {
-				// Update Buttons
-				$('.nav-btn, .nav-item').removeClass('active');
-				$(`[onclick="switchPanel('${panelId}')"]`).addClass('active');
-				
-				// Switch Panel with Fade
-				$('.panel').removeClass('active').hide();
-				$('#' + panelId).addClass('active').fadeIn(400);
-				
-				// Auto-close Menu/Sidebar on Mobile
-				if(window.innerWidth < 900) {
-					$('#menu-overlay').removeClass('active');
-					$('#admin-sidebar').removeClass('active');
-					$('#menu-btn').removeClass('active'); 
-				}
-			};
-
-			/* =========================================
-			   3. TACTICAL SCROLL REVEAL (Smart Logic)
-			   ========================================= */
-			$(window).on('scroll', function() {
-				// Navbar Scrolled State
-				if ($(window).scrollTop() > 50) {
-					$('#tactical-nav').addClass('scrolled');
-				} else {
-					$('#tactical-nav').removeClass('scrolled');
-				}
-
-				// Reveal Panels/Cards on Scroll
-				$('.panel, .titan-card, .stat-card').each(function() {
-					var top_of_element = $(this).offset().top;
-					var bottom_of_window = $(window).scrollTop() + $(window).height();
-					
-					if(bottom_of_window > top_of_element + 50) {
-						$(this).css({'opacity':'1', 'transform':'translateY(0)'});
-					}
-				});
-			});
-
-			// Initialize Reveal State
-			$('.panel, .titan-card, .stat-card').css({
-				'opacity':'0', 
-				'transform':'translateY(30px)', 
-				'transition':'0.6s all ease'
-			});
-		});
-
-		/* =========================================
-		   4. TITAN SYSTEM COMMANDS (Broadcast/Lockdown)
-		   ========================================= */
-		window.openBroadcastModal = () => $('#broadcast-modal').css('display', 'flex').hide().fadeIn(300);
-
-		window.fireBroadcast = () => {
-			const msg = $('#broadcast-msg').val();
-			const level = $('#broadcast-level').val();
-			if(msg) {
-				alert(`BROADCAST DISPATCHED: [${level.toUpperCase()}]`);
-				$('#broadcast-modal').fadeOut(300);
-				$('#broadcast-msg').val('');
-			}
-		};
-
-		window.toggleLockdown = function(checkbox) {
-			if(checkbox.checked) {
-				if(confirm("ACTIVATE TOTAL SYSTEM LOCKDOWN?")) {
-					$('body').addClass('lockdown-active');
-				} else {
-					checkbox.checked = false;
-				}
-			} else {
-				$('body').removeClass('lockdown-active');
-			}
-		};
-
-		// Global Escape Key
-		$(document).keyup(function(e) {
-			if (e.key === "Escape") { 
-				$('#broadcast-modal').fadeOut(300);
-				$('#menu-overlay').removeClass('active');
-				$('#menu-btn').removeClass('active');
-			}
-		});
-		</script>
+        // 3. PANEL SWITCHING
+        window.switchPanel = function(panelId) {
+            $('.nav-btn').removeClass('active');
+            $(`.nav-btn[onclick="switchPanel('${panelId}')"]`).addClass('active');
+            $('.panel').removeClass('active');
+            $('#' + panelId).addClass('active');
+            
+            if(window.innerWidth < 900) {
+                $('#admin-sidebar').removeClass('active');
+            }
+        };
+    </script>
 
     <script type="module">
         // --- 1. CORE IMPORTS ---
